@@ -2,19 +2,6 @@
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
  * Copyright (C) 2026 Mirai Launcher contributors.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
 
 package com.movtery.zalithlauncher.ui.screens.main
@@ -54,9 +41,9 @@ import com.movtery.zalithlauncher.ui.screens.content.elements.PlayerFace
 
 /** Primary destinations kept visible while nested launcher screens are open. */
 enum class LauncherSection {
-    HOME,
-    DISCOVER,
-    LIBRARY,
+    HOME,      // Play page (Jump In + Library dashboard)
+    DISCOVER,  // Existing download graph
+    LIBRARY,   // Full instance manager — not removed
     MULTIPLAYER,
     SETTINGS
 }
@@ -103,8 +90,8 @@ fun MiraiNavigationRail(
             Spacer(Modifier.height(8.dp))
 
             LauncherSectionItem(
-                icon = R.drawable.ic_home_filled,
-                label = stringResource(R.string.generic_main_menu),
+                icon = R.drawable.ic_play_arrow_filled,
+                label = stringResource(R.string.home_jump_in),
                 selected = selectedSection == LauncherSection.HOME,
                 onClick = { onNavigate(LauncherSection.HOME) }
             )
