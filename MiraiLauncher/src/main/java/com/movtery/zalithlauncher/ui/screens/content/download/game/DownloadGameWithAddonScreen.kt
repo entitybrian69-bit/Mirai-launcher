@@ -95,6 +95,7 @@ import com.movtery.zalithlauncher.utils.animation.getAnimateTween
 import com.movtery.zalithlauncher.utils.animation.swapAnimateDpAsState
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private class AddonsViewModel(
     private val gameVersion: String,
@@ -709,7 +710,7 @@ private fun ScreenHeader(
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MiraiThemeManager.currentAccent(),
-                    contentColor = Color(0xFF06210F)
+                    contentColor = AerixPalette.GreenDeep
                 ),
                 modifier = Modifier.padding(start = 6.dp)
             ) {

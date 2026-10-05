@@ -25,6 +25,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +60,10 @@ import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.account.Account
 import com.movtery.zalithlauncher.game.account.AccountsManager
 import com.movtery.zalithlauncher.ui.screens.content.elements.PlayerFace
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
+import com.movtery.zalithlauncher.ui.theme.aerixHairline
+import com.movtery.zalithlauncher.ui.theme.aerixPressScale
 
 /** Primary destinations kept visible while nested launcher screens are open. */
 enum class LauncherSection {
@@ -71,8 +76,8 @@ enum class LauncherSection {
     ACCOUNTS
 }
 
-private val ModrinthRailBg = Color(0xFF121418)
-private val ModrinthRailDivider = Color(0xFF222630)
+private val ModrinthRailBg = AerixPalette.ObsidianRaised
+private val ModrinthRailDivider = AerixPalette.Hairline
 
 @Composable
 fun MiraiNavigationRail(
@@ -188,31 +193,42 @@ private fun RailIconItem(
     accentColor: Color,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     val containerColor by animateColorAsState(
-        targetValue = if (selected) accentColor.copy(alpha = 0.18f) else Color.Transparent,
-        animationSpec = tween(140),
+        targetValue = if (selected) accentColor.copy(alpha = 0.16f) else Color.Transparent,
+        animationSpec = tween(160),
         label = "railContainerColor"
     )
     val iconTint by animateColorAsState(
-        targetValue = if (selected) accentColor else Color(0xFF9CA3AF),
-        animationSpec = tween(140),
+        targetValue = if (selected) accentColor else AerixPalette.TextSecondary,
+        animationSpec = tween(160),
         label = "railIconTint"
+    )
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) accentColor.copy(alpha = 0.72f) else Color.Transparent,
+        animationSpec = tween(160),
+        label = "railBorderColor"
     )
 
     Box(
         modifier = Modifier
             .size(width = 42.dp, height = 38.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(containerColor)
             .then(
                 if (selected) {
-                    Modifier.border(
-                        BorderStroke(1.5.dp, accentColor.copy(alpha = 0.75f)),
-                        RoundedCornerShape(12.dp)
-                    )
-                } else Modifier
+                    Modifier.border(BorderStroke(1.5.dp, borderColor), RoundedCornerShape(14.dp))
+                } else {
+                    Modifier.border(BorderStroke(1.dp, aerixHairline(0.05f)), RoundedCornerShape(14.dp))
+                }
             )
-            .clickable(role = Role.Tab, onClick = onClick)
+            .aerixPressScale(interactionSource, pressedScale = 0.92f)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                role = Role.Tab,
+                onClick = onClick
+            )
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center
     ) {
@@ -233,7 +249,7 @@ private fun AccountAvatarRailButton(
 ) {
     val activeAccent = MiraiThemeManager.currentAccent()
     val ringColor by animateColorAsState(
-        targetValue = if (selected) activeAccent else Color(0xFF2D323E),
+        targetValue = if (selected) activeAccent else AerixPalette.HairlineStrong,
         animationSpec = tween(150),
         label = "accountAvatarRing"
     )
@@ -242,7 +258,7 @@ private fun AccountAvatarRailButton(
         modifier = Modifier
             .size(36.dp)
             .clip(CircleShape)
-            .background(Color(0xFF1E222B))
+            .background(AerixPalette.GlassRaised)
             .border(
                 width = if (selected) 2.dp else 1.dp,
                 color = ringColor,

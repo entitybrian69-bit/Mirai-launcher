@@ -106,6 +106,7 @@ import com.movtery.zalithlauncher.ui.theme.onCardColor
 import com.movtery.zalithlauncher.utils.animation.getAnimateTween
 import com.movtery.zalithlauncher.utils.formatNumberByLocale
 import com.movtery.zalithlauncher.utils.string.isEmptyOrBlank
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 sealed interface SearchAssetsState {
     data object Searching: SearchAssetsState
@@ -451,7 +452,7 @@ fun ResultProjectLayout(
     onFavoriteClick: (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(14.dp),
     influencedByBackground: Boolean = true,
-    color: Color = Color(0xFF21242B),
+    color: Color = AerixPalette.Glass,
     contentColor: Color = Color.White,
     blur: Int = AllSettings.backgroundBlur.state,
     onClick: () -> Unit = {}
@@ -469,9 +470,9 @@ fun ResultProjectLayout(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF21242B),
+        color = AerixPalette.Glass,
         contentColor = Color.White,
-        border = BorderStroke(1.dp, Color(0xFF2E333E)),
+        border = BorderStroke(1.dp, AerixPalette.HairlineStrong),
         onClick = onClick
     ) {
         Column(
@@ -517,13 +518,13 @@ fun ResultProjectLayout(
                             modifier = Modifier.size(12.dp),
                             painter = painterResource(R.drawable.ic_download_2_outlined),
                             contentDescription = null,
-                            tint = Color(0xFFD1D5DB)
+                            tint = AerixPalette.TextPrimary
                         )
                         Text(
                             text = downloadsText,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE5E7EB)
+                            color = AerixPalette.TextPrimary
                         )
                     }
                 }
@@ -534,7 +535,7 @@ fun ResultProjectLayout(
                 modifier = Modifier.fillMaxWidth(),
                 text = description,
                 fontSize = 12.sp,
-                color = Color(0xFF9CA3AF),
+                color = AerixPalette.TextSecondary,
                 maxLines = 2,
                 minLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -555,7 +556,7 @@ fun ResultProjectLayout(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFFE5E7EB),
+                        color = AerixPalette.TextPrimary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -574,8 +575,8 @@ fun ResultProjectLayout(
 
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = if (isInstalled) Color(0xFF143825) else MiraiThemeManager.currentAccent(),
-                        contentColor = if (isInstalled) MiraiThemeManager.currentAccent() else Color(0xFF06210F),
+                        color = if (isInstalled) AerixPalette.GreenDeep else MiraiThemeManager.currentAccent(),
+                        contentColor = if (isInstalled) MiraiThemeManager.currentAccent() else AerixPalette.GreenDeep,
                         onClick = onClick
                     ) {
                         Text(

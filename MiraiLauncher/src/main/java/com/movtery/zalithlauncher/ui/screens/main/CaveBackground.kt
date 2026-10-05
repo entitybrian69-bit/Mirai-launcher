@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 /** Key of the currently cached [CaveBackground] bitmap. */
 private var caveWallpaperCacheKey: String? = null
@@ -55,7 +56,7 @@ fun CaveBackground(modifier: Modifier = Modifier, content: @Composable () -> Uni
     Box(modifier.fillMaxSize()) {
         val bitmap = image
         if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-        else Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF16181C), Color(0xFF21242B)))))
+        else Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(AerixPalette.Obsidian, AerixPalette.Glass))))
         content()
     }
 }

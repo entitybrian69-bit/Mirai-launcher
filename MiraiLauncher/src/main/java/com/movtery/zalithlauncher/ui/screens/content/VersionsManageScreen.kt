@@ -125,6 +125,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private enum class LibraryFilterGroup(val label: String) {
     ALL("All"),
@@ -286,7 +287,7 @@ fun VersionsManageScreen(
                         .fillMaxHeight()
                         .width(240.dp),
                     color = Color(0xFF17191F),
-                    border = BorderStroke(1.dp, Color(0xFF282C36))
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh)
                 ) {
                     LeftMenu(
                         isVisible = isVisible,
@@ -582,15 +583,15 @@ private fun VersionsLayout(
                             Surface(
                                 modifier = Modifier.size(36.dp),
                                 shape = RoundedCornerShape(10.dp),
-                                color = Color(0xFF161920),
-                                border = BorderStroke(1.dp, Color(0xFF262B37)),
+                                color = AerixPalette.ObsidianRaised,
+                                border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                                 onClick = { showSortMenu = true }
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_sort),
                                         contentDescription = "Sort",
-                                        tint = Color(0xFFD1D5DB),
+                                        tint = AerixPalette.TextPrimary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
@@ -614,10 +615,10 @@ private fun VersionsLayout(
                         Surface(
                             modifier = Modifier.size(36.dp),
                             shape = RoundedCornerShape(10.dp),
-                            color = if (showGamePathDrawer) Color(0xFF143825) else Color(0xFF161920),
+                            color = if (showGamePathDrawer) AerixPalette.GreenDeep else AerixPalette.ObsidianRaised,
                             border = BorderStroke(
                                 1.dp,
-                                if (showGamePathDrawer) MiraiThemeManager.currentAccent() else Color(0xFF262B37)
+                                if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixPalette.GlassHigh
                             ),
                             onClick = onToggleGamePathDrawer
                         ) {
@@ -625,7 +626,7 @@ private fun VersionsLayout(
                                 Icon(
                                     painter = painterResource(R.drawable.ic_folder_outlined),
                                     contentDescription = "Directories",
-                                    tint = if (showGamePathDrawer) MiraiThemeManager.currentAccent() else Color(0xFFD1D5DB),
+                                    tint = if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixPalette.TextPrimary,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -636,7 +637,7 @@ private fun VersionsLayout(
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MiraiThemeManager.currentAccent(),
-                                contentColor = Color(0xFF06210F)
+                                contentColor = AerixPalette.GreenDeep
                             ),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp),
                             modifier = Modifier.height(36.dp)
@@ -665,10 +666,10 @@ private fun VersionsLayout(
                             val selected = selectedFilter == group
                             Surface(
                                 shape = RoundedCornerShape(16.dp),
-                                color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF161920),
+                                color = if (selected) MiraiThemeManager.currentAccent() else AerixPalette.ObsidianRaised,
                                 border = BorderStroke(
                                     1.dp,
-                                    if (selected) MiraiThemeManager.currentAccent() else Color(0xFF262B37)
+                                    if (selected) MiraiThemeManager.currentAccent() else AerixPalette.GlassHigh
                                 ),
                                 onClick = { selectedFilter = group }
                             ) {
@@ -677,7 +678,7 @@ private fun VersionsLayout(
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                                    color = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB)
+                                    color = if (selected) AerixPalette.GreenDeep else AerixPalette.TextPrimary
                                 )
                             }
                         }
@@ -693,7 +694,7 @@ private fun VersionsLayout(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(16.dp),
-                                color = Color(0xFF161920),
+                                color = AerixPalette.ObsidianRaised,
                                 border = BorderStroke(1.dp, Color(0xFF2E323C))
                             ) {
                                 Column(
@@ -711,7 +712,7 @@ private fun VersionsLayout(
                                         onClick = onInstall,
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = MiraiThemeManager.currentAccent(),
-                                            contentColor = Color(0xFF06210F)
+                                            contentColor = AerixPalette.GreenDeep
                                         )
                                     ) {
                                         Icon(
@@ -824,7 +825,7 @@ private fun ModrinthLibraryInstanceCard(
             scaleY = scale
         },
         shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF161920),
+        color = AerixPalette.ObsidianRaised,
         border = BorderStroke(if (selected) 1.5.dp else 1.dp, borderColor),
         onClick = onSelect
     ) {
@@ -841,7 +842,7 @@ private fun ModrinthLibraryInstanceCard(
             ) {
                 Surface(
                     shape = RoundedCornerShape(10.dp),
-                    color = Color(0xFF2B2F3A),
+                    color = AerixPalette.HairlineStrong,
                     border = BorderStroke(1.dp, Color(0xFF343946))
                 ) {
                     VersionIconImage(
@@ -872,7 +873,7 @@ private fun ModrinthLibraryInstanceCard(
                         ModrinthMetaPill(
                             text = "$loaderName $mcVer",
                             backgroundColor = Color(0xFF2C303C),
-                            textColor = Color(0xFFE5E7EB)
+                            textColor = AerixPalette.TextPrimary
                         )
                     }
                 }
@@ -887,9 +888,9 @@ private fun ModrinthLibraryInstanceCard(
                 Box {
                     Surface(
                         shape = RoundedCornerShape(9.dp),
-                        color = Color(0xFF282C36),
+                        color = AerixPalette.GlassHigh,
                         border = BorderStroke(1.dp, Color(0xFF343946)),
-                        contentColor = Color(0xFFD1D5DB),
+                        contentColor = AerixPalette.TextPrimary,
                         onClick = { menuExpanded = true }
                     ) {
                         Box(
@@ -996,9 +997,9 @@ private fun ModrinthLibraryInstanceCard(
                 ) {
                     Surface(
                         shape = RoundedCornerShape(9.dp),
-                        color = Color(0xFF282C36),
+                        color = AerixPalette.GlassHigh,
                         border = BorderStroke(1.dp, Color(0xFF343946)),
-                        contentColor = Color(0xFFD1D5DB),
+                        contentColor = AerixPalette.TextPrimary,
                         onClick = onSettingsClick
                     ) {
                         Box(
@@ -1016,7 +1017,7 @@ private fun ModrinthLibraryInstanceCard(
                     Surface(
                         shape = RoundedCornerShape(16.dp),
                         color = MiraiThemeManager.currentAccent(),
-                        contentColor = Color(0xFF06210F),
+                        contentColor = AerixPalette.GreenDeep,
                         onClick = onPlayClick
                     ) {
                         Row(

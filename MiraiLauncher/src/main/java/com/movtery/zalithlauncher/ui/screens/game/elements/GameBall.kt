@@ -72,6 +72,7 @@ import com.movtery.zalithlauncher.ui.components.FloatingBall
 import com.movtery.zalithlauncher.ui.screens.content.elements.MemoryPreview
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import kotlinx.coroutines.delay
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 @Composable
 fun DraggableGameBall(
@@ -152,9 +153,9 @@ private fun MiraiQuickOverlayPillContent(
     val fpsVal = gameFps ?: 0
     val fpsColor = when {
         gameFps == null -> accentColor
-        fpsVal >= 55 -> Color(0xFF1BD96A)
-        fpsVal >= 30 -> Color(0xFFFBBF24)
-        else -> Color(0xFFEF4444)
+        fpsVal >= 55 -> AerixPalette.Green
+        fpsVal >= 30 -> AerixPalette.Amber
+        else -> AerixPalette.Red
     }
 
     Column(
@@ -208,7 +209,7 @@ private fun MiraiQuickOverlayPillContent(
             Text(
                 text = "${tempCelsius}°C",
                 style = MaterialTheme.typography.labelSmall,
-                color = if (tempCelsius >= 43) Color(0xFFFBBF24) else Color(0xFFD1D5DB)
+                color = if (tempCelsius >= 43) AerixPalette.Amber else AerixPalette.TextPrimary
             )
 
             // Expand / Collapse Quick HUD Toggle
@@ -216,7 +217,7 @@ private fun MiraiQuickOverlayPillContent(
                 modifier = Modifier
                     .size(22.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF282C36))
+                    .background(AerixPalette.GlassHigh)
                     .clickable { hudExpanded = !hudExpanded },
                 contentAlignment = Alignment.Center
             ) {
@@ -280,7 +281,7 @@ private fun MiraiQuickOverlayPillContent(
                         Text(
                             text = "🔋 $batteryPct% • ${tempCelsius}°C",
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF9CA3AF)
+                            color = AerixPalette.TextSecondary
                         )
                     }
 
@@ -366,7 +367,7 @@ private fun MiraiQuickOverlayPillContent(
                         )
                         QuickHudPillButton(
                             text = "Kill",
-                            accent = Color(0xFFEF4444),
+                            accent = AerixPalette.Red,
                             isDanger = true,
                             modifier = Modifier.weight(0.8f),
                             onClick = onForceClose
@@ -382,7 +383,7 @@ private fun MiraiQuickOverlayPillContent(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(8.dp),
                             color = Color(0xFF1E222A),
-                            border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                            border = BorderStroke(1.dp, AerixPalette.HairlineStrong),
                             onClick = { onToggleLogOverlay() }
                         ) {
                             Text(
@@ -399,7 +400,7 @@ private fun MiraiQuickOverlayPillContent(
                             modifier = Modifier.weight(1.1f),
                             shape = RoundedCornerShape(8.dp),
                             color = Color(0xFF1E222A),
-                            border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                            border = BorderStroke(1.dp, AerixPalette.HairlineStrong),
                             onClick = { onToggleLogOverlay() }
                         ) {
                             Text(
@@ -416,7 +417,7 @@ private fun MiraiQuickOverlayPillContent(
                             modifier = Modifier.weight(1.1f),
                             shape = RoundedCornerShape(8.dp),
                             color = Color(0xFF1E222A),
-                            border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                            border = BorderStroke(1.dp, AerixPalette.HairlineStrong),
                             onClick = { onToggleLogOverlay() }
                         ) {
                             Text(
@@ -448,10 +449,10 @@ private fun QuickHudPillButton(
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(8.dp),
-        color = if (isDanger) Color(0xFF3A181C) else Color(0xFF21242B),
+        color = if (isDanger) Color(0xFF3A181C) else AerixPalette.Glass,
         border = BorderStroke(
             1.dp,
-            if (isDanger) Color(0xFFEF4444).copy(alpha = 0.6f) else accent.copy(alpha = 0.4f)
+            if (isDanger) AerixPalette.Red.copy(alpha = 0.6f) else accent.copy(alpha = 0.4f)
         )
     ) {
         Box(

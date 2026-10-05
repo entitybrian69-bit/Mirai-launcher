@@ -20,11 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.io.File
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
-private val PageBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val PageBg = AerixPalette.ObsidianDeep
+private val CardBg = AerixPalette.ObsidianRaised
+private val Muted = AerixPalette.TextSecondary
+private val Green = AerixPalette.Green
 
 @Composable
 fun MiraiAccountsPage(onOffline: () -> Unit, onMicrosoft: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {

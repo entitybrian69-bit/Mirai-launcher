@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 @Composable
 fun MiraiPlayPage(
@@ -47,7 +48,7 @@ fun MiraiPlayPage(
     val versions by VersionsManager.versions.collectAsStateWithLifecycle()
     val current by VersionsManager.currentVersion.collectAsStateWithLifecycle()
     val selected = current ?: versions.firstOrNull()
-    val glass = ButtonDefaults.buttonColors(containerColor = Color(0x991BD96A), contentColor = Color(0xFF06210F))
+    val glass = ButtonDefaults.buttonColors(containerColor = Color(0x991BD96A), contentColor = AerixPalette.GreenDeep)
 
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         Text("Instances", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
@@ -81,6 +82,6 @@ private fun InstanceRow(version: Version, selected: Boolean, onClick: () -> Unit
         Box(modifier = Modifier.size(28.dp).clip(RoundedCornerShape(8.dp)).background(Color(0x33000000)), contentAlignment = Alignment.Center) {
             VersionIconImage(version = version, modifier = Modifier.size(22.dp))
         }
-        Text(version.getVersionName(), color = if (selected) Color(0xFF06210F) else Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(version.getVersionName(), color = if (selected) AerixPalette.GreenDeep else Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

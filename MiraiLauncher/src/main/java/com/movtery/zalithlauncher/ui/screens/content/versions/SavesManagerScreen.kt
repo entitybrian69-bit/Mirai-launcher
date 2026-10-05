@@ -139,6 +139,7 @@ import java.io.File
 import java.util.Date
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private class SavesManageViewModel(
     val minecraftVersion: String,
@@ -724,7 +725,7 @@ private fun SaveItemLayout(
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = MiraiThemeManager.currentAccent(),
-                            contentColor = Color(0xFF06210F),
+                            contentColor = AerixPalette.GreenDeep,
                             onClick = { updateOperation(SavesOperation.QuickPlay(saveData)) }
                         ) {
                             Row(

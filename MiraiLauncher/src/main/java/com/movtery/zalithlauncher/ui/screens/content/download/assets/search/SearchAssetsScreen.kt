@@ -106,6 +106,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private const val TAG = "SearchAssetsScreen"
 
@@ -371,8 +372,8 @@ fun SearchAssetsScreen(
                         .weight(1f)
                         .height(36.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF21242B))
-                        .border(1.dp, Color(0xFF2E333E), RoundedCornerShape(10.dp))
+                        .background(AerixPalette.Glass)
+                        .border(1.dp, AerixPalette.HairlineStrong, RoundedCornerShape(10.dp))
                         .padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -380,7 +381,7 @@ fun SearchAssetsScreen(
                     Icon(
                         painter = painterResource(R.drawable.ic_search),
                         contentDescription = null,
-                        tint = Color(0xFF9CA3AF),
+                        tint = AerixPalette.TextSecondary,
                         modifier = Modifier
                             .size(16.dp)
                             .clickable { viewModel.resetSearch() }
@@ -417,7 +418,7 @@ fun SearchAssetsScreen(
                         Icon(
                             painter = painterResource(R.drawable.ic_close),
                             contentDescription = stringResource(R.string.generic_clear),
-                            tint = Color(0xFF9CA3AF),
+                            tint = AerixPalette.TextSecondary,
                             modifier = Modifier
                                 .size(15.dp)
                                 .clickable {
@@ -679,8 +680,8 @@ private fun DiscoverFilterDropdownPill(
     Surface(
         modifier = Modifier.height(36.dp),
         shape = RoundedCornerShape(10.dp),
-        color = Color(0xFF21242B),
-        border = BorderStroke(1.dp, Color(0xFF2E333E)),
+        color = AerixPalette.Glass,
+        border = BorderStroke(1.dp, AerixPalette.HairlineStrong),
         onClick = onClick
     ) {
         Row(
@@ -692,13 +693,13 @@ private fun DiscoverFilterDropdownPill(
                 text = label,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFFE5E7EB),
+                color = AerixPalette.TextPrimary,
                 maxLines = 1
             )
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_drop_down_rounded),
                 contentDescription = null,
-                tint = Color(0xFF9CA3AF),
+                tint = AerixPalette.TextSecondary,
                 modifier = Modifier.size(16.dp)
             )
         }

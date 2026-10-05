@@ -126,6 +126,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlin.time.Duration.Companion.milliseconds
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private class DownloadScreenViewModel(
     private val platform: Platform,
@@ -690,7 +691,7 @@ private fun DownloadHeroCard(
                             enabled = latestVersion != null,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = accent,
-                                contentColor = Color(0xFF06210F)
+                                contentColor = AerixPalette.GreenDeep
                             ),
                             shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)

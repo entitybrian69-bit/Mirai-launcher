@@ -62,6 +62,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
@@ -126,6 +128,7 @@ import com.movtery.zalithlauncher.viewmodel.LocalBackgroundViewModel
 import com.movtery.zalithlauncher.viewmodel.ModpackImportViewModel
 import com.movtery.zalithlauncher.viewmodel.ScreenBackStackViewModel
 import com.movtery.zalithlauncher.viewmodel.sendKeepScreen
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 @Composable
 fun MainScreen(
@@ -236,8 +239,8 @@ fun MainScreen(
                                 .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
                                 .clickable { changeTasksExpandedState() },
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                            color = Color(0xFF143825),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1BD96A))
+                            color = AerixPalette.GreenDeep,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, AerixPalette.Green)
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
@@ -247,14 +250,14 @@ fun MainScreen(
                                 Icon(
                                     painter = painterResource(R.drawable.ic_download),
                                     contentDescription = null,
-                                    tint = Color(0xFF1BD96A),
+                                    tint = AerixPalette.Green,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Text(
                                     text = "${tasks.size} Tasks",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1BD96A)
+                                    color = AerixPalette.Green
                                 )
                             }
                         }
@@ -323,7 +326,16 @@ private fun <E: TitledNavKey> TopBar(
     CompositionLocalProvider(LocalContentColor provides contentColor) {
         BoxWithConstraints(
             modifier = modifier
-                .background(Color(0xFF14161A))
+                .background(AerixPalette.ObsidianRaised.copy(alpha = 0.94f))
+                // Hairline under the bar so the chrome reads as glass sitting above the content.
+                .drawBehind {
+                    drawLine(
+                        color = Color.White.copy(alpha = 0.07f),
+                        start = Offset(0f, size.height),
+                        end = Offset(size.width, size.height),
+                        strokeWidth = 1f
+                    )
+                }
         ) {
             ConstraintLayout(modifier = Modifier.fillMaxSize()) {
                 val (backCenter, title, endButtons) = createRefs()
@@ -362,7 +374,7 @@ private fun <E: TitledNavKey> TopBar(
                                 Icon(
                                     painter = painterResource(R.drawable.ic_home_filled),
                                     contentDescription = stringResource(R.string.generic_main_menu),
-                                    tint = Color(0xFF1BD96A)
+                                    tint = AerixPalette.Green
                                 )
                             }
                         }
@@ -446,7 +458,7 @@ private fun <E: TitledNavKey> TopBar(
                     // Modrinth Status / Syncing Pill (from Mockup #1 & #4)
                     Surface(
                         shape = MaterialTheme.shapes.extraLarge,
-                        color = Color(0xFF22252C),
+                        color = AerixPalette.GlassRaised,
                         contentColor = Color.White,
                         onClick = {
                             if (!taskRunning) changeExpandedState() else toDownloadScreen()
@@ -461,7 +473,7 @@ private fun <E: TitledNavKey> TopBar(
                                 modifier = Modifier
                                     .size(8.dp)
                                     .clip(MaterialTheme.shapes.extraLarge)
-                                    .background(Color(0xFF1BD96A))
+                                    .background(AerixPalette.Green)
                             )
                             Text(
                                 text = if (!taskRunning) {
@@ -470,15 +482,15 @@ private fun <E: TitledNavKey> TopBar(
                                     "Status: Ready"
                                 },
                                 style = MaterialTheme.typography.labelMedium,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixPalette.TextPrimary
                             )
                             if (!taskRunning) {
                                 LinearProgressIndicator(
                                     modifier = Modifier
                                         .width(56.dp)
                                         .height(4.dp),
-                                    color = Color(0xFF1BD96A),
-                                    trackColor = Color(0xFF333842)
+                                    color = AerixPalette.Green,
+                                    trackColor = AerixPalette.HairlineStrong
                                 )
                             }
                         }
@@ -487,7 +499,7 @@ private fun <E: TitledNavKey> TopBar(
                     // Modrinth "File Manager" Pill Button (from Mockup #1)
                     Surface(
                         shape = MaterialTheme.shapes.extraLarge,
-                        color = Color(0xFF22252C),
+                        color = AerixPalette.GlassRaised,
                         contentColor = Color.White,
                         onClick = openFileManager
                     ) {
@@ -500,13 +512,13 @@ private fun <E: TitledNavKey> TopBar(
                                 modifier = Modifier.size(17.dp),
                                 painter = painterResource(R.drawable.ic_folder_filled),
                                 contentDescription = stringResource(R.string.main_file_manager),
-                                tint = Color(0xFFD1D5DB)
+                                tint = AerixPalette.TextPrimary
                             )
                             Text(
                                 text = "File Manager",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixPalette.TextPrimary
                             )
                         }
                     }
@@ -749,7 +761,7 @@ private fun TaskMenu(
             influencedByBackground = false,
             shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF181A20),
+                containerColor = AerixPalette.ObsidianRaised,
                 contentColor = Color.White
             ),
             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp)
@@ -778,7 +790,7 @@ private fun TaskMenu(
                                 modifier = Modifier.size(20.dp),
                                 painter = painterResource(R.drawable.ic_close),
                                 contentDescription = stringResource(R.string.generic_collapse),
-                                tint = Color(0xFF9CA3AF)
+                                tint = AerixPalette.TextSecondary
                             )
                         }
                     }
@@ -820,7 +832,7 @@ private fun TaskItem(
     rateBytesPerSec: Long?,
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.large,
-    color: Color = Color(0xFF22252C),
+    color: Color = AerixPalette.GlassRaised,
     contentColor: Color = Color.White,
     onCancelClick: () -> Unit = {}
 ) {
@@ -839,14 +851,14 @@ private fun TaskItem(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(MaterialTheme.shapes.medium)
-                    .background(Color(0xFF143825)),
+                    .background(AerixPalette.GreenDeep),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     modifier = Modifier.size(18.dp),
                     painter = painterResource(R.drawable.ic_download_2_filled),
                     contentDescription = null,
-                    tint = Color(0xFF1BD96A)
+                    tint = AerixPalette.Green
                 )
             }
 
@@ -873,7 +885,7 @@ private fun TaskItem(
                         Text(
                             text = "${(progress * 100).toInt()}%",
                             style = MaterialTheme.typography.labelMedium,
-                            color = Color(0xFF1BD96A),
+                            color = AerixPalette.Green,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -884,8 +896,8 @@ private fun TaskItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(5.dp),
-                        color = Color(0xFF1BD96A),
-                        trackColor = Color(0xFF333842)
+                        color = AerixPalette.Green,
+                        trackColor = AerixPalette.HairlineStrong
                     )
                 } else {
                     LinearProgressIndicator(
@@ -893,8 +905,8 @@ private fun TaskItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(5.dp),
-                        color = Color(0xFF1BD96A),
-                        trackColor = Color(0xFF333842)
+                        color = AerixPalette.Green,
+                        trackColor = AerixPalette.HairlineStrong
                     )
                 }
 
@@ -908,12 +920,12 @@ private fun TaskItem(
                         Text(
                             text = text,
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF9CA3AF)
+                            color = AerixPalette.TextSecondary
                         )
                     } ?: Text(
                         text = "Downloading...",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF9CA3AF)
+                        color = AerixPalette.TextSecondary
                     )
                 }
             }
@@ -928,7 +940,7 @@ private fun TaskItem(
                     modifier = Modifier.size(18.dp),
                     painter = painterResource(R.drawable.ic_close),
                     contentDescription = stringResource(R.string.generic_cancel),
-                    tint = Color(0xFF9CA3AF)
+                    tint = AerixPalette.TextSecondary
                 )
             }
         }

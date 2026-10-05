@@ -79,6 +79,7 @@ import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.CardPositi
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.SettingsCard
 import com.movtery.zalithlauncher.ui.theme.itemColor
 import com.movtery.zalithlauncher.ui.theme.onItemColor
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 @Composable
 fun AboutInfoScreen(
@@ -112,8 +113,8 @@ fun AboutInfoScreen(
                                 Button(
                                     onClick = checkUpdate,
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF1BD96A),
-                                        contentColor = Color(0xFF06210F)
+                                        containerColor = AerixPalette.Green,
+                                        contentColor = AerixPalette.GreenDeep
                                     )
                                 ) {
                                     Text(

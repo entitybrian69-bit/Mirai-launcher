@@ -118,6 +118,7 @@ import com.movtery.zalithlauncher.utils.platform.getMaxMemoryForSettings
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
 import com.movtery.zalithlauncher.viewmodel.sendDLPlugin
 import kotlin.math.roundToInt
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private data class RendererStackOption(
     val keyMatch: String,
@@ -251,7 +252,7 @@ fun RendererSettingsScreen(
                                     label = "rendererOptionBorder"
                                 )
                                 val cardBg by animateColorAsState(
-                                    targetValue = if (isSelected) Color(0xFF162A20) else Color(0xFF161920),
+                                    targetValue = if (isSelected) Color(0xFF162A20) else AerixPalette.ObsidianRaised,
                                     animationSpec = tween(160),
                                     label = "rendererOptionBg"
                                 )
@@ -287,7 +288,7 @@ fun RendererSettingsScreen(
                                             },
                                             colors = RadioButtonDefaults.colors(
                                                 selectedColor = MiraiThemeManager.currentAccent(),
-                                                unselectedColor = Color(0xFF9CA3AF)
+                                                unselectedColor = AerixPalette.TextSecondary
                                             ),
                                             modifier = Modifier.size(20.dp)
                                         )
@@ -335,8 +336,8 @@ fun RendererSettingsScreen(
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
-                        color = Color(0xFF161920),
-                        border = BorderStroke(1.dp, Color(0xFF262B37))
+                        color = AerixPalette.ObsidianRaised,
+                        border = BorderStroke(1.dp, AerixPalette.GlassHigh)
                     ) {
                         Column(
                             modifier = Modifier
@@ -383,16 +384,16 @@ fun RendererSettingsScreen(
                                     text = "Default JRE:",
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFD1D5DB)
+                                    color = AerixPalette.TextPrimary
                                 )
 
                                 val currentJre = AllSettings.javaRuntime.state
                                 Surface(
                                     shape = RoundedCornerShape(12.dp),
-                                    color = if (currentJre.isEmpty()) MiraiThemeManager.currentAccent() else Color(0xFF17191E),
+                                    color = if (currentJre.isEmpty()) MiraiThemeManager.currentAccent() else AerixPalette.ObsidianRaised,
                                     border = BorderStroke(
                                         1.dp,
-                                        if (currentJre.isEmpty()) MiraiThemeManager.currentAccent() else Color(0xFF262B37)
+                                        if (currentJre.isEmpty()) MiraiThemeManager.currentAccent() else AerixPalette.GlassHigh
                                     ),
                                     onClick = {
                                         AllSettings.autoPickJavaRuntime.save(true)
@@ -404,7 +405,7 @@ fun RendererSettingsScreen(
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.ExtraBold,
-                                        color = if (currentJre.isEmpty()) Color(0xFF06210F) else Color(0xFFD1D5DB)
+                                        color = if (currentJre.isEmpty()) AerixPalette.GreenDeep else AerixPalette.TextPrimary
                                     )
                                 }
 
@@ -412,10 +413,10 @@ fun RendererSettingsScreen(
                                     val selected = currentJre == runtime.name
                                     Surface(
                                         shape = RoundedCornerShape(12.dp),
-                                        color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF17191E),
+                                        color = if (selected) MiraiThemeManager.currentAccent() else AerixPalette.ObsidianRaised,
                                         border = BorderStroke(
                                             1.dp,
-                                            if (selected) MiraiThemeManager.currentAccent() else Color(0xFF262B37)
+                                            if (selected) MiraiThemeManager.currentAccent() else AerixPalette.GlassHigh
                                         ),
                                         onClick = {
                                             AllSettings.autoPickJavaRuntime.save(false)
@@ -427,7 +428,7 @@ fun RendererSettingsScreen(
                                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.SemiBold,
-                                            color = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB)
+                                            color = if (selected) AerixPalette.GreenDeep else AerixPalette.TextPrimary
                                         )
                                     }
                                 }
@@ -444,8 +445,8 @@ fun RendererSettingsScreen(
                         .fillMaxWidth()
                         .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
                     shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF161920),
-                    border = BorderStroke(1.dp, Color(0xFF262B37))
+                    color = AerixPalette.ObsidianRaised,
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh)
                 ) {
                     Row(
                         modifier = Modifier
@@ -458,7 +459,7 @@ fun RendererSettingsScreen(
                             text = "Aerix Launcher v${BuildConfig.VERSION_NAME} • Built by entitybrian",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFFE5E7EB)
+                            color = AerixPalette.TextPrimary
                         )
 
                         Button(
@@ -468,7 +469,7 @@ fun RendererSettingsScreen(
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MiraiThemeManager.currentAccent(),
-                                contentColor = Color(0xFF06210F)
+                                contentColor = AerixPalette.GreenDeep
                             ),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                         ) {

@@ -38,6 +38,8 @@ import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.utils.animation.TransitionAnimationType
 import com.movtery.zalithlauncher.utils.animation.getAnimateSpeed
 import kotlin.reflect.KClass
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 
 /**
  * 兼容嵌套NavDisplay的返回事件处理
@@ -127,7 +129,7 @@ fun <T : Any> rememberTransitionSpec(): AnimatedContentTransitionScope<Scene<T>>
     val type = AllSettings.launcherSwapAnimateType.state
     val speed = AllSettings.launcherAnimateSpeed.state
     return remember(type, speed) {
-        val duration = ((getAnimateSpeed() / 5) * 2).coerceIn(110, 180)
+        val duration = ((getAnimateSpeed() / 5) * 2 + 40).coerceIn(150, 210)
         val enterSpec: FiniteAnimationSpec<Float> = when (type) {
             TransitionAnimationType.CLOSE -> snap()
             else -> tween(durationMillis = duration, easing = FastOutSlowInEasing)
@@ -136,11 +138,27 @@ fun <T : Any> rememberTransitionSpec(): AnimatedContentTransitionScope<Scene<T>>
             TransitionAnimationType.CLOSE -> snap()
             else -> tween(durationMillis = (duration * 0.75f).toInt().coerceAtLeast(80), easing = FastOutSlowInEasing)
         }
+        // Sliding animates an IntOffset, not a Float, so it needs its own spec type.
+        val slideInSpec: FiniteAnimationSpec<IntOffset> = when (type) {
+            TransitionAnimationType.CLOSE -> snap()
+            else -> tween(durationMillis = duration, easing = FastOutSlowInEasing)
+        }
+        val slideOutSpec: FiniteAnimationSpec<IntOffset> = when (type) {
+            TransitionAnimationType.CLOSE -> snap()
+            else -> tween(durationMillis = (duration * 0.75f).toInt().coerceAtLeast(80), easing = FastOutSlowInEasing)
+        }
 
         {
             ContentTransform(
-                targetContentEnter = fadeIn(animationSpec = enterSpec),
-                initialContentExit = fadeOut(animationSpec = exitSpec)
+                // Fade alone reads as a flash. A small rise, a light scale and a short
+                // horizontal offset give every tab switch and page push the same fluid
+                // movement the launcher chrome uses.
+                targetContentEnter = fadeIn(animationSpec = enterSpec) +
+                        slideInHorizontally(animationSpec = slideInSpec) { full -> full / 14 } +
+                        scaleIn(animationSpec = enterSpec, initialScale = 0.985f),
+                initialContentExit = fadeOut(animationSpec = exitSpec) +
+                        slideOutHorizontally(animationSpec = slideOutSpec) { full -> -full / 22 } +
+                        scaleOut(animationSpec = exitSpec, targetScale = 0.992f)
             )
         }
     }

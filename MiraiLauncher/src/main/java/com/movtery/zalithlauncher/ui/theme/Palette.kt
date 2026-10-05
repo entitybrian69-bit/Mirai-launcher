@@ -43,7 +43,7 @@ fun onBackgroundColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant
 fun cardColor(
     influencedByBackground: Boolean = true
 ): Color = influencedByBackgroundColor(
-    color = MaterialTheme.colorScheme.surfaceBright,
+    color = MaterialTheme.colorScheme.surfaceContainerHigh,
     enabled = influencedByBackground
 )
 @Composable
@@ -54,7 +54,10 @@ fun onCardColor(): Color = MaterialTheme.colorScheme.onSurface
 @Composable
 fun cardTitleColor(
     alpha: Float = 0.5f
-): Color = MaterialTheme.colorScheme.surface.copy(alpha = alpha)
+): Color = influencedByBackgroundColor(
+    color = MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = alpha),
+    influencedAlpha = alpha
+)
 
 /**
  * 卡片上的Item的背景颜色
@@ -67,7 +70,7 @@ fun itemColor(
 ): Color {
     return influencedByBackgroundColor(
         color = if (isDark) {
-            MaterialTheme.colorScheme.surfaceVariant
+            MaterialTheme.colorScheme.surfaceContainerHighest
         } else {
             MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
         },
@@ -76,3 +79,17 @@ fun itemColor(
 }
 @Composable
 fun onItemColor() = MaterialTheme.colorScheme.onSurface
+
+/**
+ * 玻璃卡片的描边颜色，深浅色主题都可见
+ */
+@Composable
+fun glassBorderColor(alpha: Float = 0.10f): Color =
+    MaterialTheme.colorScheme.onSurface.copy(alpha = alpha)
+
+/**
+ * 玻璃卡片顶部的受光高光
+ */
+@Composable
+fun glassSheenColor(alpha: Float = 0.045f): Color =
+    Color.White.copy(alpha = alpha)

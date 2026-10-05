@@ -77,11 +77,12 @@ import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
-private val ModrinthCardColor = Color(0xFF161920)
-private val ModrinthCardBorder = Color(0xFF262B37)
-private val ModrinthEmerald = Color(0xFF1BD96A)
-private val ModrinthOnEmerald = Color(0xFF06210F)
+private val ModrinthCardColor = AerixPalette.ObsidianRaised
+private val ModrinthCardBorder = AerixPalette.GlassHigh
+private val ModrinthEmerald = AerixPalette.Green
+private val ModrinthOnEmerald = AerixPalette.GreenDeep
 private val ModrinthAmberBg = Color(0xFF9A6712)
 private val ModrinthAmberFg = Color(0xFFFEF3C7)
 
@@ -253,7 +254,7 @@ fun MiraiHomeDashboard(
                                 text = "☕ JRE & GC",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixPalette.TextPrimary
                             )
                         }
                     }
@@ -276,7 +277,7 @@ fun MiraiHomeDashboard(
                                 text = "🩺 Crash Doctor",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixPalette.TextPrimary
                             )
                         }
                     }
@@ -298,14 +299,14 @@ fun MiraiHomeDashboard(
                             Icon(
                                 painter = painterResource(R.drawable.ic_folder_outlined),
                                 contentDescription = "Files",
-                                tint = Color(0xFFD1D5DB),
+                                tint = AerixPalette.TextPrimary,
                                 modifier = Modifier.size(14.dp)
                             )
                             Text(
                                 text = "Files",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixPalette.TextPrimary
                             )
                         }
                     }
@@ -344,7 +345,7 @@ fun MiraiHomeDashboard(
                                 text = "${tasks.size} Tasks",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = if (hasActiveTasks) activeAccent else Color(0xFFE5E7EB)
+                                color = if (hasActiveTasks) activeAccent else AerixPalette.TextPrimary
                             )
                         }
                     }
@@ -400,7 +401,7 @@ fun MiraiHomeDashboard(
                                 onClick = onExploreContent,
                                 shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF2B2F3A),
+                                    containerColor = AerixPalette.HairlineStrong,
                                     contentColor = Color.White
                                 )
                             ) {
@@ -525,7 +526,7 @@ private fun JumpBackInMobileCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF2B2F3A))
+                    .background(AerixPalette.HairlineStrong)
                     .padding(4.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -552,7 +553,7 @@ private fun JumpBackInMobileCard(
                     text = "$loaderName $mcVer",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF9CA3AF),
+                    color = AerixPalette.TextSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -620,7 +621,7 @@ private fun RecentInstanceMobileRow(
                 text = "${version.getVersionName()} • $loaderName $mcVer",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFFE5E7EB),
+                color = AerixPalette.TextPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
@@ -633,7 +634,7 @@ private fun RecentInstanceMobileRow(
                 Icon(
                     painter = painterResource(R.drawable.ic_settings_filled),
                     contentDescription = "Instance Settings",
-                    tint = Color(0xFF9CA3AF),
+                    tint = AerixPalette.TextSecondary,
                     modifier = Modifier.size(15.dp)
                 )
             }
@@ -645,8 +646,8 @@ private fun RecentInstanceMobileRow(
 fun ModrinthMetaPill(
     text: String,
     highlighted: Boolean = false,
-    backgroundColor: Color = if (highlighted) Color(0xFF1A3A2A) else Color(0xFF282C36),
-    textColor: Color = if (highlighted) ModrinthEmerald else Color(0xFFD1D5DB),
+    backgroundColor: Color = if (highlighted) Color(0xFF1A3A2A) else AerixPalette.GlassHigh,
+    textColor: Color = if (highlighted) ModrinthEmerald else AerixPalette.TextPrimary,
     borderColor: Color? = if (highlighted) ModrinthEmerald.copy(alpha = 0.45f) else null
 ) {
     Box(
@@ -682,8 +683,8 @@ fun ModrinthCompactSearchField(
         modifier = modifier
             .height(36.dp)
             .clip(RoundedCornerShape(18.dp))
-            .background(Color(0xFF21242B))
-            .border(1.dp, Color(0xFF2E333E), RoundedCornerShape(18.dp))
+            .background(AerixPalette.Glass)
+            .border(1.dp, AerixPalette.HairlineStrong, RoundedCornerShape(18.dp))
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -691,7 +692,7 @@ fun ModrinthCompactSearchField(
         Icon(
             painter = painterResource(R.drawable.ic_search),
             contentDescription = null,
-            tint = Color(0xFF9CA3AF),
+            tint = AerixPalette.TextSecondary,
             modifier = Modifier.size(16.dp)
         )
         Box(
@@ -724,7 +725,7 @@ fun ModrinthCompactSearchField(
             Icon(
                 painter = painterResource(R.drawable.ic_close),
                 contentDescription = stringResource(R.string.generic_clear),
-                tint = Color(0xFF9CA3AF),
+                tint = AerixPalette.TextSecondary,
                 modifier = Modifier
                     .size(15.dp)
                     .clickable { onValueChange("") }

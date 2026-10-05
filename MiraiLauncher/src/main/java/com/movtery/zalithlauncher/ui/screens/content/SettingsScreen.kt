@@ -85,6 +85,7 @@ import com.movtery.zalithlauncher.utils.animation.swapAnimateDpAsState
 import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
 import com.movtery.zalithlauncher.viewmodel.ScreenBackStackViewModel
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private data class ModrinthSettingNavItem(
     val key: TitledNavKey,
@@ -171,7 +172,7 @@ private fun TabMenu(
             .offset { IntOffset(x = xOffset.roundToPx(), y = 0) },
         shape = RoundedCornerShape(14.dp),
         color = Color(0xFF1A1D24).copy(alpha = 0.92f),
-        border = BorderStroke(1.dp, Color(0xFF2B2F3A))
+        border = BorderStroke(1.dp, AerixPalette.HairlineStrong)
     ) {
         Column(
             modifier = Modifier
@@ -185,7 +186,7 @@ private fun TabMenu(
                 if (item.division) {
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 3.dp),
-                        color = Color(0xFF282C36)
+                        color = AerixPalette.GlassHigh
                     )
                 }
 
@@ -196,7 +197,7 @@ private fun TabMenu(
                     label = "settingsTabBg"
                 )
                 val fgColor by animateColorAsState(
-                    targetValue = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB),
+                    targetValue = if (selected) AerixPalette.GreenDeep else AerixPalette.TextPrimary,
                     animationSpec = tween(140),
                     label = "settingsTabFg"
                 )

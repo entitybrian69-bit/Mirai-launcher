@@ -33,9 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
 import com.movtery.zalithlauncher.ui.theme.cardColor
+import com.movtery.zalithlauncher.ui.theme.glassBorderColor
 import com.movtery.zalithlauncher.ui.theme.cardTitleColor
 import com.movtery.zalithlauncher.ui.theme.onCardColor
 
@@ -54,7 +56,7 @@ fun BackgroundCard(
     ),
     elevation: CardElevation = CardDefaults.cardElevation(),
     blur: Int = AllSettings.backgroundBlur.state,
-    border: BorderStroke? = null,
+    border: BorderStroke? = BorderStroke(1.dp, glassBorderColor()),
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
@@ -87,7 +89,7 @@ fun BackgroundCard(
     ),
     elevation: CardElevation = CardDefaults.cardElevation(),
     blur: Int = AllSettings.backgroundBlur.state,
-    border: BorderStroke? = null,
+    border: BorderStroke? = BorderStroke(1.dp, glassBorderColor()),
     onClick: () -> Unit,
     enabled: Boolean = true,
     content: @Composable @UiComposable ColumnScope.() -> Unit

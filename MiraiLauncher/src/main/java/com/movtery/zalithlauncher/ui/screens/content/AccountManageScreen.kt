@@ -120,6 +120,7 @@ import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
 import com.movtery.zalithlauncher.viewmodel.LocalBackgroundViewModel
 import com.movtery.zalithlauncher.viewmodel.ScreenBackStackViewModel
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 /**
  * 封装账号界面 UI 交互的回调函数
@@ -314,8 +315,8 @@ private fun ActionsLayout(
             .offset { IntOffset(x = xOffset.roundToPx(), y = 0) }
             .fillMaxHeight(),
         shape = RoundedCornerShape(16.dp),
-        color = Color(0xFF161920),
-        border = BorderStroke(1.dp, Color(0xFF262B37))
+        color = AerixPalette.ObsidianRaised,
+        border = BorderStroke(1.dp, AerixPalette.GlassHigh)
     ) {
         Column(
             modifier = Modifier
@@ -340,7 +341,7 @@ private fun ActionsLayout(
                 Surface(
                     shape = RoundedCornerShape(14.dp),
                     color = Color(0xFF16181D),
-                    border = BorderStroke(1.dp, Color(0xFF262B37)),
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                     onClick = {
                         currentAccount?.let { acc ->
                             actions.onIntent(
@@ -364,7 +365,7 @@ private fun ActionsLayout(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (!isSlim) Color(0xFF06210F) else Color(0xFF9CA3AF)
+                                color = if (!isSlim) AerixPalette.GreenDeep else AerixPalette.TextSecondary
                             )
                         }
                         Surface(
@@ -376,7 +377,7 @@ private fun ActionsLayout(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isSlim) Color(0xFF06210F) else Color(0xFF9CA3AF)
+                                color = if (isSlim) AerixPalette.GreenDeep else AerixPalette.TextSecondary
                             )
                         }
                     }
@@ -390,8 +391,8 @@ private fun ActionsLayout(
                     .weight(1f)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
-                color = Color(0xFF17191E),
-                border = BorderStroke(1.dp, Color(0xFF282C36))
+                color = AerixPalette.ObsidianRaised,
+                border = BorderStroke(1.dp, AerixPalette.GlassHigh)
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -435,7 +436,7 @@ private fun ActionsLayout(
                     shape = RoundedCornerShape(19.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MiraiThemeManager.currentAccent(),
-                        contentColor = Color(0xFF06210F)
+                        contentColor = AerixPalette.GreenDeep
                     ),
                     contentPadding = PaddingValues(horizontal = 8.dp),
                     onClick = {
@@ -460,8 +461,8 @@ private fun ActionsLayout(
                         .weight(1f)
                         .height(38.dp),
                     shape = RoundedCornerShape(19.dp),
-                    color = Color(0xFF181A20),
-                    border = BorderStroke(1.dp, Color(0xFF262B37)),
+                    color = AerixPalette.ObsidianRaised,
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                     onClick = {
                         if (currentAccount?.isLocalAccount() == true) {
                             capePicker.launch(arrayOf("image/png"))
@@ -482,7 +483,7 @@ private fun ActionsLayout(
                         Icon(
                             painter = painterResource(R.drawable.ic_upload),
                             contentDescription = null,
-                            tint = Color(0xFFE5E7EB),
+                            tint = AerixPalette.TextPrimary,
                             modifier = Modifier.size(15.dp)
                         )
                         Spacer(Modifier.width(5.dp))
@@ -828,14 +829,14 @@ private fun AccountsLayout(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF06210F)
+                        color = AerixPalette.GreenDeep
                     )
                 }
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF161920),
-                    border = BorderStroke(1.dp, Color(0xFF262B37)),
+                    color = AerixPalette.ObsidianRaised,
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                     onClick = {
                         actions.onIntent(AccountManageIntent.UpdateLocalLoginOp(LocalLoginOperation.Edit))
                     }
@@ -851,8 +852,8 @@ private fun AccountsLayout(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF161920),
-                    border = BorderStroke(1.dp, Color(0xFF262B37)),
+                    color = AerixPalette.ObsidianRaised,
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                     onClick = {
                         actions.onIntent(AccountManageIntent.UpdateLoginMenuOp(LoginMenuOperation.Login))
                     }

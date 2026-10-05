@@ -235,9 +235,9 @@ object MiraiThemeManager {
         val isBgValid = LocalBackgroundViewModel.current?.isValid == true
         val opacity = AllSettings.launcherBackgroundOpacity.state
         return if (isBgValid && opacity < 100) {
-            Color(0xFF121418).copy(alpha = (opacity.coerceIn(30, 92)) / 100f)
+            AerixPalette.ObsidianRaised.copy(alpha = (opacity.coerceIn(30, 92)) / 100f)
         } else {
-            Color(0xFF16181C)
+            AerixPalette.Obsidian
         }
     }
 

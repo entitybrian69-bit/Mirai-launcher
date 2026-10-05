@@ -26,11 +26,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.setting.AllSettings
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
-private val PageBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val PageBg = AerixPalette.ObsidianDeep
+private val CardBg = AerixPalette.ObsidianRaised
+private val Muted = AerixPalette.TextSecondary
+private val Green = AerixPalette.Green
 
 @Composable
 fun MiraiSearchInstallPage(title: String, onInstall: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -121,5 +122,5 @@ private fun Read(label: String, value: String) {
 
 @Composable
 private fun GreenButton(label: String, onClick: () -> Unit) {
-    Text(label, color = Color(0xFF0E0E10), fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(14.dp)).background(Green).clickable(onClick = onClick).padding(14.dp))
+    Text(label, color = AerixPalette.ObsidianDeep, fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(14.dp)).background(Green).clickable(onClick = onClick).padding(14.dp))
 }

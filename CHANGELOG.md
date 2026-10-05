@@ -5,6 +5,43 @@ All notable changes to Aerix Launcher are recorded here.
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
 
+## Unreleased
+
+### Added
+
+- **`ui/theme/AerixSurface.kt` — one surface language for the whole launcher.** Before this, each
+  screen re-typed the same palette by hand (the same grey appeared as `0xFF22252C`, `0xFF21242B`
+  and `0xFF1E222B` in different files), borders were sometimes drawn and sometimes not, and corner
+  radii drifted between 12dp and 28dp. The vocabulary now lives in one place: `AerixPalette`,
+  `AerixRadius`, `AerixMotion`, `Modifier.aerixGlassSurface`, `Modifier.aerixPressScale`,
+  `AerixGlassBox`, `AerixPillTabRow`, `AerixSectionHeader` and `AerixStatusPill`. A screen that
+  needs a card, a tab or a press animation asks for it by name and gets the same result as every
+  other screen.
+- 30 screens, pages and tabs now draw from those tokens instead of their own hex literals, so the
+  navigation rail, top bar, home dashboard, Discover, Library, instance sub-tabs, settings pages,
+  account screens and dialogs all share one palette.
+
+### Changed
+
+- **The glass surface is real again.** `Modifier.backgroundGlass` had been reduced to a no-op
+  (`return this`), which left every `BackgroundCard`, dialog and menu rendering flat while the
+  surrounding design called for glass. It now draws the lit top edge and hairline border that make
+  a panel read as glass. The expensive part — the background blur — is still a single pre-rendered
+  static bitmap, so scrolling and tab switches have no extra frame cost.
+- **Every card now carries a hairline border** (`BackgroundCard`'s default), which is what makes
+  stacked cards legible against the wallpaper instead of bleeding into it.
+- **The default Aerix palette is deep obsidian** — `#0B0D12` background with a `#12151C`/`#171B23`
+  card ramp — instead of the light grey-blue scheme it used before, matching the interface design.
+- **Page transitions are no longer a bare fade.** `rememberTransitionSpec()` now adds a small
+  horizontal offset and scale on both enter and exit, so navigation reads as movement rather than a
+  flash. The user's animation-speed and "no animation" settings are still honoured.
+- **Press feedback is unified**: cards, rail items, pill tabs and buttons all use the same
+  under-damped spring (`AerixMotion.press()`), so a tap feels identical everywhere.
+- **Instance sub-tabs render through `AerixPillTabRow`**, the same component the rest of the
+  launcher uses, replacing the screen's private copy of the pill styling.
+- Background blur now defaults to 26 instead of 0, so a first run has the frosted backdrop the
+  interface is designed around. Existing installs keep whatever value they already saved.
+
 ## 1.0.0 - 2026-10-04
 
 First public release.

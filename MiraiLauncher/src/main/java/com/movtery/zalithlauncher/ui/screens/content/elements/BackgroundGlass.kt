@@ -23,10 +23,12 @@ import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.GraphicsContext
 import androidx.compose.ui.graphics.TileMode
@@ -51,6 +53,8 @@ import androidx.compose.ui.util.lerp
 import androidx.core.graphics.withSave
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.BackgroundBlur
+import com.movtery.zalithlauncher.ui.theme.glassBorderColor
+import com.movtery.zalithlauncher.ui.theme.glassSheenColor
 import com.movtery.zalithlauncher.viewmodel.BackgroundViewModel
 import com.movtery.zalithlauncher.viewmodel.LocalBackgroundViewModel
 import kotlinx.coroutines.Job
@@ -69,15 +73,47 @@ private const val GLASS_RESAMPLE_MS = 2500L
 private const val GLASS_CAPTURE_INTERVAL_MS = 2000L
 
 /**
- * 背景毛玻璃效果：在元素内容下方对齐绘制启动器背景的预模糊结果
- * @param enabled 是否应用模糊效果
+ * 背景毛玻璃效果：在元素内容下方绘制玻璃层次
+ *
+ * 这里曾经是一个空实现（直接返回 `this`），所以所有调用点看上去都是普通卡片。
+ * 现在它绘制两层开销极小的效果：顶部受光高光 + 顶端发丝线。
+ * 真正的背景模糊由 [Background] 一次性预渲染的静态模糊位图承担，
+ * 因此这里没有每帧全屏模糊，滚动时也不会有额外开销。
+ *
+ * @param blur 模糊半径设置，0 表示不启用玻璃效果
+ * @param color 元素的填充色（保留参数以兼容既有调用）
+ * @param enabled 是否应用玻璃效果
  */
 @Composable
 fun Modifier.backgroundGlass(
     blur: Int,
     color: Color,
     enabled: Boolean = true,
-): Modifier = this
+): Modifier {
+    val active = enabled
+    val sheen = if (active) glassSheenColor() else Color.Transparent
+    val hairline = if (active) glassBorderColor(0.07f) else Color.Transparent
+    return this.drawBehind {
+        if (sheen.alpha <= 0f && hairline.alpha <= 0f) return@drawBehind
+        if (sheen.alpha > 0f) {
+            drawRect(
+                brush = Brush.verticalGradient(
+                    colors = listOf(sheen, Color.Transparent),
+                    startY = 0f,
+                    endY = size.height.coerceAtLeast(1f)
+                )
+            )
+        }
+        if (hairline.alpha > 0f) {
+            drawLine(
+                color = hairline,
+                start = Offset(0f, 0.5f),
+                end = Offset(size.width, 0.5f),
+                strokeWidth = 1f
+            )
+        }
+    }
+}
 
 /**
  * 启动器背景捕获：在移动端直接透传，避免全屏 GraphicsLayer 每帧重绘造成卡顿

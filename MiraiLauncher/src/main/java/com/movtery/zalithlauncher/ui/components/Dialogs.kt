@@ -71,6 +71,8 @@ import com.movtery.zalithlauncher.ui.theme.onCardColor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import androidx.compose.foundation.BorderStroke
+import com.movtery.zalithlauncher.ui.theme.glassBorderColor
 
 /**
  * 返回对话框内容可用的最大高度，以窗口容器高度为上界
@@ -256,8 +258,9 @@ fun SimpleEditDialog(
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
-                color = cardColor(false),
+                color = cardColor(true),
                 contentColor = onCardColor(),
+                border = BorderStroke(1.dp, glassBorderColor()),
                 shadowElevation = 6.dp
             ) {
                 Column(
@@ -333,8 +336,9 @@ fun SimpleEditDialog(
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
-                color = cardColor(false),
+                color = cardColor(true),
                 contentColor = onCardColor(),
+                border = BorderStroke(1.dp, glassBorderColor()),
                 shadowElevation = 6.dp
             ) {
                 Column(
@@ -527,8 +531,9 @@ fun <T> SimpleListDialog(
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
-                color = cardColor(false),
+                color = cardColor(true),
                 contentColor = onCardColor(),
+                border = BorderStroke(1.dp, glassBorderColor()),
                 shadowElevation = 3.dp
             ) {
                 Column(

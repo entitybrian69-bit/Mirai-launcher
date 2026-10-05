@@ -18,10 +18,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val CardBg = AerixPalette.ObsidianRaised
+private val Muted = AerixPalette.TextSecondary
+private val Green = AerixPalette.Green
 
 data class MoreAction(val title: String, val body: String, val onClick: () -> Unit)
 

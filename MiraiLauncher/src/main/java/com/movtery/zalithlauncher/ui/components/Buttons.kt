@@ -76,6 +76,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.ui.screens.content.elements.DisabledAlpha
 import kotlinx.coroutines.launch
+import com.movtery.zalithlauncher.ui.theme.AerixMotion
 
 @Composable
 fun ScalingActionButton(
@@ -94,7 +95,8 @@ fun ScalingActionButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale = animateFloatAsState(
         targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
+        // Same press curve as cards and rail items, so a tap feels identical everywhere.
+        animationSpec = AerixMotion.press(),
         label = "ButtonScale"
     )
 

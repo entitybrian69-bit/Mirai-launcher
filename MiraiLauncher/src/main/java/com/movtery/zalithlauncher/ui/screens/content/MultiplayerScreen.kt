@@ -111,6 +111,7 @@ import com.movtery.zalithlauncher.utils.file.shareFile
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
 import com.movtery.zalithlauncher.viewmodel.ScreenBackStackViewModel
 import com.movtery.zalithlauncher.viewmodel.sendToast
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private enum class LogLevelFilter(val label: String) {
     ALL("All"),
@@ -200,8 +201,8 @@ private fun TouchControlsAndGamepadBentoCard(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF161920),
-        border = BorderStroke(1.dp, Color(0xFF262B37))
+        color = AerixPalette.ObsidianRaised,
+        border = BorderStroke(1.dp, AerixPalette.GlassHigh)
     ) {
         Column(
             modifier = Modifier
@@ -225,8 +226,8 @@ private fun TouchControlsAndGamepadBentoCard(
                         .weight(1f)
                         .height(38.dp),
                     shape = RoundedCornerShape(19.dp),
-                    color = Color(0xFF17191E),
-                    border = BorderStroke(1.dp, Color(0xFF262B37)),
+                    color = AerixPalette.ObsidianRaised,
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                     onClick = onOpenControlManager
                 ) {
                     Box(
@@ -247,8 +248,8 @@ private fun TouchControlsAndGamepadBentoCard(
                         .weight(1f)
                         .height(38.dp),
                     shape = RoundedCornerShape(19.dp),
-                    color = Color(0xFF17191E),
-                    border = BorderStroke(1.dp, Color(0xFF262B37)),
+                    color = AerixPalette.ObsidianRaised,
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                     onClick = onOpenGamepadSettings
                 ) {
                     Box(
@@ -282,7 +283,7 @@ private fun HudKeyBox(label: String, small: Boolean = false) {
             text = label,
             fontSize = if (small) 8.sp else 10.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFE5E7EB)
+            color = AerixPalette.TextPrimary
         )
     }
 }
@@ -293,7 +294,7 @@ private fun HudActionCircle(label: String, highlighted: Boolean) {
         modifier = Modifier
             .size(32.dp)
             .clip(CircleShape)
-            .background(if (highlighted) Color(0xFF143825) else Color(0xFF222731))
+            .background(if (highlighted) AerixPalette.GreenDeep else Color(0xFF222731))
             .border(
                 1.dp,
                 if (highlighted) MiraiThemeManager.currentAccent() else Color(0xFF394050),
@@ -305,7 +306,7 @@ private fun HudActionCircle(label: String, highlighted: Boolean) {
             text = label,
             fontSize = 8.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = if (highlighted) MiraiThemeManager.currentAccent() else Color(0xFFE5E7EB)
+            color = if (highlighted) MiraiThemeManager.currentAccent() else AerixPalette.TextPrimary
         )
     }
 }
@@ -360,8 +361,8 @@ private fun LiveDiagnosticsConsoleCard(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF161920),
-        border = BorderStroke(1.dp, Color(0xFF262B37))
+        color = AerixPalette.ObsidianRaised,
+        border = BorderStroke(1.dp, AerixPalette.GlassHigh)
     ) {
         Column(
             modifier = Modifier
@@ -389,10 +390,10 @@ private fun LiveDiagnosticsConsoleCard(
                         val selected = levelFilter == filter
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF17191E),
+                            color = if (selected) MiraiThemeManager.currentAccent() else AerixPalette.ObsidianRaised,
                             border = BorderStroke(
                                 1.dp,
-                                if (selected) MiraiThemeManager.currentAccent() else Color(0xFF262B37)
+                                if (selected) MiraiThemeManager.currentAccent() else AerixPalette.GlassHigh
                             ),
                             onClick = {
                                 cleared = false
@@ -404,7 +405,7 @@ private fun LiveDiagnosticsConsoleCard(
                                 modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                                 fontSize = 10.sp,
                                 fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                                color = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB),
+                                color = if (selected) AerixPalette.GreenDeep else AerixPalette.TextPrimary,
                                 maxLines = 1,
                                 softWrap = false
                             )
@@ -413,8 +414,8 @@ private fun LiveDiagnosticsConsoleCard(
 
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFF17191E),
-                        border = BorderStroke(1.dp, Color(0xFF262B37)),
+                        color = AerixPalette.ObsidianRaised,
+                        border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                         onClick = { cleared = true }
                     ) {
                         Text(
@@ -422,7 +423,7 @@ private fun LiveDiagnosticsConsoleCard(
                             modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFFD1D5DB),
+                            color = AerixPalette.TextPrimary,
                             maxLines = 1,
                             softWrap = false
                         )
@@ -449,9 +450,9 @@ private fun LiveDiagnosticsConsoleCard(
                     filteredLines.forEach { line ->
                         val lineColor = when {
                             line.contains("ERROR", true) || line.contains("Exception", true) -> Color(0xFFF87171)
-                            line.contains("WARN", true) -> Color(0xFFFBBF24)
+                            line.contains("WARN", true) -> AerixPalette.Amber
                             line.contains("Renderer", true) || line.contains("LTW", true) -> MiraiThemeManager.currentAccent()
-                            else -> Color(0xFFD1D5DB)
+                            else -> AerixPalette.TextPrimary
                         }
                         Text(
                             text = line,
@@ -475,8 +476,8 @@ private fun LiveDiagnosticsConsoleCard(
                         .weight(1f)
                         .height(38.dp),
                     shape = RoundedCornerShape(19.dp),
-                    color = Color(0xFF17191E),
-                    border = BorderStroke(1.dp, Color(0xFF262B37)),
+                    color = AerixPalette.ObsidianRaised,
+                    border = BorderStroke(1.dp, AerixPalette.GlassHigh),
                     onClick = onShareLog
                 ) {
                     Box(
@@ -500,7 +501,7 @@ private fun LiveDiagnosticsConsoleCard(
                     shape = RoundedCornerShape(19.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MiraiThemeManager.currentAccent(),
-                        contentColor = Color(0xFF06210F)
+                        contentColor = AerixPalette.GreenDeep
                     ),
                     contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
@@ -588,8 +589,8 @@ private fun MainMenu(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF161920),
-        border = BorderStroke(1.dp, Color(0xFF262B37))
+        color = AerixPalette.ObsidianRaised,
+        border = BorderStroke(1.dp, AerixPalette.GlassHigh)
     ) {
         Column(
             modifier = Modifier
@@ -618,8 +619,8 @@ private fun MainMenu(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
-                color = Color(0xFF17191E),
-                border = BorderStroke(1.dp, Color(0xFF262B37))
+                color = AerixPalette.ObsidianRaised,
+                border = BorderStroke(1.dp, AerixPalette.GlassHigh)
             ) {
                 Row(
                     modifier = Modifier
@@ -640,7 +641,7 @@ private fun MainMenu(
                                 text = "Host Room",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = if (isHostMode) Color(0xFF06210F) else Color(0xFF9CA3AF)
+                                color = if (isHostMode) AerixPalette.GreenDeep else AerixPalette.TextSecondary
                             )
                         }
                     }
@@ -658,7 +659,7 @@ private fun MainMenu(
                                 text = "Join Room",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = if (!isHostMode) Color(0xFF06210F) else Color(0xFF9CA3AF)
+                                color = if (!isHostMode) AerixPalette.GreenDeep else AerixPalette.TextSecondary
                             )
                         }
                     }
@@ -669,8 +670,8 @@ private fun MainMenu(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
-                color = Color(0xFF17191E),
-                border = BorderStroke(1.dp, Color(0xFF262B37))
+                color = AerixPalette.ObsidianRaised,
+                border = BorderStroke(1.dp, AerixPalette.GlassHigh)
             ) {
                 Row(
                     modifier = Modifier
@@ -684,7 +685,7 @@ private fun MainMenu(
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE5E7EB)
+                        color = AerixPalette.TextPrimary
                     )
 
                     Surface(
@@ -725,7 +726,7 @@ private fun MainMenu(
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MiraiThemeManager.currentAccent(),
-                    contentColor = Color(0xFF06210F)
+                    contentColor = AerixPalette.GreenDeep
                 )
             ) {
                 Text(

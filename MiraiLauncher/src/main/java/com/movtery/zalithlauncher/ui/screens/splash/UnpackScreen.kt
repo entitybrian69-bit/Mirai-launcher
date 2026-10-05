@@ -36,6 +36,7 @@ import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
 import com.movtery.zalithlauncher.viewmodel.SplashBackStackViewModel
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 @Composable
 fun UnpackScreen(
@@ -71,9 +72,9 @@ private fun ActionMenu(modifier: Modifier = Modifier, onAgreeClick: () -> Unit =
             shape = RoundedCornerShape(28.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0x991BD96A),
-                contentColor = Color(0xFF06210F),
+                contentColor = AerixPalette.GreenDeep,
                 disabledContainerColor = Color(0x551BD96A),
-                disabledContentColor = Color(0xFF06210F)
+                disabledContentColor = AerixPalette.GreenDeep
             )
         ) {
             Text(stringResource(R.string.splash_screen_agree))
@@ -105,8 +106,8 @@ private fun TaskItem(item: InstallableItem, modifier: Modifier = Modifier) {
         }
         val iconModifier = Modifier.padding(horizontal = 12.dp).size(18.dp)
         when (state) {
-            InstallableItem.State.RUNNING -> CircularProgressIndicator(modifier = iconModifier, strokeWidth = 2.dp, color = Color(0xFF1BD96A))
-            InstallableItem.State.FINISHED -> Icon(painterResource(R.drawable.ic_check), contentDescription = null, modifier = iconModifier, tint = Color(0xFF1BD96A))
+            InstallableItem.State.RUNNING -> CircularProgressIndicator(modifier = iconModifier, strokeWidth = 2.dp, color = AerixPalette.Green)
+            InstallableItem.State.FINISHED -> Icon(painterResource(R.drawable.ic_check), contentDescription = null, modifier = iconModifier, tint = AerixPalette.Green)
             InstallableItem.State.PENDING -> Icon(painterResource(R.drawable.ic_update), contentDescription = null, modifier = iconModifier, tint = Color.White)
             else -> Icon(painterResource(R.drawable.ic_folder_zip_outlined), contentDescription = null, modifier = iconModifier, tint = Color.White)
         }

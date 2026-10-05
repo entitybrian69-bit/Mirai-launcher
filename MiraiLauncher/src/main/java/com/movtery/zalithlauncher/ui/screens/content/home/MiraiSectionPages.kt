@@ -40,11 +40,12 @@ import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
-private val PageBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val PageBg = AerixPalette.ObsidianDeep
+private val CardBg = AerixPalette.ObsidianRaised
+private val Muted = AerixPalette.TextSecondary
+private val Green = AerixPalette.Green
 
 data class SectionAction(val title: String, val subtitle: String, val onClick: () -> Unit)
 

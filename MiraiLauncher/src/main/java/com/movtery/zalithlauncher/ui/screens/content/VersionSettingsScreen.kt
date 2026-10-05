@@ -140,6 +140,9 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.TimeoutException
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
+import com.movtery.zalithlauncher.ui.theme.AerixTab
+import com.movtery.zalithlauncher.ui.theme.AerixPillTabRow
 
 private const val TAG = "VersionSettings"
 
@@ -367,8 +370,8 @@ private fun ModrinthInstanceHeroBanner(
         // Back Arrow Button
         Surface(
             shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
+            color = AerixPalette.Glass,
+            border = BorderStroke(1.dp, AerixPalette.HairlineStrong),
             contentColor = Color.White,
             onClick = onBack
         ) {
@@ -387,8 +390,8 @@ private fun ModrinthInstanceHeroBanner(
         // Instance Icon
         Surface(
             shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E))
+            color = AerixPalette.Glass,
+            border = BorderStroke(1.dp, AerixPalette.HairlineStrong)
         ) {
             VersionIconImage(
                 version = version,
@@ -414,7 +417,7 @@ private fun ModrinthInstanceHeroBanner(
             Text(
                 text = "$loaderName $mcVer • $ramMb MB",
                 style = MaterialTheme.typography.labelSmall,
-                color = Color(0xFF9CA3AF),
+                color = AerixPalette.TextSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -460,7 +463,7 @@ private fun ModrinthInstanceHeroBanner(
                     text = "☕ JRE & GC",
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFFE5E7EB)
+                    color = AerixPalette.TextPrimary
                 )
             }
         }
@@ -468,9 +471,9 @@ private fun ModrinthInstanceHeroBanner(
         // Open Folder Button
         Surface(
             shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
-            contentColor = Color(0xFFE5E7EB),
+            color = AerixPalette.Glass,
+            border = BorderStroke(1.dp, AerixPalette.HairlineStrong),
+            contentColor = AerixPalette.TextPrimary,
             onClick = onOpenFolder
         ) {
             Box(
@@ -491,7 +494,7 @@ private fun ModrinthInstanceHeroBanner(
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = activeAccent,
-                contentColor = Color(0xFF06210F)
+                contentColor = AerixPalette.GreenDeep
             ),
             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
             modifier = Modifier.height(34.dp)
@@ -534,55 +537,24 @@ private fun ModrinthInstanceSubTabs(
         }
     }
 
-    val scrollState = rememberScrollState()
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        tabs.forEach { tab ->
-            val selected = versionsScreenKey === tab.key
-            val bgColor by animateColorAsState(
-                targetValue = if (selected) activeAccent else Color(0xFF21242B),
-                animationSpec = tween(140),
-                label = "subTabBg"
-            )
-            val textColor by animateColorAsState(
-                targetValue = if (selected) Color(0xFF06210F) else Color(0xFFE5E7EB),
-                animationSpec = tween(140),
-                label = "subTabText"
-            )
+    val selectedIndex = tabs.indexOfFirst { it.key === versionsScreenKey }
 
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = bgColor,
-                border = BorderStroke(
-                    1.dp,
-                    if (selected) activeAccent else Color(0xFF2E333E)
-                ),
-                onClick = {
-                    if (tab.key == NormalNavKey.Versions.UpdateLoader) {
-                        if (isUpdateLoader) {
-                            NormalNavKey.Versions.UpdateLoader.title = androidText(R.string.versions_update_loader)
-                        } else {
-                            NormalNavKey.Versions.UpdateLoader.title = androidText(R.string.versions_install_loader)
-                        }
-                    }
-                    backStack.navigateOnce(tab.key)
+    AerixPillTabRow(
+        tabs = tabs.map { AerixTab(label = it.label, iconRes = it.iconRes) },
+        selectedIndex = selectedIndex,
+        onSelect = { index ->
+            val tab = tabs.getOrNull(index) ?: return@AerixPillTabRow
+            if (tab.key == NormalNavKey.Versions.UpdateLoader) {
+                if (isUpdateLoader) {
+                    NormalNavKey.Versions.UpdateLoader.title = androidText(R.string.versions_update_loader)
+                } else {
+                    NormalNavKey.Versions.UpdateLoader.title = androidText(R.string.versions_install_loader)
                 }
-            ) {
-                Text(
-                    text = tab.label,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                    color = textColor
-                )
             }
-        }
-    }
+            backStack.navigateOnce(tab.key)
+        },
+        accent = activeAccent
+    )
 }
 
 @Composable

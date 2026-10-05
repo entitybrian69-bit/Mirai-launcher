@@ -120,6 +120,7 @@ import kotlinx.coroutines.launch
 import java.net.ConnectException
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private const val TAG = "SelectGameVersion"
 
@@ -320,7 +321,7 @@ fun SelectGameVersionScreen(
                                     Icon(
                                         painter = painterResource(R.drawable.ic_refresh),
                                         contentDescription = stringResource(R.string.generic_refresh),
-                                        tint = Color(0xFF9CA3AF),
+                                        tint = AerixPalette.TextSecondary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -330,7 +331,7 @@ fun SelectGameVersionScreen(
                                 text = "Instance Info",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixPalette.TextPrimary
                             )
 
                             Row(
@@ -340,8 +341,8 @@ fun SelectGameVersionScreen(
                             ) {
                                 Surface(
                                     shape = RoundedCornerShape(10.dp),
-                                    color = Color(0xFF21242B),
-                                    border = BorderStroke(1.dp, Color(0xFF2E333E))
+                                    color = AerixPalette.Glass,
+                                    border = BorderStroke(1.dp, AerixPalette.HairlineStrong)
                                 ) {
                                     Image(
                                         painter = painterResource(R.drawable.img_old_grass_block),
@@ -357,8 +358,8 @@ fun SelectGameVersionScreen(
                                         .weight(1f)
                                         .height(40.dp)
                                         .clip(RoundedCornerShape(10.dp))
-                                        .background(Color(0xFF21242B))
-                                        .border(1.dp, Color(0xFF2E333E), RoundedCornerShape(10.dp))
+                                        .background(AerixPalette.Glass)
+                                        .border(1.dp, AerixPalette.HairlineStrong, RoundedCornerShape(10.dp))
                                         .padding(horizontal = 12.dp),
                                     contentAlignment = Alignment.CenterStart
                                 ) {
@@ -381,7 +382,7 @@ fun SelectGameVersionScreen(
                                 text = "Minecraft Version",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixPalette.TextPrimary
                             )
 
                             // Filter Pills: Releases, Snapshots, Old Beta + compact search
@@ -405,10 +406,10 @@ fun SelectGameVersionScreen(
                                 filterItems.forEach { (label, active, onToggle) ->
                                     Surface(
                                         shape = RoundedCornerShape(14.dp),
-                                        color = if (active) MiraiThemeManager.currentAccent() else Color(0xFF21242B),
+                                        color = if (active) MiraiThemeManager.currentAccent() else AerixPalette.Glass,
                                         border = BorderStroke(
                                             1.dp,
-                                            if (active) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                                            if (active) MiraiThemeManager.currentAccent() else AerixPalette.HairlineStrong
                                         ),
                                         onClick = onToggle
                                     ) {
@@ -417,7 +418,7 @@ fun SelectGameVersionScreen(
                                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                             fontSize = 11.sp,
                                             fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Medium,
-                                            color = if (active) Color(0xFF06210F) else Color(0xFFD1D5DB)
+                                            color = if (active) AerixPalette.GreenDeep else AerixPalette.TextPrimary
                                         )
                                     }
                                 }
@@ -427,8 +428,8 @@ fun SelectGameVersionScreen(
                                         .weight(1f)
                                         .height(28.dp)
                                         .clip(RoundedCornerShape(14.dp))
-                                        .background(Color(0xFF21242B))
-                                        .border(1.dp, Color(0xFF2E333E), RoundedCornerShape(14.dp))
+                                        .background(AerixPalette.Glass)
+                                        .border(1.dp, AerixPalette.HairlineStrong, RoundedCornerShape(14.dp))
                                         .padding(horizontal = 8.dp),
                                     contentAlignment = Alignment.CenterStart
                                 ) {
@@ -472,10 +473,10 @@ fun SelectGameVersionScreen(
                                     Surface(
                                         modifier = Modifier.fillMaxWidth(),
                                         shape = RoundedCornerShape(10.dp),
-                                        color = if (isSelected) Color(0xFF172D22) else Color(0xFF21242B),
+                                        color = if (isSelected) Color(0xFF172D22) else AerixPalette.Glass,
                                         border = BorderStroke(
                                             width = if (isSelected) 1.5.dp else 1.dp,
-                                            color = if (isSelected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                                            color = if (isSelected) MiraiThemeManager.currentAccent() else AerixPalette.HairlineStrong
                                         ),
                                         onClick = {
                                             selectedVersionId = verId
@@ -549,10 +550,10 @@ fun SelectGameVersionScreen(
                                                     .weight(1f)
                                                     .height(74.dp),
                                                 shape = RoundedCornerShape(12.dp),
-                                                color = if (isSelected) Color(0xFF1B2B24) else Color(0xFF21242B),
+                                                color = if (isSelected) Color(0xFF1B2B24) else AerixPalette.Glass,
                                                 border = BorderStroke(
                                                     width = if (isSelected) 1.5.dp else 1.dp,
-                                                    color = if (isSelected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                                                    color = if (isSelected) MiraiThemeManager.currentAccent() else AerixPalette.HairlineStrong
                                                 ),
                                                 onClick = { selectedLoader = loaderName }
                                             ) {
@@ -573,7 +574,7 @@ fun SelectGameVersionScreen(
                                                         Text(
                                                             text = subLabel,
                                                             fontSize = 11.sp,
-                                                            color = if (isSelected) MiraiThemeManager.currentAccent() else Color(0xFF9CA3AF)
+                                                            color = if (isSelected) MiraiThemeManager.currentAccent() else AerixPalette.TextSecondary
                                                         )
                                                     }
                                                 }
@@ -591,7 +592,7 @@ fun SelectGameVersionScreen(
                                 shape = RoundedCornerShape(22.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MiraiThemeManager.currentAccent(),
-                                    contentColor = Color(0xFF06210F)
+                                    contentColor = AerixPalette.GreenDeep
                                 )
                             ) {
                                 Text(

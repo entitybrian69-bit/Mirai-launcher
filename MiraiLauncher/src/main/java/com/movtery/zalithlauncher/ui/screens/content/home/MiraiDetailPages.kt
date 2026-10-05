@@ -30,11 +30,12 @@ import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.setting.AllSettings
 import java.io.File
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
-private val PageBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val PageBg = AerixPalette.ObsidianDeep
+private val CardBg = AerixPalette.ObsidianRaised
+private val Muted = AerixPalette.TextSecondary
+private val Green = AerixPalette.Green
 
 @Composable
 fun MiraiInstanceDetail(version: Version, onOpenContent: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -46,7 +47,7 @@ fun MiraiInstanceDetail(version: Version, onOpenContent: () -> Unit, onBack: () 
         Text(if (version.isValid()) "Installed instance" else "This instance is missing files", color = Muted)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             tabs.forEach { name ->
-                Text(name, color = if (tab == name) Color(0xFF0E0E10) else Color.White, modifier = Modifier.clip(RoundedCornerShape(20.dp)).background(if (tab == name) Green else CardBg).clickable { tab = name }.padding(horizontal = 12.dp, vertical = 8.dp))
+                Text(name, color = if (tab == name) AerixPalette.ObsidianDeep else Color.White, modifier = Modifier.clip(RoundedCornerShape(20.dp)).background(if (tab == name) Green else CardBg).clickable { tab = name }.padding(horizontal = 12.dp, vertical = 8.dp))
             }
         }
         when (tab) {
@@ -77,7 +78,7 @@ fun MiraiDiscoverResults(title: String, onOpenSearch: () -> Unit, onBack: () -> 
         Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
         BasicTextField(value = query, onValueChange = { query = it }, singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White), cursorBrush = SolidColor(Green), modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(CardBg).padding(14.dp), decorationBox = { inner -> if (query.isEmpty()) Text("Search this category", color = Muted); inner() })
         Text(if (query.isBlank()) "Enter a name, then search to install." else "Search for $query", color = Muted)
-        Text("Search", color = Color(0xFF0E0E10), fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(14.dp)).background(Green).clickable(onClick = onOpenSearch).padding(14.dp))
+        Text("Search", color = AerixPalette.ObsidianDeep, fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(14.dp)).background(Green).clickable(onClick = onOpenSearch).padding(14.dp))
     }
 }
 

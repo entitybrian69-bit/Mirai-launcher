@@ -79,6 +79,7 @@ import com.movtery.zalithlauncher.ui.theme.MiraiWallpaperPreset
 import com.movtery.zalithlauncher.viewmodel.LocalBackgroundViewModel
 import kotlinx.coroutines.launch
 import java.io.File
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 fun wallpaperFile(context: Context) = File(context.filesDir, "aerix-wallpaper.jpg")
 
@@ -120,7 +121,7 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp),
-            color = Color(0xFF21242B).copy(alpha = 0.92f),
+            color = AerixPalette.Glass.copy(alpha = 0.92f),
             border = BorderStroke(1.dp, activeAccent.copy(alpha = 0.45f))
         ) {
             Row(
@@ -182,7 +183,7 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                     Text(
                         text = "Dim ${opacitySetting}%",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF9CA3AF)
+                        color = AerixPalette.TextSecondary
                     )
                     Slider(
                         value = opacitySetting.toFloat(),
@@ -195,7 +196,7 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                         colors = SliderDefaults.colors(
                             thumbColor = activeAccent,
                             activeTrackColor = activeAccent,
-                            inactiveTrackColor = Color(0xFF16181C)
+                            inactiveTrackColor = AerixPalette.Obsidian
                         )
                     )
                 }
@@ -206,7 +207,7 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                     color = if (selectedId == "none") activeAccent.copy(alpha = 0.2f) else Color(0xFF1A1D23),
                     border = BorderStroke(
                         1.dp,
-                        if (selectedId == "none") activeAccent else Color(0xFF2E333E)
+                        if (selectedId == "none") activeAccent else AerixPalette.HairlineStrong
                     ),
                     onClick = {
                         scope.launch {
@@ -219,7 +220,7 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                         text = "Solid Dark",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (selectedId == "none") activeAccent else Color(0xFFE5E7EB),
+                        color = if (selectedId == "none") activeAccent else AerixPalette.TextPrimary,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                     )
                 }
@@ -228,7 +229,7 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                 Surface(
                     shape = RoundedCornerShape(9.dp),
                     color = activeAccent,
-                    contentColor = Color(0xFF06210F),
+                    contentColor = AerixPalette.GreenDeep,
                     onClick = { picker.launch("image/*") }
                 ) {
                     Row(
@@ -302,10 +303,10 @@ private fun WallpaperPresetCard(
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
-        color = Color(0xFF21242B).copy(alpha = 0.94f),
+        color = AerixPalette.Glass.copy(alpha = 0.94f),
         border = BorderStroke(
             width = if (isSelected) 2.dp else 1.dp,
-            color = if (isSelected) preset.accentColor else Color(0xFF2E333E)
+            color = if (isSelected) preset.accentColor else AerixPalette.HairlineStrong
         )
     ) {
         Column {
@@ -371,7 +372,7 @@ private fun WallpaperPresetCard(
                             .padding(6.dp),
                         shape = RoundedCornerShape(6.dp),
                         color = preset.accentColor,
-                        contentColor = Color(0xFF06210F)
+                        contentColor = AerixPalette.GreenDeep
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
@@ -410,7 +411,7 @@ private fun WallpaperPresetCard(
                 Text(
                     text = preset.biome,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF9CA3AF),
+                    color = AerixPalette.TextSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

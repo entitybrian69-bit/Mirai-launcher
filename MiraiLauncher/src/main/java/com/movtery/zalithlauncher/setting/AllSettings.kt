@@ -104,7 +104,7 @@ object AllSettings : SettingsRegistry() {
     val launcherActionMenuSide = enumSetting("launcherActionMenuSide", ActionMenuSide.END)
     val launcherBackgroundOpacity = intSetting("launcherBackgroundOpacity", 60, 20..100)
     val videoBackgroundVolume = intSetting("videoBackgroundVolume", 0, 0..100)
-    val backgroundBlur = intSetting("backgroundBlur", 0, 0..40)
+    val backgroundBlur = intSetting("backgroundBlur", 26, 0..40)
     val backgroundBlurType = enumSetting("backgroundBlurType", BackgroundBlur.Background)
     val lastIgnoredVersion = intSetting("lastIgnoredVersion", null)
     val launcherLogRetentionDays = intSetting("launcherLogRetentionDays", 7, 1..14)

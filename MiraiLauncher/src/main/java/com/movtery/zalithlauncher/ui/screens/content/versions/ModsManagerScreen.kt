@@ -184,6 +184,7 @@ import java.util.LinkedList
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.milliseconds
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private class ModsManageViewModel(
     modsDir: File
@@ -884,10 +885,10 @@ private fun ModsActionsHeader(
                 }
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = if (selected) Color(0xFF132A1C) else Color(0xFF161920),
+                    color = if (selected) Color(0xFF132A1C) else AerixPalette.ObsidianRaised,
                     border = androidx.compose.foundation.BorderStroke(
                         1.dp,
-                        if (selected) MiraiThemeManager.currentAccent() else Color(0xFF262B37)
+                        if (selected) MiraiThemeManager.currentAccent() else AerixPalette.GlassHigh
                     ),
                     onClick = { onStateFilterChange(filter) }
                 ) {
@@ -900,14 +901,14 @@ private fun ModsActionsHeader(
                             text = stringResource(filter.textRes),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFFE5E7EB)
+                            color = if (selected) MiraiThemeManager.currentAccent() else AerixPalette.TextPrimary
                         )
                         if (count != null) {
                             Text(
                                 text = count.toString(),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF9CA3AF)
+                                color = if (selected) MiraiThemeManager.currentAccent() else AerixPalette.TextSecondary
                             )
                         }
                     }
@@ -958,10 +959,10 @@ private fun ModsActionsHeader(
             val hasIssues = detectedIssuesCount > 0
             Surface(
                 shape = RoundedCornerShape(10.dp),
-                color = if (hasIssues) Color(0xFF3B1A1E) else Color(0xFF161920),
+                color = if (hasIssues) Color(0xFF3B1A1E) else AerixPalette.ObsidianRaised,
                 border = BorderStroke(
                     1.dp,
-                    if (hasIssues) Color(0xFFEF4444) else Color(0xFF262B37)
+                    if (hasIssues) AerixPalette.Red else AerixPalette.GlassHigh
                 ),
                 onClick = onOpenModResolver
             ) {
@@ -976,7 +977,7 @@ private fun ModsActionsHeader(
                         text = if (hasIssues) "🛡️ $detectedIssuesCount Issues" else "🛡️ Check Mods",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (hasIssues) Color(0xFFFCA5A5) else Color(0xFFE5E7EB)
+                        color = if (hasIssues) Color(0xFFFCA5A5) else AerixPalette.TextPrimary
                     )
                 }
             }
@@ -986,7 +987,7 @@ private fun ModsActionsHeader(
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MiraiThemeManager.currentAccent(),
-                    contentColor = Color(0xFF06210F)
+                    contentColor = AerixPalette.GreenDeep
                 ),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                 modifier = Modifier.height(34.dp)
@@ -1221,7 +1222,7 @@ private fun ModItemLayout(
                     Text(
                         text = localMod.file.name,
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF9CA3AF),
+                        color = AerixPalette.TextSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -1248,10 +1249,10 @@ private fun ModItemLayout(
                         else onDisable()
                     },
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color(0xFF06210F),
+                        checkedThumbColor = AerixPalette.GreenDeep,
                         checkedTrackColor = MiraiThemeManager.currentAccent(),
-                        uncheckedThumbColor = Color(0xFF9CA3AF),
-                        uncheckedTrackColor = Color(0xFF282C36),
+                        uncheckedThumbColor = AerixPalette.TextSecondary,
+                        uncheckedTrackColor = AerixPalette.GlassHigh,
                         uncheckedBorderColor = Color(0xFF3E4452)
                     )
                 )
@@ -1266,7 +1267,7 @@ private fun ModItemLayout(
                         Icon(
                             painter = painterResource(R.drawable.ic_info_outlined),
                             contentDescription = stringResource(R.string.mods_manage_info),
-                            tint = Color(0xFF9CA3AF),
+                            tint = AerixPalette.TextSecondary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -1279,7 +1280,7 @@ private fun ModItemLayout(
                     Icon(
                         painter = painterResource(R.drawable.ic_delete_outlined),
                         contentDescription = stringResource(R.string.generic_delete),
-                        tint = Color(0xFF9CA3AF),
+                        tint = AerixPalette.TextSecondary,
                         modifier = Modifier.size(16.dp)
                     )
                 }

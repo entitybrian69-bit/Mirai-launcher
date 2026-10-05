@@ -59,6 +59,7 @@ import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
 import com.movtery.zalithlauncher.viewmodel.ModpackImportViewModel
 import com.movtery.zalithlauncher.viewmodel.ScreenBackStackViewModel
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 fun ScreenBackStackViewModel.navigateToDownload(targetScreen: TitledNavKey? = null) {
     downloadScreen.clearWith(targetScreen ?: downloadGameScreen)
@@ -156,12 +157,12 @@ private fun NavigationUI(
                     categories.forEach { cat ->
                         val selected = stackTopKey?.javaClass == cat.target.javaClass
                         val bgColor by animateColorAsState(
-                            targetValue = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF161920),
+                            targetValue = if (selected) MiraiThemeManager.currentAccent() else AerixPalette.ObsidianRaised,
                             animationSpec = tween(160),
                             label = "discoverCatBg"
                         )
                         val fgColor by animateColorAsState(
-                            targetValue = if (selected) Color(0xFF06210F) else Color(0xFFE5E7EB),
+                            targetValue = if (selected) AerixPalette.GreenDeep else AerixPalette.TextPrimary,
                             animationSpec = tween(160),
                             label = "discoverCatFg"
                         )
@@ -171,7 +172,7 @@ private fun NavigationUI(
                             color = bgColor,
                             border = BorderStroke(
                                 1.dp,
-                                if (selected) MiraiThemeManager.currentAccent() else Color(0xFF262B37)
+                                if (selected) MiraiThemeManager.currentAccent() else AerixPalette.GlassHigh
                             ),
                             onClick = {
                                 backScreenViewModel.navigateToDownload(cat.target)

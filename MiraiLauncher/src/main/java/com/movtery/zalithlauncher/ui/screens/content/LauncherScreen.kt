@@ -135,6 +135,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.exp
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private const val ContentWeight = 7.4f
 private const val ActionMenuWeight = 2.6f
@@ -491,7 +492,7 @@ private fun VersionsContent(
                 ),
             shape = RoundedCornerShape(14.dp),
             color = Color(0xFF171A20),
-            border = BorderStroke(1.dp, Color(0xFF2E333E))
+            border = BorderStroke(1.dp, AerixPalette.HairlineStrong)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Column(
@@ -558,7 +559,7 @@ private fun VersionsContent(
                                         Icon(
                                             painter = painterResource(R.drawable.ic_play_arrow_filled),
                                             contentDescription = stringResource(R.string.main_launch_game),
-                                            tint = Color(0xFF1BD96A)
+                                            tint = AerixPalette.Green
                                         )
                                     }
                                 }
@@ -574,7 +575,7 @@ private fun VersionsContent(
                         text = {
                             Text(
                                 text = "Manage All Instances...",
-                                color = Color(0xFF1BD96A),
+                                color = AerixPalette.Green,
                                 fontWeight = FontWeight.SemiBold
                             )
                         },
@@ -603,7 +604,7 @@ private fun VersionsContent(
                 ),
             shape = RoundedCornerShape(21.dp),
             color = activeAccent,
-            contentColor = Color(0xFF06210F)
+            contentColor = AerixPalette.GreenDeep
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -614,13 +615,13 @@ private fun VersionsContent(
                     text = "PLAY",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF06210F)
+                    color = AerixPalette.GreenDeep
                 )
                 Spacer(Modifier.width(4.dp))
                 Icon(
                     painter = painterResource(R.drawable.ic_play_arrow_filled),
                     contentDescription = stringResource(R.string.main_launch_game),
-                    tint = Color(0xFF06210F),
+                    tint = AerixPalette.GreenDeep,
                     modifier = Modifier.size(18.dp)
                 )
             }

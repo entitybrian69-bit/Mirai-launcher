@@ -60,6 +60,7 @@ import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
 import com.movtery.zalithlauncher.game.download.modpack.platform.PackPlatform
 import com.movtery.zalithlauncher.ui.components.ShimmerBox
 import com.movtery.zalithlauncher.utils.logging.Logger
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 private const val TAG = "AssetsCommonElements"
 
@@ -127,7 +128,7 @@ fun Platform.getDrawable() = when (this) {
  */
 fun Platform.getBrandColor(): Color = when (this) {
     Platform.CURSEFORGE -> Color(0xFFF16436)
-    Platform.MODRINTH -> Color(0xFF1BD96A)
+    Platform.MODRINTH -> AerixPalette.Green
 }
 
 /**

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
+import com.movtery.zalithlauncher.ui.theme.AerixPalette
 
 @Composable
 fun ClassicHome(
@@ -68,14 +69,14 @@ fun ClassicHome(
                         Text("Library", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 28.sp)
                         Text("$count installed", color = Color(0xFFD7CFC8))
                     }
-                    Text("+  New instance", color = Color(0xFF06210F), fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(24.dp)).background(Color(0xFF1BD96A)).clickable(onClick = onCreateInstance).padding(horizontal = 16.dp, vertical = 10.dp))
+                    Text("+  New instance", color = AerixPalette.GreenDeep, fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(24.dp)).background(AerixPalette.Green).clickable(onClick = onCreateInstance).padding(horizontal = 16.dp, vertical = 10.dp))
                 }
                 GlassCard {
                     Text(if (count == 0) "Your library is empty" else "${count} installed versions", color = Color.White, fontWeight = FontWeight.SemiBold)
                     Text(if (count == 0) "Install a Minecraft version to get started." else "Tap New instance to add another, or Launch to play the selected one.", color = Color(0xFFD7CFC8))
                     if (count == 0) {
                         Spacer(Modifier.height(8.dp))
-                        Text("+  New instance", color = Color(0xFF06210F), fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(24.dp)).background(Color(0xFF1BD96A)).clickable(onClick = onCreateInstance).padding(horizontal = 16.dp, vertical = 10.dp))
+                        Text("+  New instance", color = AerixPalette.GreenDeep, fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(24.dp)).background(AerixPalette.Green).clickable(onClick = onCreateInstance).padding(horizontal = 16.dp, vertical = 10.dp))
                     }
                 }
             }
@@ -88,7 +89,7 @@ fun ClassicHome(
                 Text("Add Account", color = Color.White, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onAddAccount))
                 Spacer(Modifier.weight(1f))
                 Text("$count installed versions", color = Color.White)
-                Text("Launch", color = Color(0xFF06210F), fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(Color(0xFF1BD96A)).clickable(onClick = onLaunch).padding(vertical = 12.dp))
+                Text("Launch", color = AerixPalette.GreenDeep, fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(AerixPalette.Green).clickable(onClick = onLaunch).padding(vertical = 12.dp))
             }
         }
     }
