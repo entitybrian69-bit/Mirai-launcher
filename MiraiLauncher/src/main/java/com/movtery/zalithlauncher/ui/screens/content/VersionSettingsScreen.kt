@@ -30,10 +30,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,8 +46,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -96,7 +96,6 @@ import com.movtery.zalithlauncher.game.download.jvm_server.JvmCrashException
 import com.movtery.zalithlauncher.game.download.jvm_server.isProcessStartRefused
 import com.movtery.zalithlauncher.game.optimization.JvmGcAutoTunerDialog
 import com.movtery.zalithlauncher.game.optimization.MobileFpsBoosterDialog
-import com.movtery.zalithlauncher.game.optimization.ModDependencyResolverDialog
 import com.movtery.zalithlauncher.game.version.download.DownloadFailedException
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
@@ -325,7 +324,6 @@ fun VersionSettingsScreen(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ModrinthInstanceHeroBanner(
     version: Version,
@@ -341,7 +339,7 @@ private fun ModrinthInstanceHeroBanner(
     val ramMb = remember(version) { version.getRamAllocation(context) }
     var showFpsBooster by remember { mutableStateOf(false) }
     var showJreGcTuner by remember { mutableStateOf(false) }
-    var showModResolver by remember { mutableStateOf(false) }
+    var showActionsMenu by remember { mutableStateOf(false) }
 
     if (showFpsBooster) {
         MobileFpsBoosterDialog(
@@ -357,170 +355,115 @@ private fun ModrinthInstanceHeroBanner(
         )
     }
 
-    if (showModResolver) {
-        ModDependencyResolverDialog(
-            version = version,
-            onDismiss = { showModResolver = false }
-        )
-    }
-
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val compact = maxWidth < 560.dp
-
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(AerixRadii.card),
-            color = AerixSurface.panel,
-            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AerixRadii.card),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(AerixSpacing.mdPlus),
-                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+            Surface(
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = AerixSurface.panelRaised,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                contentColor = Color.White,
+                onClick = onBack
             ) {
-                // Identity stays on its own line, so actions never squeeze the instance name.
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                Box(
+                    modifier = Modifier.size(34.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(AerixRadii.controlSmall),
-                        color = AerixSurface.panelRaised,
-                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
-                        contentColor = Color.White,
-                        onClick = onBack
-                    ) {
-                        Box(
-                            modifier = Modifier.size(36.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_arrow_back),
-                                contentDescription = stringResource(R.string.generic_back),
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_back),
+                        contentDescription = stringResource(R.string.generic_back),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
 
-                    Surface(
-                        shape = RoundedCornerShape(AerixRadii.controlSmall),
-                        color = AerixSurface.panelRaised,
-                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
-                    ) {
-                        VersionIconImage(
-                            version = version,
-                            modifier = Modifier
-                                .padding(AerixSpacing.xsPlus)
-                                .size(28.dp)
-                        )
-                    }
+            Surface(
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = AerixSurface.panelRaised,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+            ) {
+                VersionIconImage(
+                    version = version,
+                    modifier = Modifier
+                        .padding(AerixSpacing.xs)
+                        .size(28.dp)
+                )
+            }
 
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.hairline)
-                    ) {
-                        Text(
-                            text = version.getVersionName(),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color.White,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = "$loaderName $mcVer • $ramMb MB",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = AerixSurface.textSecondary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.hairline)
+            ) {
+                Text(
+                    text = version.getVersionName(),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "$loaderName $mcVer • $ramMb MB",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AerixSurface.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
-                    if (!compact) {
-                        InstancePlayButton(
-                            activeAccent = activeAccent,
-                            onPlay = onPlay
-                        )
-                    }
+            InstancePlayButton(
+                activeAccent = activeAccent,
+                onPlay = onPlay
+            )
+
+            Box {
+                IconButton(
+                    onClick = { showActionsMenu = true },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_more_vert),
+                        contentDescription = stringResource(R.string.generic_more),
+                        tint = AerixSurface.textPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
 
-                // Secondary actions wrap on narrow windows instead of compressing the header.
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
-                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                DropdownMenu(
+                    expanded = showActionsMenu,
+                    onDismissRequest = { showActionsMenu = false }
                 ) {
-                    if (compact) {
-                        InstancePlayButton(
-                            activeAccent = activeAccent,
-                            onPlay = onPlay
-                        )
-                    }
-
-                    Surface(
-                        shape = RoundedCornerShape(AerixRadii.control),
-                        color = activeAccent.copy(alpha = 0.14f),
-                        border = BorderStroke(AerixSpacing.hairline, activeAccent.copy(alpha = 0.5f)),
-                        onClick = { showFpsBooster = true }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .height(34.dp)
-                                .padding(horizontal = AerixSpacing.smPlus),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
-                        ) {
-                            Text(
-                                text = "⚡ Boost FPS",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = activeAccent
-                            )
+                    DropdownMenuItem(
+                        text = { Text("Boost FPS") },
+                        onClick = {
+                            showActionsMenu = false
+                            showFpsBooster = true
                         }
-                    }
-
-                    Surface(
-                        shape = RoundedCornerShape(AerixRadii.control),
-                        color = AerixSurface.panelRaised,
-                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
-                        onClick = { showJreGcTuner = true }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .height(34.dp)
-                                .padding(horizontal = AerixSpacing.smPlus),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
-                        ) {
-                            Text(
-                                text = "☕ JRE & GC",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AerixSurface.textPrimary
-                            )
+                    )
+                    DropdownMenuItem(
+                        text = { Text("JRE & GC") },
+                        onClick = {
+                            showActionsMenu = false
+                            showJreGcTuner = true
                         }
-                    }
-
-                    Surface(
-                        shape = RoundedCornerShape(AerixRadii.controlSmall),
-                        color = AerixSurface.panelRaised,
-                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
-                        contentColor = AerixSurface.textPrimary,
-                        onClick = onOpenFolder
-                    ) {
-                        Box(
-                            modifier = Modifier.size(34.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_folder_outlined),
-                                contentDescription = "Folder",
-                                modifier = Modifier.size(18.dp)
-                            )
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Open instance folder") },
+                        onClick = {
+                            showActionsMenu = false
+                            onOpenFolder()
                         }
-                    }
+                    )
                 }
             }
         }
@@ -539,8 +482,8 @@ private fun InstancePlayButton(
             containerColor = activeAccent,
             contentColor = AerixSurface.onAccent
         ),
-        contentPadding = PaddingValues(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smCompact),
-        modifier = Modifier.height(36.dp)
+        contentPadding = PaddingValues(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
+        modifier = Modifier.height(34.dp)
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_play_arrow_filled),
@@ -580,62 +523,54 @@ private fun ModrinthInstanceSubTabs(
     }
 
     val scrollState = rememberScrollState()
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AerixRadii.card),
-        color = AerixSurface.panel,
-        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState),
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(scrollState)
-                .padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.smCompact),
-            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            tabs.forEach { tab ->
-                val selected = versionsScreenKey === tab.key
-                val bgColor by animateColorAsState(
-                    targetValue = if (selected) activeAccent else AerixSurface.panelRaised,
-                    animationSpec = tween(140),
-                    label = "subTabBg"
-                )
-                val textColor by animateColorAsState(
-                    targetValue = if (selected) AerixSurface.onAccent else AerixSurface.textPrimary,
-                    animationSpec = tween(140),
-                    label = "subTabText"
-                )
+        tabs.forEach { tab ->
+            val selected = versionsScreenKey === tab.key
+            val bgColor by animateColorAsState(
+                targetValue = if (selected) activeAccent else AerixSurface.panelRaised,
+                animationSpec = tween(140),
+                label = "subTabBg"
+            )
+            val textColor by animateColorAsState(
+                targetValue = if (selected) AerixSurface.onAccent else AerixSurface.textPrimary,
+                animationSpec = tween(140),
+                label = "subTabText"
+            )
 
-                Surface(
-                    shape = RoundedCornerShape(AerixRadii.card),
-                    color = bgColor,
-                    border = BorderStroke(
-                        AerixSpacing.hairline,
-                        if (selected) activeAccent else AerixSurface.borderSoft
-                    ),
-                    onClick = {
-                        if (tab.key == NormalNavKey.Versions.UpdateLoader) {
-                            if (isUpdateLoader) {
-                                NormalNavKey.Versions.UpdateLoader.title = androidText(R.string.versions_update_loader)
-                            } else {
-                                NormalNavKey.Versions.UpdateLoader.title = androidText(R.string.versions_install_loader)
-                            }
+            Surface(
+                shape = RoundedCornerShape(AerixRadii.card),
+                color = bgColor,
+                border = BorderStroke(
+                    AerixSpacing.hairline,
+                    if (selected) activeAccent else AerixSurface.borderSoft
+                ),
+                onClick = {
+                    if (tab.key == NormalNavKey.Versions.UpdateLoader) {
+                        if (isUpdateLoader) {
+                            NormalNavKey.Versions.UpdateLoader.title = androidText(R.string.versions_update_loader)
+                        } else {
+                            NormalNavKey.Versions.UpdateLoader.title = androidText(R.string.versions_install_loader)
                         }
-                        backStack.navigateOnce(tab.key)
                     }
-                ) {
-                    Text(
-                        text = tab.label,
-                        modifier = Modifier.padding(
-                            horizontal = AerixSpacing.mdPlus,
-                            vertical = AerixSpacing.smCompact
-                        ),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                        color = textColor
-                    )
+                    backStack.navigateOnce(tab.key)
                 }
+            ) {
+                Text(
+                    text = tab.label,
+                    modifier = Modifier.padding(
+                        horizontal = AerixSpacing.smPlus,
+                        vertical = AerixSpacing.xsPlus
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
+                    color = textColor
+                )
             }
         }
     }
