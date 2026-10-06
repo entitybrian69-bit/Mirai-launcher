@@ -46,6 +46,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -53,6 +54,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movtery.zalithlauncher.ui.theme.AerixMetrics
 import com.movtery.zalithlauncher.ui.theme.AerixRadii
@@ -89,23 +91,23 @@ fun MiraiNavigationRail(
     val account by AccountsManager.currentAccountFlow.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     val activeAccent = MiraiThemeManager.currentAccent()
+    val expandedRail = LocalConfiguration.current.screenWidthDp >= 900
 
     Row(modifier = modifier.fillMaxHeight()) {
         Surface(
             modifier = Modifier
-                .width(AerixMetrics.navigationRailWidth)
+                .width(if (expandedRail) AerixMetrics.expandedNavigationRailWidth else AerixMetrics.navigationRailWidth)
                 .fillMaxHeight()
                 .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.smPlus)
                 .liquidGlass(
-                    shape = RoundedCornerShape(AerixRadii.pill),
+                    shape = CircleShape,
                     tint = AerixSurface.glassTint,
-                    strength = 1f,
+                    strength = 0.94f,
                     elevation = AerixMetrics.glassRailElevation
                 ),
-            shape = RoundedCornerShape(AerixRadii.pill),
+            shape = CircleShape,
             color = Color.Transparent,
-            contentColor = Color.White,
-            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+            contentColor = Color.White
         ) {
             Column(
                 modifier = Modifier
@@ -115,42 +117,55 @@ fun MiraiNavigationRail(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
-                // Aerix 'M' Logo Button
-                Box(
+                // Aerix monogram and wordmark establish a persistent brand anchor.
+                Column(
                     modifier = Modifier
-                        .size(40.dp)
                         .clip(RoundedCornerShape(AerixRadii.panelSmall))
-                        .background(activeAccent.copy(alpha = 0.18f))
-                        .liquidGlass(
-                            shape = RoundedCornerShape(AerixRadii.panelSmall),
-                            tint = activeAccent,
-                            strength = 1f,
-                            elevation = AerixMetrics.glassSelectedElevation
-                        )
-                        .border(
-                            AerixSpacing.hairline,
-                            AerixSurface.borderHighlight.copy(alpha = 0.72f),
-                            RoundedCornerShape(AerixRadii.panelSmall)
-                        )
                         .clickable(role = Role.Button) { onNavigate(LauncherSection.HOME) }
-                        .semantics { contentDescription = "Aerix Home" },
-                    contentAlignment = Alignment.Center
+                        .semantics { contentDescription = "Aerix Home" }
+                        .padding(vertical = AerixSpacing.xs),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_mirai_mark),
-                        contentDescription = "Aerix",
-                        tint = activeAccent,
-                        modifier = Modifier.size(26.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(RoundedCornerShape(AerixRadii.control))
+                            .background(AerixSurface.accent.copy(alpha = 0.12f))
+                            .liquidGlass(
+                                shape = RoundedCornerShape(AerixRadii.control),
+                                tint = AerixSurface.glassBlue,
+                                strength = 0.82f,
+                                elevation = AerixMetrics.glassSubtleElevation
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_mirai_mark),
+                            contentDescription = "Aerix",
+                            tint = activeAccent,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    if (expandedRail) {
+                        androidx.compose.material3.Text(
+                            text = "AERIX",
+                            fontSize = 8.sp,
+                            letterSpacing = 1.1.sp,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
+                            color = AerixSurface.textSecondary
+                        )
+                    }
                 }
 
-                Spacer(Modifier.height(AerixSpacing.xxs))
+                Spacer(Modifier.height(AerixSpacing.xs))
 
                 RailIconItem(
                     iconRes = R.drawable.ic_home_filled,
                     label = "Home",
                     selected = selectedSection == LauncherSection.HOME,
                     accentColor = activeAccent,
+                    expanded = expandedRail,
                     onClick = { onNavigate(LauncherSection.HOME) }
                 )
 
@@ -159,7 +174,7 @@ fun MiraiNavigationRail(
                     label = "New Instance",
                     selected = false,
                     accentColor = activeAccent,
-                    emphasized = true,
+                    expanded = expandedRail,
                     onClick = onCreateInstance
                 )
 
@@ -168,6 +183,7 @@ fun MiraiNavigationRail(
                     label = "Library",
                     selected = selectedSection == LauncherSection.LIBRARY,
                     accentColor = activeAccent,
+                    expanded = expandedRail,
                     onClick = { onNavigate(LauncherSection.LIBRARY) }
                 )
 
@@ -176,6 +192,7 @@ fun MiraiNavigationRail(
                     label = "Discover",
                     selected = selectedSection == LauncherSection.DISCOVER,
                     accentColor = activeAccent,
+                    expanded = expandedRail,
                     onClick = { onNavigate(LauncherSection.DISCOVER) }
                 )
 
@@ -184,6 +201,7 @@ fun MiraiNavigationRail(
                     label = "Multiplayer",
                     selected = selectedSection == LauncherSection.MULTIPLAYER,
                     accentColor = activeAccent,
+                    expanded = expandedRail,
                     onClick = { onNavigate(LauncherSection.MULTIPLAYER) }
                 )
 
@@ -192,6 +210,7 @@ fun MiraiNavigationRail(
                     label = "Wallpapers",
                     selected = selectedSection == LauncherSection.WALLPAPERS,
                     accentColor = activeAccent,
+                    expanded = expandedRail,
                     onClick = { onNavigate(LauncherSection.WALLPAPERS) }
                 )
 
@@ -207,12 +226,14 @@ fun MiraiNavigationRail(
                     label = "Settings",
                     selected = selectedSection == LauncherSection.SETTINGS,
                     accentColor = activeAccent,
+                    expanded = expandedRail,
                     onClick = { onNavigate(LauncherSection.SETTINGS) }
                 )
 
                 AccountAvatarRailButton(
                     account = account,
                     selected = selectedSection == LauncherSection.ACCOUNTS,
+                    expanded = expandedRail,
                     onClick = onAccountClick
                 )
             }
@@ -226,53 +247,40 @@ private fun RailIconItem(
     label: String,
     selected: Boolean,
     accentColor: Color,
-    emphasized: Boolean = false,
+    expanded: Boolean,
     onClick: () -> Unit
 ) {
-    val active = selected || emphasized
     val containerColor by animateColorAsState(
-        targetValue = when {
-            emphasized -> accentColor.copy(alpha = 0.78f)
-            selected -> accentColor.copy(alpha = 0.18f)
-            else -> Color.Transparent
-        },
-        animationSpec = tween(150),
+        targetValue = if (selected) accentColor.copy(alpha = 0.18f) else Color.Transparent,
+        animationSpec = tween(140),
         label = "railContainerColor"
     )
     val iconTint by animateColorAsState(
-        targetValue = when {
-            emphasized -> AerixSurface.onAccent
-            selected -> accentColor
-            else -> AerixSurface.textSecondary
-        },
-        animationSpec = tween(150),
+        targetValue = if (selected) accentColor else AerixSurface.textSecondary,
+        animationSpec = tween(140),
         label = "railIconTint"
     )
-    val shape = RoundedCornerShape(AerixRadii.panelSmall)
 
     Box(
         modifier = Modifier
-            .size(width = 46.dp, height = 42.dp)
-            .clip(shape)
+            .size(width = if (expanded) 64.dp else 44.dp, height = if (expanded) 54.dp else 42.dp)
+            .clip(RoundedCornerShape(AerixRadii.panelSmall))
             .background(containerColor)
             .then(
-                if (active) {
+                if (selected) {
                     Modifier.liquidGlass(
-                        shape = shape,
+                        shape = RoundedCornerShape(AerixRadii.panelSmall),
                         tint = accentColor,
-                        strength = if (emphasized) 1f else 0.94f,
+                        strength = 0.9f,
                         elevation = AerixMetrics.glassSubtleElevation
                     )
                 } else Modifier
             )
             .then(
-                if (selected || emphasized) {
+                if (selected) {
                     Modifier.border(
-                        BorderStroke(
-                            width = if (selected) 1.5.dp else AerixSpacing.hairline,
-                            color = if (emphasized) Color.White.copy(alpha = 0.68f) else accentColor.copy(alpha = 0.72f)
-                        ),
-                        shape
+                        BorderStroke(1.5.dp, accentColor.copy(alpha = 0.75f)),
+                        RoundedCornerShape(AerixRadii.panelSmall)
                     )
                 } else Modifier
             )
@@ -280,12 +288,34 @@ private fun RailIconItem(
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            painter = painterResource(iconRes),
-            contentDescription = label,
-            tint = iconTint,
-            modifier = Modifier.size(21.dp)
-        )
+        if (expanded) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Icon(
+                    painter = painterResource(iconRes),
+                    contentDescription = label,
+                    tint = iconTint,
+                    modifier = Modifier.size(19.dp)
+                )
+                androidx.compose.material3.Text(
+                    text = label,
+                    color = if (selected) iconTint else AerixSurface.textSecondary,
+                    fontSize = 8.sp,
+                    lineHeight = 9.sp,
+                    fontWeight = if (selected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Medium,
+                    maxLines = 1
+                )
+            }
+        } else {
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = label,
+                tint = iconTint,
+                modifier = Modifier.size(21.dp)
+            )
+        }
     }
 }
 
@@ -293,6 +323,7 @@ private fun RailIconItem(
 private fun AccountAvatarRailButton(
     account: Account?,
     selected: Boolean,
+    expanded: Boolean,
     onClick: () -> Unit
 ) {
     val activeAccent = MiraiThemeManager.currentAccent()
@@ -302,31 +333,48 @@ private fun AccountAvatarRailButton(
         label = "accountAvatarRing"
     )
 
-    Box(
+    Column(
         modifier = Modifier
-            .size(36.dp)
-            .clip(CircleShape)
-            .background(AerixSurface.panel)
-            .liquidGlass(
-                shape = CircleShape,
-                tint = activeAccent,
-                strength = if (selected) 0.82f else 0.34f,
-                elevation = AerixMetrics.glassSelectedElevation
-            )
-            .border(
-                width = if (selected) 2.dp else AerixSpacing.hairline,
-                color = ringColor,
-                shape = CircleShape
-            )
+            .clip(RoundedCornerShape(AerixRadii.panelSmall))
             .clickable(role = Role.Button, onClick = onClick)
-            .semantics { contentDescription = account?.username ?: "Accounts" },
-        contentAlignment = Alignment.Center
+            .semantics { contentDescription = account?.username ?: "Accounts" }
+            .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xs),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
-        PlayerFace(
+        Box(
             modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape),
-            account = account
-        )
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(AerixSurface.panel)
+                .liquidGlass(
+                    shape = CircleShape,
+                    tint = activeAccent,
+                    strength = if (selected) 0.82f else 0.34f,
+                    elevation = AerixMetrics.glassSelectedElevation
+                )
+                .border(
+                    width = if (selected) 2.dp else AerixSpacing.hairline,
+                    color = ringColor,
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            PlayerFace(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape),
+                account = account
+            )
+        }
+        if (expanded) {
+            androidx.compose.material3.Text(
+                text = "Profile",
+                color = if (selected) activeAccent else AerixSurface.textSecondary,
+                fontSize = 8.sp,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                maxLines = 1
+            )
+        }
     }
 }

@@ -24,7 +24,7 @@ import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.theme.AerixSurface
 
 /**
- * Adds the layered sheen and spectral rim that make a translucent surface read as
+ * Adds the layered sheen and refractive rim that make a translucent surface read as
  * glass rather than as a flat semi-transparent card.
  *
  * Apply this to a transparent [androidx.compose.material3.Surface], or to content
@@ -54,10 +54,10 @@ fun Modifier.liquidGlass(
             val prismFill = Brush.linearGradient(
                 colors = listOf(
                     Color.White.copy(alpha = 0.10f * intensity),
-                    tint.copy(alpha = 0.11f * intensity),
+                    tint.copy(alpha = 0.10f * intensity),
                     AerixSurface.glassBlue.copy(alpha = 0.085f * intensity),
-                    AerixSurface.glassViolet.copy(alpha = 0.065f * intensity),
-                    AerixSurface.glassRose.copy(alpha = 0.035f * intensity),
+                    AerixSurface.glassViolet.copy(alpha = 0.07f * intensity),
+                    AerixSurface.glassRose.copy(alpha = 0.045f * intensity),
                     Color.Transparent
                 ),
                 start = Offset.Zero,
@@ -65,40 +65,33 @@ fun Modifier.liquidGlass(
             )
             val topReflection = Brush.verticalGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.27f * intensity),
-                    AerixSurface.glassBlue.copy(alpha = 0.10f * intensity),
+                    Color.White.copy(alpha = 0.25f * intensity),
+                    Color.White.copy(alpha = 0.09f * intensity),
+                    AerixSurface.glassBlue.copy(alpha = 0.035f * intensity),
                     Color.Transparent,
-                    AerixSurface.glassRose.copy(alpha = 0.025f * intensity)
+                    AerixSurface.glassViolet.copy(alpha = 0.025f * intensity)
                 ),
                 startY = 0f,
                 endY = height
             )
             val upperLens = Brush.radialGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.21f * intensity),
-                    AerixSurface.glassBlue.copy(alpha = 0.075f * intensity),
+                    Color.White.copy(alpha = 0.20f * intensity),
+                    AerixSurface.glassBlue.copy(alpha = 0.09f * intensity),
+                    AerixSurface.glassViolet.copy(alpha = 0.035f * intensity),
                     Color.Transparent
                 ),
-                center = Offset(width * 0.19f, height * 0.025f),
-                radius = longEdge * 0.82f
-            )
-            val lowerPrism = Brush.radialGradient(
-                colors = listOf(
-                    AerixSurface.glassViolet.copy(alpha = 0.09f * intensity),
-                    AerixSurface.glassBlue.copy(alpha = 0.045f * intensity),
-                    Color.Transparent
-                ),
-                center = Offset(width * 0.92f, height * 0.92f),
-                radius = longEdge * 0.72f
+                center = Offset(width * 0.2f, height * 0.035f),
+                radius = longEdge * 0.84f
             )
             val rim = Brush.linearGradient(
                 colors = listOf(
                     Color.White.copy(alpha = 0.68f * intensity),
                     Color.White.copy(alpha = 0.20f * intensity),
-                    AerixSurface.glassBlue.copy(alpha = 0.34f * intensity),
+                    AerixSurface.glassBlue.copy(alpha = 0.32f * intensity),
                     AerixSurface.glassViolet.copy(alpha = 0.24f * intensity),
-                    AerixSurface.glassRose.copy(alpha = 0.17f * intensity),
-                    Color.White.copy(alpha = 0.48f * intensity)
+                    AerixSurface.glassRose.copy(alpha = 0.16f * intensity),
+                    Color.White.copy(alpha = 0.46f * intensity)
                 ),
                 start = Offset.Zero,
                 end = Offset(width, height)
@@ -111,7 +104,6 @@ fun Modifier.liquidGlass(
                 drawRect(brush = prismFill)
                 drawRect(brush = upperLens, blendMode = BlendMode.Screen)
                 drawRect(brush = topReflection, blendMode = BlendMode.Softlight)
-                drawRect(brush = lowerPrism, blendMode = BlendMode.Screen)
                 drawContent()
 
                 if (rimWidth > 0f) {

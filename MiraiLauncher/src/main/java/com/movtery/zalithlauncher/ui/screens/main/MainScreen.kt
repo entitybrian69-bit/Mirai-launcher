@@ -18,6 +18,7 @@
 
 package com.movtery.zalithlauncher.ui.screens.main
 
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -26,13 +27,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -177,116 +178,153 @@ fun MainScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .liquidAuroraField()
+                .drawWithCache {
+                    val width = size.width.coerceAtLeast(1f)
+                    val height = size.height.coerceAtLeast(1f)
+                    val aurora = Brush.linearGradient(
+                        colors = listOf(
+                            AerixSurface.auroraCyan.copy(alpha = 0.10f),
+                            Color.Transparent,
+                            AerixSurface.auroraViolet.copy(alpha = 0.08f),
+                            Color.Transparent
+                        ),
+                        start = Offset.Zero,
+                        end = Offset(width, height)
+                    )
+                    val cyanLens = Brush.radialGradient(
+                        colors = listOf(
+                            AerixSurface.auroraCyan.copy(alpha = 0.15f),
+                            AerixSurface.auroraCyan.copy(alpha = 0.06f),
+                            Color.Transparent
+                        ),
+                        center = Offset(width * 0.04f, height * 0.06f),
+                        radius = maxOf(width, height) * 0.74f
+                    )
+                    val violetLens = Brush.radialGradient(
+                        colors = listOf(
+                            AerixSurface.auroraViolet.copy(alpha = 0.12f),
+                            AerixSurface.auroraViolet.copy(alpha = 0.04f),
+                            Color.Transparent
+                        ),
+                        center = Offset(width * 0.96f, height * 0.92f),
+                        radius = maxOf(width, height) * 0.7f
+                    )
+                    onDrawBehind {
+                        drawRect(brush = aurora)
+                        drawRect(brush = cyanLens)
+                        drawRect(brush = violetLens)
+                    }
+                }
         ) {
-            Row(modifier = Modifier.fillMaxSize()) {
-                MiraiNavigationRail(
-                    modifier = Modifier.fillMaxHeight(),
-                    selectedSection = mainScreenKey.toLauncherSection(),
-                    onNavigate = { section ->
-                        when (section) {
-                            LauncherSection.HOME -> screenBackStackModel.mainScreen.clearWith(NormalNavKey.LauncherMain)
-                            LauncherSection.DISCOVER -> {
-                                screenBackStackModel.downloadScreen.clearWith(screenBackStackModel.downloadModScreen)
-                                screenBackStackModel.mainScreen.clearWith(screenBackStackModel.downloadScreen)
+        Row(modifier = Modifier.fillMaxSize()) {
+            MiraiNavigationRail(
+                modifier = Modifier.fillMaxHeight(),
+                selectedSection = mainScreenKey.toLauncherSection(),
+                onNavigate = { section ->
+                    when (section) {
+                        LauncherSection.HOME -> screenBackStackModel.mainScreen.clearWith(NormalNavKey.LauncherMain)
+                        LauncherSection.DISCOVER -> {
+                            screenBackStackModel.downloadScreen.clearWith(screenBackStackModel.downloadModScreen)
+                            screenBackStackModel.mainScreen.clearWith(screenBackStackModel.downloadScreen)
+                        }
+                        LauncherSection.LIBRARY -> screenBackStackModel.mainScreen.clearWith(NormalNavKey.VersionsManager)
+                        LauncherSection.WALLPAPERS -> {
+                            screenBackStackModel.settingsScreen.clearWith(NormalNavKey.Settings.Wallpapers)
+                            screenBackStackModel.mainScreen.clearWith(screenBackStackModel.settingsScreen)
+                        }
+                        LauncherSection.MULTIPLAYER -> screenBackStackModel.mainScreen.clearWith(NormalNavKey.Multiplayer)
+                        LauncherSection.SETTINGS -> {
+                            if (screenBackStackModel.settingsScreen.currentKey === NormalNavKey.Settings.Wallpapers) {
+                                screenBackStackModel.settingsScreen.clearWith(NormalNavKey.Settings.Renderer)
                             }
-                            LauncherSection.LIBRARY -> screenBackStackModel.mainScreen.clearWith(NormalNavKey.VersionsManager)
-                            LauncherSection.WALLPAPERS -> {
-                                screenBackStackModel.settingsScreen.clearWith(NormalNavKey.Settings.Wallpapers)
-                                screenBackStackModel.mainScreen.clearWith(screenBackStackModel.settingsScreen)
-                            }
-                            LauncherSection.MULTIPLAYER -> screenBackStackModel.mainScreen.clearWith(NormalNavKey.Multiplayer)
-                            LauncherSection.SETTINGS -> {
-                                if (screenBackStackModel.settingsScreen.currentKey === NormalNavKey.Settings.Wallpapers) {
-                                    screenBackStackModel.settingsScreen.clearWith(NormalNavKey.Settings.Renderer)
-                                }
-                                screenBackStackModel.mainScreen.clearWith(screenBackStackModel.settingsScreen)
-                            }
-                            LauncherSection.ACCOUNTS -> screenBackStackModel.mainScreen.clearWith(
-                                NormalNavKey.AccountManager(FirstLoginMenu.NONE)
-                            )
+                            screenBackStackModel.mainScreen.clearWith(screenBackStackModel.settingsScreen)
+                        }
+                        LauncherSection.ACCOUNTS -> screenBackStackModel.mainScreen.clearWith(
+                            NormalNavKey.AccountManager(FirstLoginMenu.NONE)
+                        )
+                    }
+                },
+                onCreateInstance = {
+                    screenBackStackModel.downloadScreen.clearWith(screenBackStackModel.downloadGameScreen)
+                    screenBackStackModel.mainScreen.clearWith(screenBackStackModel.downloadScreen)
+                },
+                onAccountClick = {
+                    screenBackStackModel.mainScreen.clearWith(
+                        NormalNavKey.AccountManager(FirstLoginMenu.NONE)
+                    )
+                }
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            ) {
+                MainShellHeader(
+                    mainScreenKey = mainScreenKey,
+                    inLauncherScreen = inLauncherScreen,
+                    activeTasksCount = tasks.size,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.sm),
+                    onBack = { onBack(screenBackStackModel.mainScreen.backStack) },
+                    onHome = toMainScreen,
+                    onTasks = {
+                        if (tasks.isNotEmpty()) changeTasksExpandedState() else {
+                            screenBackStackModel.downloadScreen.clearWith(screenBackStackModel.downloadModScreen)
+                            screenBackStackModel.mainScreen.clearWith(screenBackStackModel.downloadScreen)
                         }
                     },
-                    onCreateInstance = {
-                        screenBackStackModel.downloadScreen.clearWith(screenBackStackModel.downloadGameScreen)
+                    onDiscover = {
+                        screenBackStackModel.downloadScreen.clearWith(screenBackStackModel.downloadModScreen)
                         screenBackStackModel.mainScreen.clearWith(screenBackStackModel.downloadScreen)
                     },
                     onAccountClick = {
                         screenBackStackModel.mainScreen.clearWith(
                             NormalNavKey.AccountManager(FirstLoginMenu.NONE)
                         )
+                    },
+                    onOpenFileManager = {
+                        screenBackStackModel.mainScreen.backStack.navigateToFileSelector(
+                            startPath = PathManager.DIR_FILES_EXTERNAL.absolutePath,
+                            selectFile = false,
+                            saveKey = mainScreenKey ?: NormalNavKey.LauncherMain
+                        ) {}
                     }
                 )
 
-                Column(
+                Box(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .weight(1f)
-                        .fillMaxHeight()
                 ) {
-                    MainShellHeader(
-                        mainScreenKey = mainScreenKey,
-                        inLauncherScreen = inLauncherScreen,
-                        activeTasksCount = tasks.size,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.sm),
-                        onBack = { onBack(screenBackStackModel.mainScreen.backStack) },
-                        onTasks = {
-                            if (tasks.isNotEmpty()) changeTasksExpandedState() else {
-                                screenBackStackModel.downloadScreen.clearWith(screenBackStackModel.downloadModScreen)
-                                screenBackStackModel.mainScreen.clearWith(screenBackStackModel.downloadScreen)
-                            }
-                        },
-                        onOpenFileManager = {
-                            screenBackStackModel.mainScreen.backStack.navigateToFileSelector(
-                                startPath = PathManager.DIR_FILES_EXTERNAL.absolutePath,
-                                selectFile = false,
-                                saveKey = mainScreenKey ?: NormalNavKey.LauncherMain
-                            ) {}
-                        },
-                        onExploreContent = {
-                            screenBackStackModel.downloadScreen.clearWith(screenBackStackModel.downloadModScreen)
-                            screenBackStackModel.mainScreen.clearWith(screenBackStackModel.downloadScreen)
-                        },
-                        onAccountClick = {
-                            screenBackStackModel.mainScreen.clearWith(
-                                NormalNavKey.AccountManager(FirstLoginMenu.NONE)
-                            )
-                        }
+                    NavigationUI(
+                        modifier = Modifier.fillMaxSize(),
+                        screenBackStackModel = screenBackStackModel,
+                        toMainScreen = toMainScreen,
+                        eventViewModel = eventViewModel,
+                        modpackImportViewModel = modpackImportViewModel,
+                        submitError = submitError
                     )
 
-                    Box(
+                    TaskMenu(
+                        tasks = tasks,
+                        isExpanded = isTaskMenuExpanded,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
+                            .fillMaxHeight()
+                            .fillMaxWidth(0.36f)
+                            .align(Alignment.CenterEnd)
+                            .padding(all = AerixSpacing.sm)
                     ) {
-                        NavigationUI(
-                            modifier = Modifier.fillMaxSize(),
-                            screenBackStackModel = screenBackStackModel,
-                            toMainScreen = toMainScreen,
-                            eventViewModel = eventViewModel,
-                            modpackImportViewModel = modpackImportViewModel,
-                            submitError = submitError
-                        )
-
-                        TaskMenu(
-                            tasks = tasks,
-                            isExpanded = isTaskMenuExpanded,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth(0.36f)
-                                .align(Alignment.CenterEnd)
-                                .padding(all = AerixSpacing.sm)
-                        ) {
-                            changeTasksExpandedState()
-                        }
+                        changeTasksExpandedState()
                     }
                 }
             }
         }
+        }
     }
-
 }
+
 private fun TitledNavKey?.toLauncherSection(): LauncherSection? = when (this) {
     null, NormalNavKey.LauncherMain -> LauncherSection.HOME
     is NestedNavKey.Download,
@@ -318,10 +356,11 @@ private fun <E : TitledNavKey> MainShellHeader(
     activeTasksCount: Int,
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
+    onHome: () -> Unit,
     onTasks: () -> Unit,
-    onOpenFileManager: () -> Unit,
-    onExploreContent: () -> Unit,
-    onAccountClick: () -> Unit
+    onDiscover: () -> Unit,
+    onAccountClick: () -> Unit,
+    onOpenFileManager: () -> Unit
 ) {
     val festivals = LocalFestivals.current
     val parentTitle = mainScreenKey?.title
@@ -338,108 +377,163 @@ private fun <E : TitledNavKey> MainShellHeader(
     Surface(
         modifier = modifier.liquidGlass(
             shape = headerShape,
-            tint = AerixSurface.glassTint,
-            strength = 1f,
+            tint = AerixSurface.glassBlue,
+            strength = 0.82f,
             elevation = AerixMetrics.glassFloatingElevation
         ),
         shape = headerShape,
         color = Color.Transparent,
         contentColor = AerixSurface.textPrimary,
-        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+        border = BorderStroke(1.dp, AerixSurface.borderSoft)
     ) {
         BoxWithConstraints {
-            val compactActions = maxWidth < 620.dp
+            val compactActions = maxWidth < 610.dp
+            val showAccountAction = maxWidth >= 460.dp
+            val showSearch = maxWidth >= 650.dp
+            val routeWidth = when {
+                maxWidth < 430.dp -> 76.dp
+                compactActions -> 126.dp
+                else -> 210.dp
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(AerixMetrics.shellHeaderHeight)
-                    .padding(horizontal = AerixSpacing.smPlus),
+                    .padding(horizontal = AerixSpacing.md),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 if (!inLauncherScreen) {
-                    IconButton(onClick = onBack, modifier = Modifier.size(36.dp)) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.generic_back),
-                            tint = AerixSurface.textPrimary
-                        )
-                    }
+                    HeaderIconButton(
+                        iconRes = R.drawable.ic_arrow_back,
+                        description = stringResource(R.string.generic_back),
+                        onClick = onBack
+                    )
                 }
-
                 Box(
                     modifier = Modifier
-                        .size(34.dp)
+                        .size(36.dp)
                         .clip(RoundedCornerShape(AerixRadii.control))
-                        .background(AerixSurface.accentContainer.copy(alpha = 0.50f))
+                        .background(AerixSurface.accent.copy(alpha = 0.16f))
                         .liquidGlass(
                             shape = RoundedCornerShape(AerixRadii.control),
-                            tint = AerixSurface.accent,
-                            strength = 0.92f,
+                            tint = AerixSurface.glassBlue,
+                            strength = 0.8f,
                             elevation = AerixMetrics.glassSubtleElevation
-                        )
-                        .border(
-                            AerixSpacing.hairline,
-                            AerixSurface.borderHighlight.copy(alpha = 0.62f),
-                            RoundedCornerShape(AerixRadii.control)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_mirai_mark),
-                        contentDescription = "Aerix Launcher",
+                        contentDescription = "Aerix",
                         tint = AerixSurface.accent,
                         modifier = Modifier.size(22.dp)
                     )
                 }
-
                 Column(
-                    modifier = Modifier.weight(if (compactActions) 1f else 0.85f),
+                    modifier = Modifier.widthIn(max = routeWidth),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = "AERIX",
-                        style = MaterialTheme.typography.labelSmall,
+                        color = AerixSurface.accent,
+                        fontSize = 9.sp,
+                        letterSpacing = 1.8.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = 1.6.sp,
-                        color = AerixSurface.accent
+                        maxLines = 1
                     )
                     Crossfade(
                         targetState = routeTitle.takeUnless { showFestivalTitle },
                         label = "aerixRouteTitle"
                     ) { title ->
                         if (showFestivalTitle) {
-                            FestivalTitleText(
-                                festivals = festivals,
-                                style = MaterialTheme.typography.labelLarge.copy(
-                                    color = AerixSurface.textPrimary,
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                maxLines = 1
+                            AerixSectionHeader(
+                                titleContent = { style ->
+                                    FestivalTitleText(festivals = festivals, style = style, maxLines = 1)
+                                },
+                                maxLines = 1,
+                                titleStyle = MaterialTheme.typography.titleSmall.copy(
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
                             )
                         } else {
                             AerixSectionHeader(
                                 title = title,
                                 maxLines = 1,
-                                titleStyle = MaterialTheme.typography.labelLarge.copy(
-                                    color = AerixSurface.textPrimary,
-                                    fontWeight = FontWeight.Bold
+                                titleStyle = MaterialTheme.typography.titleSmall.copy(
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = AerixSurface.textPrimary
                                 )
                             )
                         }
                     }
                 }
 
-                if (!compactActions) {
-                    HeaderSearchPill(
-                        modifier = Modifier.weight(1.1f).widthIn(min = 190.dp, max = 310.dp),
-                        onClick = onExploreContent
+                if (!inLauncherScreen && !compactActions) {
+                    HeaderIconButton(
+                        iconRes = R.drawable.ic_home_filled,
+                        description = stringResource(R.string.generic_main_menu),
+                        tint = AerixSurface.accent,
+                        onClick = onHome
                     )
                 }
+
+                if (showSearch) {
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .widthIn(min = 150.dp, max = 340.dp)
+                            .height(AerixMetrics.shellActionHeight)
+                            .liquidGlass(
+                                shape = CircleShape,
+                                tint = AerixSurface.glassTint,
+                                strength = 0.48f,
+                                elevation = AerixMetrics.glassSubtleElevation
+                            ),
+                        shape = CircleShape,
+                        color = Color.Transparent,
+                        contentColor = AerixSurface.textSecondary,
+                        border = BorderStroke(1.dp, AerixSurface.borderSoft),
+                        onClick = onDiscover
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = AerixSpacing.md),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_search),
+                                contentDescription = null,
+                                tint = AerixSurface.glassBlue,
+                                modifier = Modifier.size(17.dp)
+                            )
+                            Text(
+                                text = "Explore mods, versions, worlds",
+                                color = AerixSurface.textSecondary,
+                                fontSize = 11.sp,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = "⌕",
+                                color = AerixSurface.textMuted,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+
                 HeaderActionPill(
-                    iconRes = R.drawable.ic_download_2_filled,
-                    label = if (activeTasksCount > 0) "$activeTasksCount Tasks" else "Downloads",
-                    modifier = Modifier.widthIn(min = 42.dp),
+                    iconRes = R.drawable.ic_download,
+                    label = if (activeTasksCount > 0) "$activeTasksCount Tasks" else "Tasks",
                     compact = compactActions,
                     selected = activeTasksCount > 0,
                     onClick = onTasks
@@ -447,14 +541,15 @@ private fun <E : TitledNavKey> MainShellHeader(
                 HeaderActionPill(
                     iconRes = R.drawable.ic_folder_filled,
                     label = "Files",
-                    modifier = Modifier.widthIn(min = 42.dp),
                     compact = compactActions,
                     onClick = onOpenFileManager
                 )
-                if (!compactActions) {
+                if (showAccountAction) {
                     HeaderActionPill(
                         iconRes = R.drawable.ic_person_outlined,
                         label = "Account",
+                        compact = true,
+                        selected = false,
                         onClick = onAccountClick
                     )
                 }
@@ -464,41 +559,33 @@ private fun <E : TitledNavKey> MainShellHeader(
 }
 
 @Composable
-private fun HeaderSearchPill(
-    modifier: Modifier = Modifier,
+private fun HeaderIconButton(
+    iconRes: Int,
+    description: String,
+    tint: Color = AerixSurface.textPrimary,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AerixRadii.pill)
     Surface(
-        modifier = modifier
-            .height(38.dp)
+        modifier = Modifier
+            .size(38.dp)
             .liquidGlass(
-                shape = shape,
-                tint = AerixSurface.glassBlue,
-                strength = 0.62f,
+                shape = CircleShape,
+                tint = AerixSurface.glassTint,
+                strength = 0.42f,
                 elevation = AerixMetrics.glassSubtleElevation
             ),
-        shape = shape,
-        color = Color.White.copy(alpha = 0.045f),
-        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+        shape = CircleShape,
+        color = Color.Transparent,
+        contentColor = tint,
+        border = BorderStroke(1.dp, AerixSurface.borderSoft),
         onClick = onClick
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = AerixSpacing.md),
-            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Box(contentAlignment = Alignment.Center) {
             Icon(
-                painter = painterResource(R.drawable.ic_search),
-                contentDescription = null,
-                tint = AerixSurface.glassBlue,
-                modifier = Modifier.size(17.dp)
-            )
-            Text(
-                text = "Search mods, versions, worlds",
-                style = MaterialTheme.typography.labelMedium,
-                color = AerixSurface.textSecondary,
-                maxLines = 1
+                painter = painterResource(iconRes),
+                contentDescription = description,
+                tint = tint,
+                modifier = Modifier.size(18.dp)
             )
         }
     }
@@ -513,14 +600,14 @@ private fun HeaderActionPill(
     selected: Boolean = false,
     onClick: () -> Unit
 ) {
-    val actionShape = RoundedCornerShape(AerixRadii.pill)
+    val actionShape = RoundedCornerShape(AerixRadii.control)
     Surface(
         modifier = modifier
             .height(AerixMetrics.shellActionHeight)
             .liquidGlass(
                 shape = actionShape,
                 tint = if (selected) AerixSurface.accent else AerixSurface.glassTint,
-                strength = if (selected) 0.94f else 0.66f,
+                strength = if (selected) 0.92f else 0.56f,
                 elevation = if (selected) AerixMetrics.glassSelectedElevation else AerixMetrics.glassSubtleElevation
             ),
         shape = actionShape,
@@ -551,37 +638,6 @@ private fun HeaderActionPill(
                 )
             }
         }
-    }
-}
-
-private fun Modifier.liquidAuroraField(): Modifier = drawWithCache {
-    val width = size.width.coerceAtLeast(1f)
-    val height = size.height.coerceAtLeast(1f)
-    val radius = maxOf(width, height) * 0.68f
-    val wash = Brush.linearGradient(
-        colors = listOf(
-            Color(0x153DEBFF),
-            Color.Transparent,
-            Color(0x1521D9C3),
-            Color(0x16B6A0FF)
-        ),
-        start = Offset.Zero,
-        end = Offset(width, height)
-    )
-    val coolGlow = Brush.radialGradient(
-        colors = listOf(AerixSurface.glassBlue.copy(alpha = 0.16f), Color.Transparent),
-        center = Offset(width * 0.12f, height * 0.10f),
-        radius = radius
-    )
-    val violetGlow = Brush.radialGradient(
-        colors = listOf(AerixSurface.glassViolet.copy(alpha = 0.12f), Color.Transparent),
-        center = Offset(width * 0.96f, height * 0.90f),
-        radius = radius * 0.84f
-    )
-    onDrawBehind {
-        drawRect(brush = wash)
-        drawCircle(brush = coolGlow, radius = radius, center = Offset(width * 0.12f, height * 0.10f))
-        drawCircle(brush = violetGlow, radius = radius * 0.84f, center = Offset(width * 0.96f, height * 0.90f))
     }
 }
 

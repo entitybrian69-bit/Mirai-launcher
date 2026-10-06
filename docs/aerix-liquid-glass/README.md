@@ -1,32 +1,24 @@
-# Aerix Liquid Glass — launcher refresh
+# Aerix Liquid Glass — full launcher concepts
 
-The redesign establishes an aurora-lit, liquid-glass identity across the persistent launcher shell, home dashboard, instance library, discovery, multiplayer, settings, account/skin and instance-detail surfaces. Existing routes and actions remain wired to their current screens.
+A complete launcher identity and layout study: ten distinct 1600 × 900 screens, rendered individually with repository Minecraft wallpapers, translucent glass panes, refractive rims, aurora light, and legible UI copy. These are concept screens, not stitched variants.
 
-## Ten mock screens
+| # | Screen | Mock image |
+|---:|---|---|
+| 01 | Home launch desk | [`01-home.png`](mockups/01-home.png) |
+| 02 | Worlds and instances | [`02-library.png`](mockups/02-library.png) |
+| 03 | New-instance creation | [`03-create-instance.png`](mockups/03-create-instance.png) |
+| 04 | Discover catalogue | [`04-discover.png`](mockups/04-discover.png) |
+| 05 | Modpack details and install | [`05-mod-details.png`](mockups/05-mod-details.png) |
+| 06 | Multiplayer / server list | [`06-multiplayer.png`](mockups/06-multiplayer.png) |
+| 07 | Settings / appearance | [`07-settings.png`](mockups/07-settings.png) |
+| 08 | Wallpaper and atmosphere studio | [`08-wallpapers.png`](mockups/08-wallpapers.png) |
+| 09 | Account and skin atelier | [`09-account-skin.png`](mockups/09-account-skin.png) |
+| 10 | Instance control center | [`10-instance-overview.png`](mockups/10-instance-overview.png) |
 
-These 1600 × 900 PNGs are concept references for the new layout, not screenshots from a running emulator:
-
-1. `mockups/01-home.png` — launch hero, recent instances, selected-world controls and quick tools.
-2. `mockups/02-library.png` — searchable, filterable adaptive instance grid.
-3. `mockups/03-create-instance.png` — version, loader and profile creation flow.
-4. `mockups/04-discover.png` — curated discovery and category browsing.
-5. `mockups/05-mod-details.png` — project overview, compatibility and install actions.
-6. `mockups/06-multiplayer.png` — quick connect, favorites and server health.
-7. `mockups/07-settings.png` — settings categories and glass/background controls.
-8. `mockups/08-wallpapers.png` — wallpaper gallery and material preview.
-9. `mockups/09-account-skin.png` — linked account and player-skin studio.
-10. `mockups/10-instance-overview.png` — launch controls, content, runtime and health.
-
-## Regenerate
-
-From the repository root, run:
+Regenerate the set from the repository root:
 
 ```sh
 python3 docs/aerix-liquid-glass/generate_mockups.py
 ```
 
-The script requires ImageMagick (`convert`) and uses the wallpapers and profile art already shipped in `MiraiLauncher`. It renders the images deterministically with crisp UI text; no image-generation service or Python imaging package is needed.
-
-## Material and performance notes
-
-Glass is built from cached Compose gradients, spectral highlights and fine edge reflections. The wallpaper stays visible with `backgroundBlur = 0`; the refresh adds no always-running animation or per-frame full-screen blur. Elevations were reduced for frequently repeated surfaces, while the existing background-capture/blur cache and saved blur preference remain intact.
+The implementation keeps the existing navigation destinations and launcher flows, then reworks the shell, home dashboard, glass material, palette, and shared component proportions around the new identity.

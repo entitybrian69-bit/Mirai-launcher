@@ -1,681 +1,605 @@
 #!/usr/bin/env python3
-"""Render ten crisp, repeatable Aerix Liquid Glass launcher mockups.
+"""Render ten crisp Aerix launcher concept screens with ImageMagick.
 
-Requires ImageMagick 6 or 7 (`convert`). The source wallpapers are the licensed
-assets already shipped by the launcher. Images are design references, not claimed
-as device captures of the running app.
+The mockups are intentionally composed from repository wallpapers, simple vector
+shapes, and system fonts so UI copy stays legible and the output is reproducible.
 """
 from __future__ import annotations
 
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WALLPAPERS = ROOT / "MiraiLauncher/src/main/assets/wallpapers"
-DRAWABLES = ROOT / "MiraiLauncher/src/main/res/drawable-nodpi"
-OUTPUT = Path(__file__).resolve().parent / "mockups"
-WIDTH, HEIGHT = 1600, 900
-
-WHITE = "#F3F8FC"
-MUTED = "#C0D0DD"
-QUIET = "#92A9BA"
-CYAN = "#9AF2EC"
-BLUE = "#9DE8FF"
-VIOLET = "#C2B5FF"
-ROSE = "#F1B1DC"
-GREEN = "#9AE8C4"
-AMBER = "#FFD08B"
-INK = "#0A1721"
+WALLPAPER_DIR = ROOT / "MiraiLauncher/src/main/assets/wallpapers"
+RESOURCE_DIR = ROOT / "MiraiLauncher/src/main/res/drawable-nodpi"
+OUT = ROOT / "docs/aerix-liquid-glass/mockups"
+W, H = 1600, 900
+FONT = "DejaVu-Sans"
+FONT_BOLD = "DejaVu-Sans-Bold"
+WHITE = "#F4F8FC"
+SECONDARY = "#C1D0DC"
+MUTED = "#8EA3B2"
+AQUA = "#9AF0E8"
+CYAN = "#9AE9FF"
+VIOLET = "#C2B4FF"
+ROSE = "#F6B4DE"
+GREEN = "#8AE5B3"
+INK = "#091521"
 
 
 def run(args: list[str]) -> None:
     subprocess.run(args, check=True, stdout=subprocess.DEVNULL)
 
 
-def wallpaper(name: str) -> Path:
-    return WALLPAPERS / name
+def escaped(text: str) -> str:
+    return text.replace("\\", "\\\\").replace("'", "\\'")
 
 
 def rounded_crop(source: Path, width: int, height: int, radius: int, out: Path) -> None:
-    mask = [
-        "(", "-size", f"{width}x{height}", "xc:none", "-fill", "white",
-        "-draw", f"roundrectangle 0,0 {width - 1},{height - 1} {radius},{radius}", ")",
-    ]
+    mask = out.with_suffix(".mask.png")
     run([
         "convert", str(source), "-resize", f"{width}x{height}^", "-gravity", "center",
-        "-extent", f"{width}x{height}", *mask, "-compose", "CopyOpacity", "-composite",
-        "-strip", str(out),
+        "-extent", f"{width}x{height}",
+        "(", "-size", f"{width}x{height}", "xc:none", "-fill", "white",
+        "-draw", f"roundrectangle 0,0 {width - 1},{height - 1} {radius},{radius}", ")",
+        "-compose", "CopyOpacity", "-composite", str(out)
     ])
+    mask.unlink(missing_ok=True)
 
 
-class Mockup:
-    def __init__(self, background: Path, section: str, selected: str):
+class Screen:
+    def __init__(self, wallpaper: str, section: str, active_nav: str):
         self.temp = Path(tempfile.mkdtemp(prefix="aerix-mock-"))
-        self.base = self.temp / "base.png"
-        self.args = [
-            "convert", str(background), "-resize", f"{WIDTH}x{HEIGHT}^", "-gravity", "center",
-            "-extent", f"{WIDTH}x{HEIGHT}", "-modulate", "82,92,100",
-            "-fill", "rgba(4,10,21,0.52)", "-stroke", "none", "-draw", f"rectangle 0,0 {WIDTH},{HEIGHT}",
-            "-fill", "rgba(3,9,19,0.20)", "-draw", f"rectangle 0,0 {WIDTH},145",
-            "-strip", str(self.base),
+        self.args: list[str] = [
+            "convert", str(WALLPAPER_DIR / wallpaper),
+            "-resize", f"{W}x{H}^", "-gravity", "center", "-extent", f"{W}x{H}",
+            "-modulate", "84,92,100",
+            "-fill", "rgba(4,10,22,0.54)", "-stroke", "none",
+            "-draw", f"rectangle 0,0 {W},{H}", "-gravity", "NorthWest"
         ]
-        run(self.args)
-        self.args = ["convert", str(self.base)]
-        self.chrome(section, selected)
+        self.section = section
+        self.active_nav = active_nav
+        self.add_aurora()
+        self.chrome()
 
-    @staticmethod
-    def _n(value: float) -> str:
-        return str(int(round(value)))
+    def add_aurora(self) -> None:
+        glow = self.temp / "aurora.png"
+        run([
+            "convert", "-size", f"{W}x{H}", "xc:none",
+            "-fill", "rgba(53,221,242,0.20)", "-draw", "circle 1370,80 1370,400",
+            "-fill", "rgba(152,112,255,0.14)", "-draw", "circle 200,790 200,1120",
+            "-fill", "rgba(255,138,205,0.07)", "-draw", "circle 930,60 930,230",
+            "-blur", "0x90", str(glow)
+        ])
+        self.args.extend([str(glow), "-compose", "over", "-composite"])
 
-    def draw(self, command: str, fill: str = "none", stroke: str = "none", width: int = 1) -> None:
+    def draw(self, fill: str, stroke: str, width: int, command: str) -> None:
         self.args.extend(["-fill", fill, "-stroke", stroke, "-strokewidth", str(width), "-draw", command])
 
-    def rect(self, x: int, y: int, width: int, height: int, fill: str,
-             stroke: str = "none", radius: int = 0, stroke_width: int = 1) -> None:
+    def panel(
+        self,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        radius: int = 24,
+        tint: str = "rgba(184,224,244,0.105)",
+        edge: str = "rgba(244,252,255,0.34)",
+        shine: bool = True,
+    ) -> None:
         x2, y2 = x + width, y + height
-        shape = f"roundrectangle {x},{y} {x2},{y2} {radius},{radius}" if radius else f"rectangle {x},{y} {x2},{y2}"
-        self.draw(shape, fill, stroke, stroke_width)
+        self.draw("rgba(0,0,0,0.18)", "none", 0, f"roundrectangle {x},{y + 5} {x2},{y2 + 5} {radius},{radius}")
+        self.draw(tint, edge, 1, f"roundrectangle {x},{y} {x2},{y2} {radius},{radius}")
+        if shine:
+            self.draw("none", "rgba(255,255,255,0.39)", 1, f"line {x + radius + 10},{y + 1} {x2 - radius - 10},{y + 1}")
 
-    def line(self, x1: int, y1: int, x2: int, y2: int, color: str, width: int = 1) -> None:
-        self.draw(f"line {x1},{y1} {x2},{y2}", "none", color, width)
+    def pill(self, x: int, y: int, width: int, label: str, tint: str = "rgba(216,242,255,0.11)", edge: str = "rgba(239,251,255,0.24)", color: str = SECONDARY, size: int = 12) -> None:
+        self.draw(tint, edge, 1, f"roundrectangle {x},{y} {x + width},{y + 34} 17,17")
+        self.text(x + 16, y + 22, label, size, color, bold=True)
 
-    def circle(self, cx: int, cy: int, radius: int, fill: str, stroke: str = "none", width: int = 1) -> None:
-        self.draw(f"circle {cx},{cy} {cx + radius},{cy}", fill, stroke, width)
+    def button(self, x: int, y: int, width: int, label: str, fill: str = AQUA, color: str = INK, height: int = 44, size: int = 12) -> None:
+        self.draw(fill, "rgba(255,255,255,0.72)", 1, f"roundrectangle {x},{y} {x + width},{y + height} {height // 2},{height // 2}")
+        self.text(x + 18, y + height // 2 + size // 2, label, size, color, bold=True)
 
-    def panel(self, x: int, y: int, width: int, height: int, radius: int = 28,
-              tint: str = "rgba(158,205,226,0.13)", rim: str = "rgba(241,251,255,0.34)") -> None:
-        self.rect(x + 1, y + 7, width, height, "rgba(0,4,12,0.24)", radius=radius)
-        self.rect(x, y, width, height, tint, rim, radius, 2)
-        self.line(x + radius, y + 2, x + width - radius, y + 2, "rgba(255,255,255,0.32)", 1)
-        self.line(x + 2, y + radius + 12, x + 2, y + height - radius - 12, "rgba(255,255,255,0.12)", 1)
+    def text(self, x: int, y: int, content: str, size: int, color: str = WHITE, bold: bool = False, letter_spacing: int | None = None) -> None:
+        font = FONT_BOLD if bold else FONT
+        self.args.extend(["-font", font, "-pointsize", str(size), "-fill", color, "-stroke", "none"])
+        self.args.extend(["-kerning", str(letter_spacing if letter_spacing is not None else 0)])
+        self.args.extend(["-draw", f"text {x},{y} '{escaped(content)}'"])
 
-    def panel_outline(self, x: int, y: int, width: int, height: int, radius: int = 28,
-                      rim: str = "rgba(242,252,255,0.42)") -> None:
-        self.rect(x, y, width, height, "none", rim, radius, 2)
-        self.line(x + radius, y + 2, x + width - radius, y + 2, "rgba(255,255,255,0.38)", 1)
+    def line(self, x1: int, y1: int, x2: int, y2: int, color: str = "rgba(228,246,255,0.22)", width: int = 1) -> None:
+        self.draw("none", color, width, f"line {x1},{y1} {x2},{y2}")
 
-    def text(self, x: int, y: int, value: str, size: int = 18, color: str = WHITE,
-             bold: bool = False, tracking: float = 0) -> None:
-        escaped = value.replace("\\", "\\\\").replace("'", "\\'")
-        self.args.extend([
-            "-font", "DejaVu-Sans-Bold" if bold else "DejaVu-Sans",
-            "-pointsize", str(size), "-kerning", str(tracking), "-fill", color,
-            "-stroke", "none", "-draw", f"text {x},{y} '{escaped}'",
-        ])
+    def circle(self, x: int, y: int, radius: int, fill: str, edge: str = "rgba(255,255,255,0.36)", width: int = 1) -> None:
+        self.draw(fill, edge, width, f"circle {x},{y} {x + radius},{y}")
 
-    def pill(self, x: int, y: int, width: int, height: int, label: str,
-             fill: str = "rgba(231,247,255,0.08)", stroke: str = "rgba(241,251,255,0.24)",
-             text_color: str = WHITE, size: int = 13, bold: bool = True) -> None:
-        self.rect(x, y, width, height, fill, stroke, height // 2, 1)
-        self.text(x + 18, y + height // 2 + size // 3, label, size, text_color, bold)
-
-    def button(self, x: int, y: int, width: int, height: int, label: str,
-               fill: str = CYAN, text_color: str = INK, size: int = 15) -> None:
-        self.rect(x, y, width, height, fill, "rgba(246,255,255,0.76)", height // 2, 1)
-        self.text(x + 20, y + height // 2 + size // 3, label, size, text_color, True)
-        self.circle(x + width - 25, y + height // 2, 10, "rgba(255,255,255,0.34)")
-        self.text(x + width - 29, y + height // 2 + 5, "›", 15, text_color, True)
-
-    def image(self, source: Path, x: int, y: int, width: int, height: int, radius: int = 24) -> None:
-        crop = self.temp / f"crop-{len(list(self.temp.glob('crop-*.png'))):02d}.png"
+    def add_image(self, source: Path, x: int, y: int, width: int, height: int, radius: int = 18) -> None:
+        crop = self.temp / f"crop-{len(list(self.temp.iterdir()))}.png"
         rounded_crop(source, width, height, radius, crop)
-        self.args.extend([str(crop), "-geometry", f"+{x}+{y}", "-compose", "over", "-composite"])
+        self.args.extend(["-gravity", "NorthWest", str(crop), "-geometry", f"+{x}+{y}", "-compose", "over", "-composite", "-gravity", "NorthWest"])
 
-    def photo_dim(self, x: int, y: int, width: int, height: int, radius: int = 24,
-                  alpha: float = 0.18) -> None:
-        self.rect(x, y, width, height, f"rgba(2,8,16,{alpha})", radius=radius)
-
-    def title(self, eyebrow: str, heading: str, subtitle: str, y: int = 156) -> None:
-        self.text(132, y, eyebrow.upper(), 11, CYAN, True, 1.8)
-        self.text(132, y + 42, heading, 31, WHITE, True, -0.35)
-        self.text(132, y + 68, subtitle, 14, MUTED)
-
-    def chrome(self, section: str, selected: str) -> None:
-        self.panel(22, 26, 82, 848, 40, "rgba(106,157,181,0.16)", "rgba(246,253,255,0.42)")
-        self.panel(122, 26, 1456, 82, 35, "rgba(103,157,180,0.17)", "rgba(246,253,255,0.40)")
-        self.circle(63, 66, 22, "rgba(136,240,233,0.18)", "rgba(220,255,255,0.60)", 2)
-        self.text(55, 74, "A", 23, CYAN, True)
-        self.text(153, 59, "AERIX", 17, WHITE, True, 1.8)
-        self.text(153, 82, section.upper(), 10, CYAN, True, 1.2)
-        self.pill(815, 45, 366, 44, "⌕   Search mods, versions, worlds", "rgba(218,241,250,0.07)", "rgba(244,252,255,0.23)", MUTED, 13, False)
-        self.pill(1200, 45, 144, 44, "↓   DOWNLOADS", "rgba(135,237,231,0.13)", "rgba(198,255,255,0.38)", CYAN, 11)
-        self.pill(1354, 45, 104, 44, "▣   FILES", "rgba(218,241,250,0.06)", "rgba(244,252,255,0.22)", WHITE, 11)
-        self.circle(1518, 67, 22, "rgba(189,171,255,0.30)", "rgba(246,251,255,0.54)", 2)
-        self.text(1509, 73, "EB", 11, WHITE, True)
-
+    def chrome(self) -> None:
+        # Narrow floating rail with a luminous selection capsule.
+        self.panel(24, 24, 78, 852, radius=38, tint="rgba(188,223,241,0.105)", edge="rgba(238,250,255,0.36)")
+        self.circle(63, 67, 21, "rgba(82,223,227,0.22)", "rgba(194,253,255,0.68)", 2)
+        self.text(55, 76, "A", 25, AQUA, bold=True)
         nav = [
             ("H", "HOME"), ("L", "LIBRARY"), ("D", "DISCOVER"),
-            ("M", "SERVERS"), ("W", "WALLPAPERS"),
+            ("M", "MULTIPLAYER"), ("W", "WALLPAPERS"), ("S", "SETTINGS")
         ]
-        for i, (glyph, label) in enumerate(nav):
-            y = 158 + i * 76
-            is_selected = label == selected
-            if is_selected:
-                self.rect(38, y - 23, 50, 48, "rgba(142,239,232,0.20)", "rgba(220,255,255,0.53)", 20, 1)
-                self.circle(36, y, 3, CYAN)
-                self.text(55, y + 7, glyph, 18, CYAN, True)
-            else:
-                self.circle(63, y, 22, "rgba(228,245,255,0.035)", "rgba(235,248,255,0.16)", 1)
-                self.text(57, y + 6, glyph, 16, MUTED, True)
-        self.line(43, 560, 83, 560, "rgba(233,250,255,0.20)", 1)
-        self.circle(63, 610, 22, "rgba(228,245,255,0.035)", "rgba(235,248,255,0.16)", 1)
-        self.text(56, 616, "S", 16, MUTED, True)
-        self.circle(63, 821, 23, "rgba(189,171,255,0.30)", "rgba(246,251,255,0.48)", 1)
-        self.text(54, 826, "EB", 11, WHITE, True)
+        for index, (glyph, name) in enumerate(nav):
+            cy = 160 + index * 86
+            if name == self.active_nav:
+                self.draw("rgba(130,236,246,0.20)", "rgba(183,250,255,0.56)", 1, f"roundrectangle 36,{cy - 26} 90,{cy + 27} 19,19")
+            self.circle(63, cy, 16, "rgba(217,241,250,0.08)" if name != self.active_nav else "rgba(148,236,244,0.15)", "rgba(233,248,255,0.18)")
+            self.text(57, cy + 5, glyph, 15, AQUA if name == self.active_nav else SECONDARY, bold=True)
+        self.line(43, 695, 83, 695, "rgba(255,255,255,0.22)")
+        self.circle(63, 744, 18, "rgba(150,116,255,0.20)", "rgba(235,223,255,0.55)")
+        self.text(57, 750, "P", 15, WHITE, bold=True)
+        self.circle(63, 818, 18, "rgba(236,247,255,0.08)", "rgba(238,251,255,0.30)")
+        self.text(57, 824, "?", 14, SECONDARY, bold=True)
 
-    def finish(self, name: str) -> Path:
-        out = OUTPUT / name
-        out.parent.mkdir(parents=True, exist_ok=True)
-        self.args.extend(["-strip", "-define", "png:compression-level=9", str(out)])
-        run(self.args)
-        return out
+        # Floating global command bar.
+        self.panel(124, 24, 1452, 80, radius=38, tint="rgba(194,229,246,0.115)", edge="rgba(239,251,255,0.42)")
+        self.circle(162, 64, 18, "rgba(115,225,232,0.18)", "rgba(201,254,255,0.52)")
+        self.text(156, 70, "A", 18, AQUA, bold=True)
+        self.text(192, 56, "AERIX", 13, AQUA, bold=True, letter_spacing=2)
+        self.text(192, 79, self.section.upper(), 10, SECONDARY, bold=True, letter_spacing=1)
+        self.panel(762, 43, 426, 42, radius=21, tint="rgba(210,239,250,0.075)", edge="rgba(238,251,255,0.22)", shine=False)
+        self.circle(787, 64, 7, "none", CYAN, 2)
+        self.line(792, 69, 797, 74, CYAN, 2)
+        self.text(810, 69, "Search mods, versions, worlds", 12, MUTED)
+        self.pill(1206, 43, 126, "⇩  TASKS", tint="rgba(164,222,246,0.10)", size=11)
+        self.pill(1343, 43, 92, "FILES", tint="rgba(164,222,246,0.08)", size=11)
+        self.circle(1500, 64, 21, "rgba(177,153,255,0.22)", "rgba(242,230,255,0.62)", 2)
+        self.text(1494, 69, "B", 15, WHITE, bold=True)
+
+    def label(self, x: int, y: int, text: str, color: str = CYAN) -> None:
+        self.text(x, y, text.upper(), 10, color, bold=True, letter_spacing=1)
+
+    def title(self, x: int, y: int, text: str, size: int = 32) -> None:
+        self.text(x, y, text, size, WHITE, bold=True)
+
+    def footer(self) -> None:
+        self.text(132, 868, "AERIX  /  LIQUID GLASS CONCEPT", 9, "rgba(221,239,247,0.55)", bold=True, letter_spacing=1)
+
+    def save(self, filename: str) -> None:
+        try:
+            self.footer()
+            self.args.extend(["-define", "png:compression-level=9", str(OUT / filename)])
+            run(self.args)
+        finally:
+            shutil.rmtree(self.temp, ignore_errors=True)
 
 
-def home() -> Path:
-    m = Mockup(wallpaper("wp_07_ocean_arch.jpg"), "Home", "HOME")
-    # The wide composition follows MiraiHomeDashboard: launch hero, three navigation
-    # actions, recent-instance strip, selected-world panel and quick tools.
-    hero = (132, 132, 964, 352)
-    m.image(DRAWABLES / "mirai_hero_bg.webp", hero[0], hero[1], hero[2], hero[3], 32)
-    m.photo_dim(*hero, alpha=0.17)
-    m.panel_outline(*hero, 32)
-    m.circle(184, 174, 15, "rgba(255,255,255,0.16)", "rgba(240,252,255,0.38)", 1)
-    m.text(179, 180, "A", 14, CYAN, True)
-    m.text(210, 178, "AERIX  /  YOUR WORLD", 11, CYAN, True, 1.3)
-    m.text(168, 252, "A new world", 38, WHITE, True, -0.5)
-    m.text(168, 297, "awaits you.", 38, WHITE, True, -0.5)
-    m.text(170, 327, "One calm place to shape, tune and launch your worlds.", 13, MUTED)
-    m.pill(168, 394, 620, 48, "Vanilla 1.21.4   ·   Minecraft 1.21.4", "rgba(205,239,249,0.10)", "rgba(242,252,255,0.28)", WHITE, 12)
-    m.button(806, 394, 174, 48, "PLAY NOW", CYAN, INK, 13)
-
-    # SelectedWorldPanel: the chosen instance is actionable without opening the library.
-    m.panel(1120, 132, 428, 444, 30, "rgba(115,162,183,0.16)")
-    m.text(1152, 174, "ACTIVE WORLD", 10, CYAN, True, 1.3)
-    m.text(1152, 207, "Your selected instance", 19, WHITE, True)
-    m.rect(1152, 226, 54, 54, "rgba(135,220,233,0.18)", "rgba(226,250,255,0.32)", 14, 1)
-    m.text(1163, 260, "1.21", 15, CYAN, True)
-    m.text(1220, 248, "Vanilla 1.21.4", 17, WHITE, True)
-    m.text(1220, 270, "Vanilla  /  1.21.4", 11, MUTED)
-    m.line(1152, 300, 1516, 300, "rgba(233,249,255,0.22)")
-    for i, (label, value) in enumerate([("RENDERER", "LTW"), ("MINECRAFT", "1.21.4"), ("PROFILE", "Vanilla 1.21.4")]):
-        y = 334 + i * 35
-        m.text(1152, y, label, 9, QUIET, True, 0.8)
-        m.text(1400, y, value, 12, WHITE, True)
-    m.button(1152, 497, 230, 44, "LAUNCH", CYAN, INK, 12)
-    m.pill(1394, 497, 122, 44, "SETTINGS", "rgba(220,240,250,0.08)", "rgba(240,252,255,0.22)", WHITE, 10)
-
-    actions = [
-        ("+", "New instance", "Build a world", CYAN),
-        ("◇", "Discover", "Mods & packs", BLUE),
-        ("▦", "Your library", "All instances", VIOLET),
-    ]
-    for i, (glyph, label, detail, color) in enumerate(actions):
-        x = 132 + i * 326
-        m.panel(x, 500, 310, 76, 20, "rgba(120,174,197,0.14)")
-        m.circle(x + 33, 538, 18, f"rgba(144,234,237,0.15)", f"{color}80", 1)
-        m.text(x + 27, 544, glyph, 15, color, True)
-        m.text(x + 61, 532, label, 15, WHITE, True)
-        m.text(x + 61, 552, detail, 10, MUTED)
-        m.text(x + 286, 543, "›", 20, color, True)
-
-    m.text(132, 617, "Recently played", 19, WHITE, True)
-    m.text(132, 638, "3 saved worlds", 10, MUTED)
-    m.text(1004, 628, "OPEN LIBRARY  →", 10, CYAN, True, 0.7)
-    recent = [
-        ("Vanilla 1.21.4", "1.21.4  ·  Vanilla", CYAN),
-        ("Sodium 1.20.1", "1.20.1  ·  Fabric", BLUE),
-        ("Create: Above", "1.20.4  ·  Forge", VIOLET),
-    ]
-    for i, (name, detail, color) in enumerate(recent):
-        x, y = 132 + i * 326, 656
-        m.panel(x, y, 310, 184, 22, "rgba(125,174,196,0.13)")
-        m.rect(x + 16, y + 69, 42, 42, f"{color}2A", f"{color}88", 12, 1)
-        m.text(x + 23, y + 96, "MC", 11, color, True)
-        m.text(x + 71, y + 82, name, 13, WHITE, True)
-        m.text(x + 71, y + 103, detail.split("  ·  ")[0], 9, MUTED)
-        m.text(x + 71, y + 121, detail.split("  ·  ")[-1], 9, color)
-        m.circle(x + 265, y + 85, 15, "rgba(228,245,255,0.07)", "rgba(236,250,255,0.18)", 1)
-        m.text(x + 259, y + 91, "▶", 10, color, True)
-        m.circle(x + 265, y + 128, 15, "rgba(228,245,255,0.07)", "rgba(236,250,255,0.18)", 1)
-        m.text(x + 260, y + 133, "⚙", 9, MUTED, True)
-
-    # Two-by-two quick tools mirror the live performance, diagnostics and task actions.
-    m.panel(1120, 596, 428, 244, 25, "rgba(126,172,195,0.14)")
-    m.text(1148, 630, "TOOLS & STATUS", 10, CYAN, True, 1.2)
-    m.text(1148, 649, "Small refinements, one tap away", 10, MUTED)
-    for i, (label, detail, color) in enumerate([
-        ("FPS", "Performance", CYAN),
-        ("JRE / GC", "Memory tuning", BLUE),
-        ("Crash Doctor", "Find a fix", AMBER),
-        ("0 tasks", "Downloads & files", VIOLET),
+def create_home() -> None:
+    s = Screen("wp_07_ocean_arch.jpg", "Home", "HOME")
+    s.label(132, 147, "YOUR LAUNCH DESK")
+    s.text(132, 177, "A little space for big worlds.", 13, SECONDARY)
+    s.panel(132, 198, 922, 420, radius=34, tint="rgba(179,226,246,0.105)")
+    s.add_image(WALLPAPER_DIR / "wp_07_ocean_arch.jpg", 576, 214, 458, 388, 28)
+    s.draw("rgba(7,17,29,0.80)", "none", 0, "roundrectangle 146,212 634,602 30,30")
+    s.label(170, 250, "READY WHEN YOU ARE", GREEN)
+    s.title(170, 330, "A world of", 42)
+    s.title(170, 378, "your own.", 42)
+    s.text(170, 413, "Your next chapter is only one touch away.", 13, SECONDARY)
+    s.pill(170, 444, 130, "1.21.4  /  VANILLA", tint="rgba(122,219,220,0.16)", edge="rgba(160,251,248,0.42)", color=AQUA, size=10)
+    s.button(170, 500, 176, "▶  PLAY NOW", fill=AQUA)
+    s.text(372, 529, "OPEN LIBRARY  ↗", 10, WHITE, bold=True, letter_spacing=1)
+    s.panel(1076, 198, 474, 420, radius=32, tint="rgba(182,218,241,0.10)")
+    s.label(1110, 244, "PICK UP WHERE YOU LEFT OFF")
+    s.title(1110, 279, "Recent worlds", 22)
+    for i, (name, sub, icon, accent) in enumerate([
+        ("Valley of Echoes", "Fabric 1.20.1  ·  Today", "V", AQUA),
+        ("Copper & Clouds", "NeoForge 1.21  ·  Yesterday", "C", VIOLET),
+        ("Creative Archive", "Vanilla 1.21.4  ·  Sunday", "A", ROSE),
     ]):
-        col, row = i % 2, i // 2
-        x, y = 1148 + col * 190, 669 + row * 76
-        m.rect(x, y, 178, 64, "rgba(223,242,249,0.06)", "rgba(241,251,255,0.19)", 15, 1)
-        m.circle(x + 20, y + 32, 10, f"{color}40", f"{color}90", 1)
-        m.text(x + 39, y + 28, label, 11, WHITE, True)
-        m.text(x + 39, y + 47, detail, 9, MUTED)
-    return m.finish("01-home.png")
+        y = 307 + i * 84
+        s.panel(1098, y, 428, 70, radius=22, tint="rgba(216,239,251,0.075)", edge="rgba(237,250,255,0.20)", shine=False)
+        s.circle(1135, y + 35, 20, "rgba(137,224,234,0.18)", "rgba(255,255,255,0.20)")
+        s.text(1129, y + 41, icon, 14, accent, bold=True)
+        s.text(1170, y + 30, name, 13, WHITE, bold=True)
+        s.text(1170, y + 51, sub, 10, SECONDARY)
+        s.circle(1490, y + 35, 11, "rgba(132,237,226,0.18)", "rgba(150,246,237,0.42)")
+        s.text(1487, y + 39, "›", 13, AQUA, bold=True)
+    actions = [
+        ("＋", "CREATE INSTANCE", "A clean new profile", AQUA),
+        ("✧", "EXPLORE CONTENT", "Modpacks, mods & more", CYAN),
+        ("▣", "YOUR LIBRARY", "Profiles, versions, saves", VIOLET),
+        ("⌂", "FILE SPACE", "Worlds, logs, exports", ROSE),
+    ]
+    for i, (glyph, name, sub, color) in enumerate(actions):
+        x = 132 + i * 359
+        s.panel(x, 644, 342, 156, radius=28, tint="rgba(194,228,244,0.105)")
+        s.circle(x + 43, 690, 19, "rgba(151,226,238,0.13)", "rgba(241,253,255,0.25)")
+        s.text(x + 36, 696, glyph, 18, color, bold=True)
+        s.text(x + 26, 740, name, 11, WHITE, bold=True, letter_spacing=1)
+        s.text(x + 26, 762, sub, 10, SECONDARY)
+
+    s.save("01-home.png")
 
 
-def library() -> Path:
-    m = Mockup(wallpaper("wp_10_spruce_mist.jpg"), "Library", "LIBRARY")
-    # Match VersionsLayout's adaptive, searchable four-column instance grid.
-    m.pill(132, 136, 1070, 44, "⌕   Search instances...", "rgba(218,241,249,0.07)", "rgba(244,252,255,0.23)", MUTED, 13, False)
-    m.pill(1214, 136, 44, 44, "≡", "rgba(218,241,249,0.08)", "rgba(244,252,255,0.23)", WHITE, 15)
-    m.pill(1270, 136, 44, 44, "▣", "rgba(218,241,249,0.08)", "rgba(244,252,255,0.23)", WHITE, 12)
-    m.button(1326, 136, 222, 44, "NEW INSTANCE", CYAN, INK, 12)
-    filters = [("ALL  16", 114), ("MODPACKS", 148), ("VANILLA", 126), ("PINNED", 116)]
-    x = 132
-    for i, (label, width) in enumerate(filters):
-        m.pill(x, 196, width, 40, label,
-               "rgba(141,235,229,0.18)" if i == 0 else "rgba(228,245,255,0.055)",
-               "rgba(240,252,255,0.26)", CYAN if i == 0 else MUTED, 10)
-        x += width + 10
-
+def create_library() -> None:
+    s = Screen("wp_14_cozy_village.jpg", "Worlds & instances", "LIBRARY")
+    s.label(132, 151, "WORLD VAULT")
+    s.title(132, 194, "Worlds & instances", 32)
+    s.text(132, 221, "A considered home for every profile you have built.", 12, SECONDARY)
+    s.button(1370, 152, 178, "＋  NEW INSTANCE", fill=AQUA, size=11)
+    for i, (label, active) in enumerate([("ALL  12", True), ("VANILLA  5", False), ("MODDED  7", False), ("FAVOURITES", False)]):
+        s.pill(132 + i * 136, 249, 124, label,
+               tint="rgba(124,235,231,0.19)" if active else "rgba(201,231,244,0.09)",
+               edge="rgba(155,243,240,0.42)" if active else "rgba(242,250,255,0.18)",
+               color=AQUA if active else SECONDARY, size=9)
+    s.panel(132, 301, 940, 497, radius=30)
     cards = [
-        ("Vanilla 1.21.4", "Vanilla 1.21.4", CYAN),
-        ("Sodium 1.20.1", "Fabric 1.20.1", BLUE),
-        ("Create: Above", "Forge 1.20.4", VIOLET),
-        ("Skybound", "Quilt 1.20.1", ROSE),
-        ("Cherry Grove", "Vanilla 1.20.4", CYAN),
-        ("Shader Lab", "Fabric 1.21.3", BLUE),
-        ("Survival Plus", "Forge 1.19.4", AMBER),
-        ("Better Adventures", "Fabric 1.20.1", GREEN),
-        ("Builder's World", "Quilt 1.21.1", VIOLET),
-        ("Vanilla 1.20.1", "Vanilla 1.20.1", CYAN),
-        ("Create: Above 2", "Forge 1.20.1", AMBER),
-        ("Test Instance", "Fabric 1.21.4", ROSE),
-        ("Creative Lab", "Fabric 1.21.2", BLUE),
-        ("Legacy World", "Forge 1.18.2", AMBER),
-        ("Performance Build", "Fabric 1.21.4", GREEN),
-        ("Quilt Testing", "Quilt 1.20.1", VIOLET),
+        ("wp_04_crystal_river.jpg", "Valley of Echoes", "Fabric 1.20.1", "LAST PLAYED  TODAY", CYAN),
+        ("wp_02_cherry_blossom.jpg", "Sakura Harbor", "Vanilla 1.21.4", "LAST PLAYED  MON", ROSE),
+        ("wp_09_flower_meadow.jpg", "Wildflower", "NeoForge 1.21", "MODDED  24", VIOLET),
+        ("wp_14_cozy_village.jpg", "Copper & Clouds", "Quilt 1.20.4", "LAST PLAYED  SUN", AQUA),
     ]
-    card_width, card_height = 342, 138
-    for i, (name, detail, accent) in enumerate(cards):
-        col, row = i % 4, i // 4
-        x, y = 132 + col * 358, 254 + row * 146
-        selected = i == 0
-        m.panel(x, y, card_width, card_height, 23,
-                "rgba(139,193,211,0.17)" if selected else "rgba(124,175,197,0.12)",
-                "rgba(158,244,236,0.56)" if selected else "rgba(241,251,255,0.30)")
-        m.rect(x + 18, y + 14, 48, 48, f"{accent}25", f"{accent}88", 13, 1)
-        m.text(x + 25, y + 44, "MC", 12, accent, True)
-        m.text(x + 80, y + 34, name, 15, WHITE, True)
-        m.pill(x + 80, y + 43, 142, 24, detail, "rgba(218,241,249,0.07)", "rgba(240,251,255,0.16)", MUTED, 8, False)
-        m.circle(x + 35, y + 112, 15, "rgba(224,242,249,0.07)", "rgba(241,251,255,0.20)", 1)
-        m.text(x + 29, y + 118, "···", 11, WHITE, True)
-        m.circle(x + 235, y + 112, 15, "rgba(224,242,249,0.07)", "rgba(241,251,255,0.20)", 1)
-        m.text(x + 230, y + 117, "⚙", 10, MUTED, True)
-        m.pill(x + 270, y + 96, 62, 32, "PLAY", "rgba(143,237,230,0.87)", "rgba(244,255,255,0.68)", INK, 9)
-    return m.finish("02-library.png")
+    for i, (wall, name, meta, foot, accent) in enumerate(cards):
+        x = 153 + (i % 2) * 452
+        y = 322 + (i // 2) * 226
+        s.panel(x, y, 428, 204, radius=24, tint="rgba(211,235,248,0.08)", edge="rgba(241,251,255,0.22)")
+        s.add_image(WALLPAPER_DIR / wall, x + 10, y + 10, 148, 184, 18)
+        s.label(x + 180, y + 42, foot, accent)
+        s.text(x + 180, y + 82, name, 18, WHITE, bold=True)
+        s.text(x + 180, y + 111, meta, 11, SECONDARY)
+        s.pill(x + 180, y + 137, 102, "OPEN  ›", tint="rgba(127,228,227,0.15)", edge="rgba(144,239,239,0.3)", color=AQUA, size=9)
+    s.panel(1095, 249, 455, 549, radius=30, tint="rgba(200,229,245,0.11)")
+    s.add_image(WALLPAPER_DIR / "wp_07_ocean_arch.jpg", 1110, 263, 425, 195, 24)
+    s.label(1128, 493, "SELECTED PROFILE", AQUA)
+    s.title(1128, 530, "Valley of Echoes", 23)
+    s.text(1128, 558, "Fabric 1.20.1  ·  18 mods", 12, SECONDARY)
+    s.line(1128, 581, 1516, 581)
+    s.text(1128, 615, "GAME VERSION", 9, MUTED, bold=True, letter_spacing=1)
+    s.text(1128, 641, "Minecraft 1.20.1", 12, WHITE, bold=True)
+    s.text(1128, 682, "LOADER", 9, MUTED, bold=True, letter_spacing=1)
+    s.text(1128, 708, "Fabric 0.16.9", 12, WHITE, bold=True)
+    s.button(1128, 737, 180, "▶  PLAY", fill=AQUA)
+    s.text(1330, 764, "PROFILE SETTINGS", 9, SECONDARY, bold=True, letter_spacing=1)
+
+    s.save("02-library.png")
 
 
-def create_instance() -> Path:
-    m = Mockup(wallpaper("wp_03_sunset_river.jpg"), "Create instance", "LIBRARY")
-    m.title("A NEW BEGINNING", "Build an instance", "Choose a base version, select a loader, and tailor the details before install.")
-    m.panel(132, 230, 1416, 76, 27, "rgba(121,174,197,0.14)")
-    steps = [("01", "VERSION", True), ("02", "LOADER", False), ("03", "DETAILS", False)]
-    for i, (num, name, active) in enumerate(steps):
-        x = 172 + i * 440
-        m.circle(x + 18, 268, 17, "rgba(143,239,231,0.20)" if active else "rgba(221,240,248,0.07)", "rgba(225,255,255,0.46)" if active else "rgba(242,251,255,0.20)", 1)
-        m.text(x + 10, 273, num, 11, CYAN if active else MUTED, True)
-        m.text(x + 49, 273, name, 12, WHITE if active else MUTED, True, 1)
-        if i < 2:
-            m.line(x + 236, 268, x + 407, 268, "rgba(241,251,255,0.20)", 2)
-    m.panel(132, 330, 890, 494, 28, "rgba(124,177,199,0.15)")
-    m.text(166, 374, "SELECT A GAME VERSION", 11, CYAN, True, 1.2)
-    m.pill(166, 394, 344, 42, "⌕   Search releases and snapshots", "rgba(226,242,249,0.06)", "rgba(244,251,255,0.20)", MUTED, 12, False)
-    m.pill(787, 394, 190, 42, "LATEST RELEASE  ▾", "rgba(226,242,249,0.06)", "rgba(244,251,255,0.20)", WHITE, 10)
-    versions = [("1.21.4", "Latest release", True), ("1.21.3", "Release", False), ("1.20.6", "Release", False), ("1.20.4", "Release", False), ("24w14a", "Snapshot", False), ("1.19.4", "Release", False)]
-    for i, (version, detail, selected) in enumerate(versions):
-        col, row = i % 3, i // 3
-        x, y = 166 + col * 273, 462 + row * 129
-        m.rect(x, y, 252, 109, "rgba(216,239,248,0.06)", "rgba(241,251,255,0.20)", 21, 1)
-        m.circle(x + 31, y + 31, 13, "rgba(140,237,231,0.19)" if selected else "rgba(221,241,248,0.08)", "rgba(236,250,255,0.19)", 1)
-        m.text(x + 67, y + 38, version, 19, WHITE, True)
-        m.text(x + 20, y + 77, detail, 11, MUTED)
-        m.text(x + 20, y + 97, "MINECRAFT", 8, CYAN if selected else QUIET, True, 1)
-        if selected:
-            m.circle(x + 226, y + 27, 8, CYAN)
-            m.circle(x + 226, y + 27, 3, INK)
-    m.panel(1048, 330, 500, 494, 28, "rgba(139,179,199,0.17)")
-    m.text(1082, 374, "INSTANCE PROFILE", 11, CYAN, True, 1.2)
-    m.text(1082, 421, "Vanilla 1.21.4", 25, WHITE, True)
-    m.text(1082, 449, "The essentials, ready for your touch.", 12, MUTED)
-    m.text(1082, 502, "MOD LOADER", 10, QUIET, True, 1)
-    for i, label in enumerate(["Vanilla", "Fabric", "Quilt", "Forge"]):
-        m.pill(1082 + i * 105, 516, 96, 39, label, "rgba(141,238,233,0.18)" if i == 0 else "rgba(225,243,249,0.06)", "rgba(234,251,255,0.25)", CYAN if i == 0 else MUTED, 10)
-    m.text(1082, 593, "INSTANCE NAME", 10, QUIET, True, 1)
-    m.rect(1082, 607, 430, 46, "rgba(225,242,249,0.06)", "rgba(239,250,255,0.20)", 15, 1)
-    m.text(1100, 636, "Vanilla 1.21.4", 13, WHITE)
-    m.text(1082, 690, "GAME DIRECTORY", 10, QUIET, True, 1)
-    m.pill(1082, 704, 430, 42, "Use a separate folder for this instance", "rgba(225,242,249,0.06)", "rgba(239,250,255,0.20)", MUTED, 11, False)
-    m.button(1082, 764, 204, 44, "CONTINUE", CYAN, INK, 13)
-    m.text(1305, 791, "Step 1 of 3", 11, MUTED)
-    return m.finish("03-create-instance.png")
+def create_new_instance() -> None:
+    s = Screen("wp_06_the_end.jpg", "Create an instance", "LIBRARY")
+    s.label(132, 151, "CREATE WORKSPACE")
+    s.title(132, 194, "A new world, your way.", 31)
+    s.text(132, 221, "Choose a game build. Add a loader. We will take care of the rest.", 12, SECONDARY)
+    s.panel(132, 247, 1418, 76, radius=28, tint="rgba(199,229,245,0.095)")
+    steps = [("01", "GAME VERSION", True), ("02", "LOADER", False), ("03", "PROFILE DETAILS", False), ("04", "INSTALL", False)]
+    for i, (num, label, active) in enumerate(steps):
+        x = 166 + i * 344
+        color = AQUA if active else MUTED
+        s.circle(x + 18, 285, 14, "rgba(131,230,235,0.18)" if active else "rgba(217,234,244,0.08)", "rgba(175,249,252,0.4)" if active else "rgba(230,244,250,0.18)")
+        s.text(x + 9, 289, num, 9, color, bold=True)
+        s.text(x + 43, 289, label, 10, color, bold=True, letter_spacing=1)
+        if i < 3:
+            s.line(x + 190, 285, x + 314, 285, "rgba(229,246,255,0.18)")
+    s.panel(132, 346, 900, 454, radius=30)
+    s.label(166, 390, "01  /  SELECT THE GAME BUILD")
+    s.text(166, 425, "Search releases", 12, SECONDARY)
+    s.panel(164, 447, 820, 42, radius=21, tint="rgba(197,229,245,0.075)", edge="rgba(235,248,255,0.18)", shine=False)
+    s.text(187, 474, "⌕    Search Minecraft versions...", 11, MUTED)
+    versions = [("1.21.4", "LATEST RELEASE", True), ("1.21.3", "RELEASE", False), ("1.20.4", "POPULAR", False), ("1.20.1", "STABLE", False), ("1.19.4", "RELEASE", False), ("1.16.5", "CLASSIC", False)]
+    for i, (ver, tag, active) in enumerate(versions):
+        x = 164 + (i % 3) * 276
+        y = 512 + (i // 3) * 105
+        s.panel(x, y, 256, 86, radius=20,
+                tint="rgba(118,227,227,0.16)" if active else "rgba(208,235,247,0.07)",
+                edge="rgba(157,248,241,0.48)" if active else "rgba(237,249,255,0.19)", shine=False)
+        s.text(x + 18, y + 35, ver, 20, WHITE, bold=True)
+        s.text(x + 18, y + 61, tag, 9, AQUA if active else MUTED, bold=True, letter_spacing=1)
+    s.panel(1054, 346, 496, 454, radius=30)
+    s.label(1090, 392, "02  /  CHOOSE A LOADER")
+    for i, (name, meta, active) in enumerate([("Vanilla", "Official game", True), ("Fabric", "Lightweight + mods", False), ("Forge", "A broad mod library", False), ("NeoForge", "Modern modpacks", False)]):
+        y = 421 + i * 72
+        s.panel(1080, y, 444, 58, radius=18,
+                tint="rgba(125,232,226,0.17)" if active else "rgba(210,235,245,0.06)",
+                edge="rgba(160,248,243,0.42)" if active else "rgba(238,249,255,0.18)", shine=False)
+        s.circle(1109, y + 29, 9, "rgba(132,235,227,0.24)" if active else "rgba(241,251,255,0.05)", "rgba(208,250,248,0.5)" if active else "rgba(239,250,255,0.24)")
+        s.text(1132, y + 25, name, 12, WHITE, bold=True)
+        s.text(1132, y + 43, meta, 9, SECONDARY)
+    s.line(1090, 733, 1514, 733)
+    s.text(1090, 764, "ESTIMATED DOWNLOAD", 9, MUTED, bold=True, letter_spacing=1)
+    s.text(1090, 786, "~ 180 MB", 12, WHITE, bold=True)
+    s.button(1320, 740, 196, "CONTINUE  →", fill=AQUA, size=11)
+
+    s.save("03-create-instance.png")
 
 
-def discover() -> Path:
-    m = Mockup(wallpaper("wp_09_flower_meadow.jpg"), "Discover", "DISCOVER")
-    m.title("THE COMMUNITY, CURATED", "Find the next thing you love", "A more thoughtful way to discover mods, packs, worlds and shaders.")
-    m.pill(1113, 159, 205, 42, "⌕   Search everything", "rgba(218,241,249,0.06)", "rgba(244,252,255,0.22)", MUTED, 12, False)
-    m.pill(1330, 159, 218, 42, "TRENDING  ·  THIS WEEK", "rgba(143,238,231,0.16)", "rgba(228,255,252,0.36)", CYAN, 10)
-    m.panel(132, 226, 894, 350, 31, "rgba(127,176,198,0.14)")
-    m.image(wallpaper("wp_14_cozy_village.jpg"), 544, 239, 468, 324, 25)
-    m.photo_dim(544, 239, 468, 324, 25, 0.18)
-    m.panel_outline(132, 226, 894, 350, 31)
-    m.pill(168, 260, 160, 34, "EDITOR'S PICK", "rgba(143,238,231,0.24)", "rgba(223,255,252,0.40)", CYAN, 9)
-    m.text(168, 345, "A softer kind", 32, WHITE, True)
-    m.text(168, 385, "of survival.", 32, WHITE, True)
-    m.text(170, 425, "Handpicked worlds, reimagined.", 13, MUTED)
-    m.text(170, 456, "2.4M installs  ·  Updated yesterday", 11, QUIET)
-    m.button(168, 495, 174, 44, "EXPLORE PACK", CYAN, INK, 12)
-    m.panel(1052, 226, 496, 350, 29, "rgba(149,168,199,0.17)")
-    m.image(wallpaper("wp_13_frozen_glacier.jpg"), 1070, 244, 460, 191, 20)
-    m.photo_dim(1070, 244, 460, 191, 20, 0.17)
-    m.text(1084, 478, "WEEKLY SPOTLIGHT", 10, VIOLET, True, 1.2)
-    m.text(1084, 510, "Quiet Horizons", 22, WHITE, True)
-    m.text(1084, 538, "Built for exploration, not urgency.", 12, MUTED)
-    m.text(1495, 541, "↗", 20, VIOLET, True)
-    m.text(132, 623, "Browse by mood", 21, WHITE, True)
-    m.text(1360, 623, "VIEW ALL CATEGORIES  →", 10, CYAN, True, 1)
-    categories = [
-        ("01", "Cozy evenings", "Warm light, softer edges", "wp_02_cherry_blossom.jpg", ROSE),
-        ("02", "Big adventures", "A world with room to roam", "wp_18_crater_harbor.jpg", BLUE),
-        ("03", "Built different", "Fresh systems and machines", "wp_05_nether_fortress.jpg", AMBER),
-        ("04", "Lightweight play", "Smooth on every device", "wp_01_lush_caves.jpg", GREEN),
+def create_discover() -> None:
+    s = Screen("wp_09_flower_meadow.jpg", "Discover", "DISCOVER")
+    s.label(132, 151, "THE CURATED FRONTIER")
+    s.title(132, 194, "Find your next favourite.", 31)
+    s.text(132, 221, "A living catalogue of modpacks, mods, resource packs, and worlds.", 12, SECONDARY)
+    for i, item in enumerate(["FEATURED", "MODPACKS", "MODS", "RESOURCE PACKS", "SHADERS"]):
+        s.pill(132 + i * 142, 244, 130, item, tint="rgba(129,230,229,0.16)" if i == 0 else "rgba(207,234,246,0.075)", color=AQUA if i == 0 else SECONDARY, size=9)
+    s.panel(132, 300, 922, 356, radius=32)
+    s.add_image(WALLPAPER_DIR / "wp_04_crystal_river.jpg", 548, 314, 491, 328, 26)
+    s.draw("rgba(7,17,29,0.82)", "none", 0, "roundrectangle 145,313 650,643 26,26")
+    s.label(174, 359, "EDITOR'S PICK  /  MODPACK", VIOLET)
+    s.title(174, 405, "Into the", 34)
+    s.title(174, 444, "Wilds", 34)
+    s.text(174, 477, "A slower, softer survival journey.", 12, SECONDARY)
+    s.text(174, 508, "Explore biomes, build a home, and find your rhythm.", 10, SECONDARY)
+    s.pill(174, 536, 102, "1.21  /  FABRIC", tint="rgba(207,185,255,0.14)", edge="rgba(221,210,255,0.36)", color=VIOLET, size=9)
+    s.button(174, 587, 150, "VIEW PACK  →", fill=VIOLET, color=INK, height=38, size=10)
+    s.panel(1076, 300, 474, 356, radius=32)
+    s.label(1110, 343, "TRENDING THIS WEEK")
+    for i, (name, category, count, accent) in enumerate([
+        ("Soft Horizons", "SHADERS", "42k installs", CYAN),
+        ("Create: Reframed", "MODPACK", "31k installs", AQUA),
+        ("Wilder World", "MOD", "19k installs", ROSE),
+    ]):
+        y = 367 + i * 86
+        s.circle(1144, y + 22, 20, "rgba(150,224,238,0.16)", "rgba(239,250,255,0.25)")
+        s.text(1138, y + 28, str(i + 1), 13, accent, bold=True)
+        s.text(1180, y + 19, name, 13, WHITE, bold=True)
+        s.text(1180, y + 39, f"{category}  ·  {count}", 9, SECONDARY)
+        s.line(1110, y + 67, 1515, y + 67)
+    s.label(132, 698, "BROWSE BY MOOD")
+    cards = [("wp_02_cherry_blossom.jpg", "Calm & cozy", "COMFORT BUILDS"), ("wp_13_frozen_glacier.jpg", "Into the wild", "EXPLORATION"), ("wp_05_nether_fortress.jpg", "Hard mode", "CHALLENGE RUNS"), ("wp_20_sakura_sunbeams.jpg", "Make it yours", "CREATIVE TOOLS")]
+    for i, (wall, name, sub) in enumerate(cards):
+        x = 132 + i * 359
+        s.panel(x, 718, 342, 134, radius=24, tint="rgba(207,231,244,0.09)")
+        s.add_image(WALLPAPER_DIR / wall, x + 9, 727, 126, 116, 17)
+        s.text(x + 154, 773, name, 15, WHITE, bold=True)
+        s.text(x + 154, 798, sub, 9, CYAN, bold=True, letter_spacing=1)
+
+    s.save("04-discover.png")
+
+
+def create_pack_detail() -> None:
+    s = Screen("wp_04_crystal_river.jpg", "Pack details", "DISCOVER")
+    s.label(132, 151, "DISCOVER  /  MODPACKS  /  FEATURED")
+    s.panel(132, 177, 900, 470, radius=32)
+    s.add_image(WALLPAPER_DIR / "wp_07_ocean_arch.jpg", 146, 191, 872, 442, 26)
+    s.draw("rgba(6,15,27,0.58)", "none", 0, "roundrectangle 146,470 1018,633 26,26")
+    s.pill(176, 500, 120, "CURATED PICK", tint="rgba(171,156,255,0.18)", edge="rgba(220,207,255,0.44)", color=VIOLET, size=9)
+    s.title(176, 556, "Better Adventures", 33)
+    s.text(176, 590, "A deep, tactile journey through a reimagined Overworld.", 12, WHITE)
+    s.panel(1054, 177, 496, 610, radius=32)
+    s.label(1090, 223, "PACK OVERVIEW")
+    s.title(1090, 270, "Better", 28)
+    s.title(1090, 304, "Adventures", 28)
+    s.text(1090, 340, "by the Aerix community", 11, SECONDARY)
+    s.pill(1090, 365, 98, "FABRIC  1.21", tint="rgba(125,232,227,0.14)", color=AQUA, size=9)
+    s.pill(1197, 365, 109, "64 MODS", tint="rgba(189,170,255,0.16)", color=VIOLET, size=9)
+    s.text(1090, 430, "4.9", 28, WHITE, bold=True)
+    s.text(1154, 430, "★★★★★   2,418 reviews", 11, AQUA, bold=True)
+    s.text(1090, 463, "A balanced collection for long evenings: discovery,", 11, SECONDARY)
+    s.text(1090, 483, "building, and small surprises around every corner.", 11, SECONDARY)
+    s.line(1090, 510, 1512, 510)
+    s.text(1090, 541, "LAST UPDATED", 9, MUTED, bold=True, letter_spacing=1)
+    s.text(1090, 564, "October 02, 2026", 11, WHITE, bold=True)
+    s.text(1090, 596, "DOWNLOAD SIZE", 9, MUTED, bold=True, letter_spacing=1)
+    s.text(1090, 619, "~ 842 MB", 11, WHITE, bold=True)
+    s.button(1090, 681, 218, "＋  INSTALL PACK", fill=AQUA, height=48, size=11)
+    s.text(1330, 710, "♡  SAVE", 10, SECONDARY, bold=True, letter_spacing=1)
+    s.panel(132, 675, 900, 151, radius=28, tint="rgba(197,228,243,0.09)")
+    s.label(166, 714, "INCLUDED IN THIS PACK")
+    for i, (name, val, color) in enumerate([("World generation", "18", AQUA), ("Building tools", "14", VIOLET), ("Quality of life", "22", CYAN), ("Visuals", "10", ROSE)]):
+        x = 166 + i * 206
+        s.text(x, 759, val, 20, color, bold=True)
+        s.text(x + 32, 759, name, 10, WHITE, bold=True)
+        s.text(x + 32, 782, "verified & compatible", 8, SECONDARY)
+
+    s.save("05-mod-details.png")
+
+
+def create_multiplayer() -> None:
+    s = Screen("wp_18_crater_harbor.jpg", "Multiplayer", "MULTIPLAYER")
+    s.label(132, 151, "PLAY TOGETHER")
+    s.title(132, 194, "Your people are one click away.", 31)
+    s.text(132, 221, "Keep your favourite servers close, clear, and ready to join.", 12, SECONDARY)
+    s.panel(132, 253, 1418, 128, radius=30, tint="rgba(137,226,239,0.13)")
+    s.circle(182, 316, 25, "rgba(108,237,227,0.2)", "rgba(188,254,249,0.56)", 2)
+    s.text(174, 323, "↗", 21, AQUA, bold=True)
+    s.label(230, 297, "QUICK CONNECT  /  JOIN A SERVER")
+    s.panel(230, 311, 705, 40, radius=20, tint="rgba(212,238,249,0.08)", edge="rgba(239,250,255,0.23)", shine=False)
+    s.text(250, 337, "play.example.net", 12, WHITE)
+    s.button(961, 302, 170, "JOIN SERVER  →", fill=AQUA, height=46, size=11)
+    s.text(1171, 321, "LAST CONNECTION", 9, MUTED, bold=True, letter_spacing=1)
+    s.text(1171, 346, "2 hours ago", 12, WHITE, bold=True)
+    s.panel(132, 408, 916, 420, radius=30)
+    s.label(168, 450, "SAVED SERVERS")
+    s.text(168, 485, "Your server list", 21, WHITE, bold=True)
+    s.button(852, 430, 158, "＋  ADD SERVER", fill=VIOLET, color=INK, height=38, size=10)
+    rows = [("Cedar Valley", "play.cedarvalley.net", "18 / 40", "32 ms", GREEN), ("Build & Bloom", "mc.buildbloom.org", "7 / 24", "58 ms", AQUA), ("The Long Night", "nightfall.example", "Offline", "—", ROSE)]
+    for i, (name, address, players, ping, accent) in enumerate(rows):
+        y = 512 + i * 88
+        s.panel(157, y, 864, 72, radius=19, tint="rgba(207,235,248,0.075)", edge="rgba(237,250,255,0.19)", shine=False)
+        s.circle(195, y + 36, 19, "rgba(132,221,235,0.14)", "rgba(244,252,255,0.2)")
+        s.text(189, y + 42, str(i + 1), 12, accent, bold=True)
+        s.text(231, y + 30, name, 13, WHITE, bold=True)
+        s.text(231, y + 51, address, 10, SECONDARY)
+        s.text(711, y + 42, players, 10, SECONDARY)
+        s.circle(872, y + 36, 4, accent if ping != "—" else ROSE, "none", 0)
+        s.text(886, y + 42, ping, 10, accent, bold=True)
+        s.text(967, y + 43, "JOIN  ›", 9, AQUA, bold=True, letter_spacing=1)
+    s.panel(1072, 408, 478, 420, radius=30, tint="rgba(183,219,241,0.10)")
+    s.label(1110, 451, "SERVER DETAILS")
+    s.title(1110, 490, "Cedar Valley", 22)
+    s.text(1110, 520, "A friendly survival world with room to grow.", 10, SECONDARY)
+    s.add_image(WALLPAPER_DIR / "wp_14_cozy_village.jpg", 1100, 542, 422, 126, 20)
+    s.pill(1110, 693, 100, "ONLINE", tint="rgba(99,221,165,0.14)", edge="rgba(130,236,183,0.36)", color=GREEN, size=9)
+    s.pill(1220, 693, 146, "JAVA  1.21.4", tint="rgba(190,227,245,0.10)", color=CYAN, size=9)
+    s.text(1110, 758, "18 players online  ·  32 ms ping", 10, SECONDARY)
+
+    s.save("06-multiplayer.png")
+
+
+def create_settings() -> None:
+    s = Screen("wp_08_moonlit_lake.jpg", "Settings", "SETTINGS")
+    s.label(132, 151, "CONTROL ROOM")
+    s.title(132, 194, "Settings", 31)
+    s.text(132, 221, "The details that make every session feel like yours.", 12, SECONDARY)
+    s.panel(132, 253, 328, 566, radius=30)
+    s.label(166, 297, "PREFERENCES")
+    for i, (name, glyph) in enumerate([("General", "G"), ("Appearance", "A"), ("Java & memory", "J"), ("Game renderer", "R"), ("Controls", "C"), ("Storage", "S"), ("About Aerix", "i")]):
+        y = 333 + i * 62
+        if name == "Appearance":
+            s.draw("rgba(139,231,231,0.16)", "rgba(161,247,245,0.39)", 1, f"roundrectangle 150,{y - 24} 440,{y + 26} 18,18")
+        s.circle(180, y, 13, "rgba(169,225,245,0.09)", "rgba(239,251,255,0.17)")
+        s.text(175, y + 5, glyph, 10, AQUA if name == "Appearance" else SECONDARY, bold=True)
+        s.text(208, y + 5, name, 12, WHITE if name == "Appearance" else SECONDARY, bold=name == "Appearance")
+    s.panel(485, 253, 1065, 566, radius=30, tint="rgba(192,225,243,0.105)")
+    s.label(525, 299, "APPEARANCE")
+    s.title(525, 340, "A softer kind of light.", 25)
+    s.text(525, 367, "Fine-tune the atmosphere without hiding the world behind it.", 11, SECONDARY)
+    s.panel(525, 395, 986, 111, radius=24, tint="rgba(211,236,247,0.08)", edge="rgba(239,250,255,0.2)")
+    s.circle(571, 450, 18, "rgba(108,227,225,0.16)", "rgba(165,245,241,0.45)")
+    s.text(565, 456, "✦", 16, AQUA, bold=True)
+    s.text(611, 444, "Liquid Glass", 13, WHITE, bold=True)
+    s.text(611, 467, "Translucent panels with a soft refractive edge", 10, SECONDARY)
+    s.pill(1370, 429, 104, "ENABLED  ●", tint="rgba(104,224,195,0.16)", edge="rgba(140,248,214,0.42)", color=GREEN, size=9)
+    s.text(525, 554, "WALLPAPER DIM", 10, WHITE, bold=True, letter_spacing=1)
+    s.text(525, 577, "Keep the art visible through the glass surfaces.", 10, SECONDARY)
+    s.line(525, 600, 1498, 600, "rgba(255,255,255,0.12)", 2)
+    s.line(525, 600, 1188, 600, AQUA, 4)
+    s.circle(1188, 600, 10, AQUA, "rgba(255,255,255,0.8)", 2)
+    s.text(1470, 581, "68%", 11, AQUA, bold=True)
+    s.text(525, 648, "BACKGROUND BLUR", 10, WHITE, bold=True, letter_spacing=1)
+    s.text(525, 671, "A light, cached blur for a calm sense of depth.", 10, SECONDARY)
+    s.pill(525, 692, 120, "OFF  /  SHARP", tint="rgba(144,226,246,0.13)", edge="rgba(172,239,250,0.35)", color=CYAN, size=9)
+    s.pill(654, 692, 110, "SUBTLE", tint="rgba(201,231,245,0.075)", size=9)
+    s.pill(773, 692, 110, "BALANCED", tint="rgba(201,231,245,0.075)", size=9)
+    s.panel(525, 751, 986, 45, radius=21, tint="rgba(171,219,241,0.07)", edge="rgba(237,250,255,0.16)", shine=False)
+    s.text(548, 780, "PERFORMANCE NOTE", 9, AQUA, bold=True, letter_spacing=1)
+    s.text(713, 780, "Reflections are cached; no live full-screen blur.", 10, SECONDARY)
+
+    s.save("07-settings.png")
+
+
+def create_wallpapers() -> None:
+    s = Screen("wp_13_frozen_glacier.jpg", "Wallpaper studio", "WALLPAPERS")
+    s.label(132, 151, "ATMOSPHERE STUDIO")
+    s.title(132, 194, "Set the mood.", 31)
+    s.text(132, 221, "Your world is the wallpaper. Let the glass do the framing.", 12, SECONDARY)
+    s.panel(132, 253, 920, 500, radius=34)
+    s.add_image(WALLPAPER_DIR / "wp_13_frozen_glacier.jpg", 146, 267, 892, 472, 28)
+    s.draw("rgba(5,14,25,0.15)", "none", 0, "roundrectangle 146,267 1038,739 28,28")
+    s.pill(172, 291, 154, "CURRENT WALLPAPER", tint="rgba(7,18,29,0.58)", edge="rgba(236,250,255,0.35)", color=WHITE, size=9)
+    s.text(172, 710, "FROSTED BLUE  /  HIGH CONTRAST", 9, WHITE, bold=True, letter_spacing=1)
+    s.panel(1075, 253, 475, 500, radius=32)
+    s.label(1110, 298, "GLASS FINISH")
+    s.title(1110, 338, "A clear view,", 21)
+    s.title(1110, 365, "with a little glow.", 21)
+    s.text(1110, 402, "Wallpaper visibility", 10, SECONDARY)
+    s.line(1110, 432, 1512, 432, "rgba(255,255,255,0.14)", 3)
+    s.line(1110, 432, 1364, 432, CYAN, 4)
+    s.circle(1364, 432, 9, CYAN, "rgba(255,255,255,0.8)", 2)
+    s.text(1471, 410, "63%", 10, CYAN, bold=True)
+    s.text(1110, 474, "BACKDROP SOFTENING", 10, SECONDARY, bold=True, letter_spacing=1)
+    s.pill(1110, 495, 114, "CRYSTAL CLEAR", tint="rgba(135,224,239,0.15)", edge="rgba(178,240,250,0.35)", color=CYAN, size=8)
+    s.pill(1235, 495, 88, "SOFT", tint="rgba(211,236,247,0.08)", size=9)
+    s.pill(1332, 495, 88, "DREAMY", tint="rgba(211,236,247,0.08)", size=9)
+    s.text(1110, 565, "FAVOURITES", 10, WHITE, bold=True, letter_spacing=1)
+    for i, wall in enumerate(["wp_04_crystal_river.jpg", "wp_02_cherry_blossom.jpg", "wp_14_cozy_village.jpg", "wp_17_night_clouds.jpg"]):
+        s.add_image(WALLPAPER_DIR / wall, 1110 + i * 100, 583, 88, 72, 15)
+    s.line(1110, 684, 1512, 684)
+    s.button(1110, 706, 192, "APPLY WALLPAPER", fill=AQUA, height=38, size=10)
+    s.text(1326, 730, "RESTORE DEFAULT", 9, SECONDARY, bold=True, letter_spacing=1)
+    s.label(132, 797, "AERIX WALLPAPER COLLECTION")
+    for i, (wall, name) in enumerate([("wp_02_cherry_blossom.jpg", "Cherry hush"), ("wp_07_ocean_arch.jpg", "Tidal glass"), ("wp_14_cozy_village.jpg", "Cedar glow"), ("wp_20_sakura_sunbeams.jpg", "Sakura light")]):
+        x = 350 + i * 302
+        s.add_image(WALLPAPER_DIR / wall, x, 768, 270, 92, 17)
+        s.text(x + 10, 850, name, 10, WHITE, bold=True)
+
+    s.save("08-wallpapers.png")
+
+
+def create_account() -> None:
+    s = Screen("wp_20_sakura_sunbeams.jpg", "Account & skin studio", "HOME")
+    s.label(132, 151, "IDENTITY STUDIO")
+    s.title(132, 194, "Your look. Your legend.", 31)
+    s.text(132, 221, "Accounts, character style, and the small details that make the game yours.", 12, SECONDARY)
+    s.panel(132, 253, 420, 571, radius=32)
+    s.label(169, 298, "LINKED ACCOUNT", AQUA)
+    avatar = RESOURCE_DIR / "img_avatar_entitybrian.png"
+    s.add_image(avatar, 215, 335, 250, 250, 125)
+    s.circle(434, 546, 12, GREEN, "rgba(233,255,246,0.8)", 2)
+    s.text(169, 625, "EntityBrian69", 22, WHITE, bold=True)
+    s.text(169, 653, "Microsoft account  ·  Connected", 10, SECONDARY)
+    s.pill(169, 679, 108, "VERIFIED", tint="rgba(103,224,177,0.13)", edge="rgba(141,242,206,0.38)", color=GREEN, size=9)
+    s.line(169, 729, 515, 729)
+    s.text(169, 763, "SWITCH ACCOUNT", 9, AQUA, bold=True, letter_spacing=1)
+    s.text(389, 763, "MANAGE  →", 9, SECONDARY, bold=True, letter_spacing=1)
+    s.panel(577, 253, 973, 571, radius=32)
+    s.add_image(WALLPAPER_DIR / "wp_07_ocean_arch.jpg", 591, 267, 945, 300, 25)
+    s.draw("rgba(7,17,29,0.26)", "none", 0, "roundrectangle 591,267 1536,567 25,25")
+    s.label(628, 312, "SKIN ATELIER")
+    s.title(628, 356, "A new layer of you.", 28)
+    s.text(628, 387, "Preview a skin before it joins your next adventure.", 11, SECONDARY)
+    # Stylized, pixel-inspired character preview built from crisp shapes.
+    s.panel(1190, 292, 264, 236, radius=24, tint="rgba(192,226,243,0.10)", edge="rgba(239,250,255,0.22)")
+    s.draw("#B98261", "#F0C3A1", 2, "rectangle 1281,327 1365,411")
+    s.draw("#382D46", "none", 0, "rectangle 1270,309 1377,342")
+    s.draw("#3A7F79", "#A8ECE2", 2, "rectangle 1268,411 1378,499")
+    s.draw("#34445C", "none", 0, "rectangle 1272,498 1317,527")
+    s.draw("#34445C", "none", 0, "rectangle 1330,498 1375,527")
+    s.text(628, 622, "CURRENT SKIN", 9, MUTED, bold=True, letter_spacing=1)
+    s.text(628, 649, "Wanderer in Moss", 15, WHITE, bold=True)
+    s.text(628, 676, "Classic model  ·  64 × 64", 10, SECONDARY)
+    s.button(628, 720, 177, "CHANGE SKIN", fill=AQUA, height=40, size=10)
+    s.text(832, 746, "OPEN WARDROBE  ↗", 9, SECONDARY, bold=True, letter_spacing=1)
+    s.pill(1322, 720, 158, "PREVIEW ACTIVE", tint="rgba(110,229,192,0.14)", edge="rgba(144,245,214,0.38)", color=GREEN, size=9)
+
+    s.save("09-account-skin.png")
+
+
+def create_instance_control() -> None:
+    s = Screen("wp_03_sunset_river.jpg", "Instance control center", "LIBRARY")
+    s.label(132, 151, "LIBRARY  /  VALLEY OF ECHOES")
+    s.title(132, 194, "Valley of Echoes", 31)
+    s.text(132, 221, "One profile. Every file, mod, setting, and launch detail in one calm place.", 12, SECONDARY)
+    s.panel(132, 253, 1418, 219, radius=32)
+    s.add_image(WALLPAPER_DIR / "wp_03_sunset_river.jpg", 146, 267, 1390, 191, 25)
+    s.draw("rgba(5,15,26,0.58)", "none", 0, "roundrectangle 146,267 1536,458 25,25")
+    s.label(183, 310, "FABRIC  1.20.1  /  PROFILE ACTIVE", AQUA)
+    s.title(183, 357, "A place to call home.", 29)
+    s.text(183, 389, "Last played today  ·  18 mods  ·  2.4 GB", 11, SECONDARY)
+    s.button(1275, 322, 210, "▶  LAUNCH PROFILE", fill=AQUA, height=48, size=11)
+    s.text(1285, 399, "PROFILE SETTINGS  ⚙", 9, WHITE, bold=True, letter_spacing=1)
+    lower = [
+        (132, 500, 442, "MODS & CONTENT", "18 enabled", "Manage, update, or inspect dependencies", "M", CYAN),
+        (597, 500, 442, "FILES & WORLDS", "6 worlds", "Open saves, exports, screenshots, and logs", "F", VIOLET),
+        (1062, 500, 488, "RUNTIME & PERFORMANCE", "LTW  ·  1.17+", "Tune memory, renderer, and compatibility", "R", AQUA),
     ]
-    for i, (n, name, detail, art, accent) in enumerate(categories):
-        x = 132 + i * 356
-        m.panel(x, 648, 336, 188, 24, "rgba(118,167,189,0.14)")
-        m.image(wallpaper(art), x + 11, 659, 314, 108, 17)
-        m.photo_dim(x + 11, 659, 314, 108, 17, 0.14)
-        m.text(x + 20, 798, name, 16, WHITE, True)
-        m.text(x + 20, 820, detail, 10, MUTED)
-        m.circle(x + 304, 803, 10, f"rgba(143,230,235,0.25)")
-        m.text(x + 300, 808, "›", 13, accent, True)
-    return m.finish("04-discover.png")
+    for x, y, width, title, count, sub, icon, accent in lower:
+        s.panel(x, y, width, 181, radius=27, tint="rgba(195,228,244,0.10)")
+        s.circle(x + 46, y + 48, 20, "rgba(153,220,241,0.14)", "rgba(232,249,255,0.24)")
+        s.text(x + 40, y + 54, icon, 15, accent, bold=True)
+        s.text(x + 82, y + 44, title, 10, WHITE, bold=True, letter_spacing=1)
+        s.text(x + 82, y + 71, count, 12, accent, bold=True)
+        s.text(x + 28, y + 118, sub, 10, SECONDARY)
+        s.text(x + width - 54, y + 156, "OPEN  ›", 9, AQUA, bold=True, letter_spacing=1)
+    s.panel(132, 710, 1418, 114, radius=27, tint="rgba(188,222,240,0.08)")
+    s.label(166, 750, "RECENT ACTIVITY")
+    s.text(166, 781, "Updated Sodium  ·  Saved new world  ·  Crash report ready", 11, SECONDARY)
+    s.pill(1236, 744, 136, "VIEW LOGS  ↗", tint="rgba(206,231,245,0.10)", color=WHITE, size=9)
+    s.pill(1384, 744, 130, "EXPORT PROFILE", tint="rgba(185,162,255,0.16)", edge="rgba(220,204,255,0.35)", color=VIOLET, size=9)
 
-
-def mod_details() -> Path:
-    m = Mockup(wallpaper("wp_01_lush_caves.jpg"), "Mod details", "DISCOVER")
-    m.title("MOD / DETAIL VIEW", "Make the world feel like yours", "A clear, considered install page with the information you actually need.")
-    m.panel(132, 232, 892, 389, 30, "rgba(128,177,198,0.15)")
-    m.image(wallpaper("wp_19_sinkhole_falls.jpg"), 148, 248, 860, 354, 24)
-    m.photo_dim(148, 248, 860, 354, 24, 0.12)
-    m.panel_outline(132, 232, 892, 389, 30)
-    m.pill(170, 272, 141, 34, "MODRINTH  ·  FABRIC", "rgba(144,238,231,0.18)", "rgba(228,255,252,0.36)", CYAN, 9)
-    m.text(170, 356, "Wildwood", 42, WHITE, True)
-    m.text(172, 390, "An atmosphere worth getting lost in.", 14, MUTED)
-    m.pill(170, 540, 129, 38, "1.21.4", "rgba(228,244,250,0.10)", "rgba(243,252,255,0.28)", WHITE, 11)
-    m.pill(311, 540, 154, 38, "WORLD GENERATION", "rgba(228,244,250,0.10)", "rgba(243,252,255,0.28)", WHITE, 9)
-    m.panel(1052, 232, 496, 389, 29, "rgba(138,176,198,0.17)")
-    m.text(1086, 278, "PROJECT OVERVIEW", 10, CYAN, True, 1.3)
-    m.text(1086, 320, "Wildwood", 27, WHITE, True)
-    m.text(1086, 348, "by Team Meadow", 12, MUTED)
-    m.text(1086, 385, "Explore lush clearings and deep caves,", 12, WHITE)
-    m.text(1086, 405, "with quiet places worth finding.", 12, WHITE)
-    m.pill(1086, 424, 108, 34, "★  4.9", "rgba(255,205,139,0.12)", "rgba(255,228,177,0.30)", AMBER, 10)
-    m.pill(1205, 424, 132, 34, "2.4M DOWNLOADS", "rgba(228,244,250,0.07)", "rgba(243,252,255,0.20)", MUTED, 9)
-    m.text(1086, 490, "SUPPORTED VERSIONS", 10, QUIET, True, 1)
-    m.text(1086, 514, "1.20.1  ·  1.20.4  ·  1.21.4", 12, WHITE, True)
-    m.button(1086, 548, 244, 44, "INSTALL TO LIBRARY", CYAN, INK, 12)
-    m.pill(1343, 548, 174, 44, "ADD TO FAVORITES", "rgba(226,243,250,0.07)", "rgba(242,252,255,0.23)", WHITE, 10)
-    m.panel(132, 650, 1416, 186, 27, "rgba(116,168,190,0.13)")
-    m.text(168, 690, "Compatibility, in plain language", 18, WHITE, True)
-    m.text(168, 720, "Every dependency is checked before install. Your existing worlds remain untouched.", 12, MUTED)
-    facts = [("GAME VERSION", "1.20.1—1.21.4"), ("REQUIRES", "Fabric API"), ("LAST UPDATED", "2 days ago"), ("SOURCE", "Modrinth")]
-    for i, (key, value) in enumerate(facts):
-        x = 168 + i * 330
-        m.text(x, 773, key, 9, QUIET, True, 1)
-        m.text(x, 803, value, 14, CYAN if i == 0 else WHITE, True)
-    return m.finish("05-mod-details.png")
-
-
-def multiplayer() -> Path:
-    m = Mockup(wallpaper("wp_17_night_clouds.jpg"), "Multiplayer", "SERVERS")
-    m.title("YOUR PEOPLE ARE HERE", "A place for the next session", "Keep favorite servers close and join without breaking your flow.")
-    m.panel(132, 229, 1416, 166, 30, "rgba(115,161,190,0.17)")
-    m.image(wallpaper("wp_08_moonlit_lake.jpg"), 1070, 243, 459, 138, 20)
-    m.photo_dim(1070, 243, 459, 138, 20, 0.20)
-    m.text(170, 271, "QUICK CONNECT", 10, CYAN, True, 1.3)
-    m.text(170, 318, "Join a world together.", 24, WHITE, True)
-    m.text(170, 348, "Paste an address, or choose a familiar server below.", 12, MUTED)
-    m.rect(170, 360, 605, 1, "rgba(237,250,255,0.20)")
-    m.text(182, 383, "play.example.net", 12, WHITE)
-    m.button(793, 344, 208, 42, "CONNECT", CYAN, INK, 12)
-    m.panel(132, 417, 890, 419, 28, "rgba(126,172,195,0.14)")
-    m.text(166, 461, "FAVORITE SERVERS", 11, CYAN, True, 1.2)
-    m.pill(827, 434, 162, 38, "+  ADD SERVER", "rgba(144,238,231,0.16)", "rgba(230,255,253,0.35)", CYAN, 10)
-    servers = [
-        ("Lunar Grove", "play.lunargrove.net", "1.21.4", "34 ms", GREEN),
-        ("The Orchard", "mc.theorchard.org", "1.21.3", "68 ms", CYAN),
-        ("Cinder Realms", "play.cinderrealms.com", "1.20.4", "112 ms", AMBER),
-        ("Cloud District", "join.clouddistrict.gg", "1.21.4", "—", VIOLET),
-    ]
-    for i, (name, address, version, ping, accent) in enumerate(servers):
-        y = 493 + i * 78
-        m.rect(161, y, 832, 66, "rgba(222,241,248,0.05)", "rgba(240,251,255,0.16)", 18, 1)
-        m.circle(193, y + 32, 15, f"{accent}44", f"{accent}99", 1)
-        m.text(188, y + 37, "S", 11, accent, True)
-        m.text(224, y + 27, name, 14, WHITE, True)
-        m.text(224, y + 47, address, 10, MUTED)
-        m.pill(684, y + 18, 77, 30, version, "rgba(230,246,252,0.07)", "rgba(240,250,255,0.17)", MUTED, 9)
-        m.circle(798, y + 32, 4, accent)
-        m.text(811, y + 37, ping, 11, accent, True)
-        m.text(954, y + 41, "›", 21, WHITE, True)
-    m.panel(1052, 417, 496, 419, 28, "rgba(133,169,193,0.16)")
-    m.text(1086, 461, "SERVER SIGNAL", 10, CYAN, True, 1.2)
-    m.text(1086, 506, "Lunar Grove", 24, WHITE, True)
-    m.text(1086, 533, "play.lunargrove.net", 12, MUTED)
-    m.line(1086, 553, 1514, 553, "rgba(240,250,255,0.18)")
-    m.circle(1101, 591, 5, GREEN)
-    m.text(1118, 596, "ONLINE  ·  42 / 100 PLAYERS", 11, GREEN, True)
-    m.text(1086, 633, "A friendly survival community with seasonal events.", 11, WHITE)
-    m.text(1086, 651, "A place to build and play together.", 11, WHITE)
-    m.pill(1086, 699, 134, 38, "SURVIVAL", "rgba(228,245,251,0.07)", "rgba(239,251,255,0.18)", MUTED, 9)
-    m.pill(1232, 699, 138, 38, "COMMUNITY", "rgba(228,245,251,0.07)", "rgba(239,251,255,0.18)", MUTED, 9)
-    m.button(1086, 762, 232, 44, "JOIN THIS SERVER", CYAN, INK, 12)
-    return m.finish("06-multiplayer.png")
-
-
-def settings() -> Path:
-    m = Mockup(wallpaper("wp_20_sakura_sunbeams.jpg"), "Settings", "SETTINGS")
-    m.title("MAKE IT YOURS", "A launcher that feels like home", "Thoughtful controls for appearance, performance, game files and your account.")
-    m.panel(132, 232, 322, 606, 28, "rgba(118,166,191,0.15)")
-    categories = ["Appearance", "Background & glass", "Game", "Performance", "Java runtime", "Storage", "Accounts", "About Aerix"]
-    for i, label in enumerate(categories):
-        y = 273 + i * 62
-        selected = i == 1
-        if selected:
-            m.rect(151, y - 28, 284, 50, "rgba(142,240,232,0.16)", "rgba(226,255,252,0.34)", 19, 1)
-        m.circle(177, y - 3, 8, "rgba(149,230,241,0.14)", "rgba(229,247,255,0.23)", 1)
-        m.text(197, y + 2, label, 13, CYAN if selected else MUTED, selected)
-        if selected:
-            m.text(407, y + 3, "›", 17, CYAN, True)
-    m.panel(480, 232, 1068, 606, 28, "rgba(139,177,199,0.16)")
-    m.text(520, 279, "Background & glass", 24, WHITE, True)
-    m.text(520, 309, "Set the atmosphere. The wallpaper stays sharp when blur is off.", 12, MUTED)
-    m.line(520, 332, 1508, 332, "rgba(241,251,255,0.18)")
-    settings_rows = [
-        ("Wallpaper", "Moonlit lake", "Change the scene behind the glass"),
-        ("Liquid glass", "On", "Reflections, soft edges and translucent layers"),
-        ("Background blur", "0", "Keep the wallpaper crisp and interactions light"),
-        ("Reduce motion", "Off", "Use short, restrained transitions"),
-    ]
-    for i, (name, value, detail) in enumerate(settings_rows):
-        y = 379 + i * 92
-        m.text(520, y, name, 14, WHITE, True)
-        m.text(520, y + 24, detail, 11, MUTED)
-        if i == 0:
-            m.pill(1230, y - 18, 240, 42, value + "  ▾", "rgba(224,242,249,0.06)", "rgba(241,251,255,0.18)", WHITE, 12, False)
-        elif i == 2:
-            m.rect(1230, y - 2, 202, 5, "rgba(227,242,249,0.22)", radius=3)
-            m.rect(1230, y - 2, 18, 5, CYAN, radius=3)
-            m.circle(1248, y, 10, CYAN, "rgba(255,255,255,0.66)", 1)
-            m.text(1454, y + 5, "0", 12, WHITE, True)
-        else:
-            on = i == 1
-            m.rect(1409, y - 12, 61, 32, "rgba(143,239,231,0.37)" if on else "rgba(231,244,250,0.08)", "rgba(235,250,255,0.25)", 16, 1)
-            m.circle(1450 if on else 1428, y + 4, 10, CYAN if on else MUTED)
-            m.text(1372, y + 5, value, 10, CYAN if on else MUTED, True)
-        if i < len(settings_rows) - 1:
-            m.line(520, y + 49, 1508, y + 49, "rgba(237,249,255,0.13)")
-    m.text(520, 763, "PREVIEW", 10, CYAN, True, 1.2)
-    m.panel(520, 778, 988, 42, 18, "rgba(206,233,243,0.08)", "rgba(244,252,255,0.22)")
-    m.text(541, 805, "Sharp wallpaper   ·   Translucent panes   ·   Cached reflections", 11, MUTED)
-    m.text(1422, 805, "LIVE", 9, GREEN, True, 1)
-    return m.finish("07-settings.png")
-
-
-def wallpapers() -> Path:
-    m = Mockup(wallpaper("wp_02_cherry_blossom.jpg"), "Wallpapers", "WALLPAPERS")
-    m.title("SET THE ATMOSPHERE", "A little world behind the glass", "Choose a backdrop with enough room for the launcher to breathe.")
-    m.panel(132, 228, 921, 507, 30, "rgba(115,161,188,0.17)")
-    m.image(wallpaper("wp_02_cherry_blossom.jpg"), 148, 244, 889, 475, 25)
-    m.photo_dim(148, 244, 889, 475, 25, 0.10)
-    m.panel_outline(132, 228, 921, 507, 30)
-    m.pill(177, 275, 147, 36, "CURRENT WALLPAPER", "rgba(12,24,36,0.48)", "rgba(243,252,255,0.34)", WHITE, 9)
-    m.text(177, 676, "Cherry blossom valley", 23, WHITE, True)
-    m.text(178, 702, "By the Aerix landscape collection", 12, WHITE)
-    m.panel(1080, 228, 468, 507, 28, "rgba(137,175,197,0.17)")
-    m.text(1114, 274, "GLASS & MOTION", 10, CYAN, True, 1.2)
-    m.text(1114, 320, "Wallpaper opacity", 14, WHITE, True)
-    m.rect(1114, 342, 364, 5, "rgba(226,242,249,0.20)", radius=3)
-    m.rect(1114, 342, 284, 5, CYAN, radius=3)
-    m.circle(1398, 344, 10, CYAN, "rgba(255,255,255,0.6)", 1)
-    m.text(1487, 349, "78%", 11, WHITE, True)
-    m.text(1114, 390, "Background blur", 14, WHITE, True)
-    m.pill(1114, 406, 110, 38, "OFF", "rgba(143,238,231,0.18)", "rgba(229,255,252,0.35)", CYAN, 10)
-    m.pill(1233, 406, 110, 38, "SUBTLE", "rgba(222,240,248,0.06)", "rgba(241,251,255,0.18)", MUTED, 10)
-    m.pill(1352, 406, 150, 38, "SOFT FOCUS", "rgba(222,240,248,0.06)", "rgba(241,251,255,0.18)", MUTED, 10)
-    m.text(1114, 485, "LIQUID GLASS PREVIEW", 10, QUIET, True, 1)
-    m.panel(1114, 501, 400, 118, 23, "rgba(177,220,238,0.13)")
-    m.text(1138, 542, "Reflected light, not heavy blur.", 13, WHITE, True)
-    m.text(1138, 570, "Your wallpaper stays sharp at zero.", 11, MUTED)
-    m.button(1114, 660, 192, 44, "APPLY WALLPAPER", CYAN, INK, 12)
-    m.pill(1318, 660, 196, 44, "RESTORE DEFAULT", "rgba(225,242,249,0.06)", "rgba(241,251,255,0.20)", WHITE, 10)
-    gallery = [
-        ("Crystal river", "wp_04_crystal_river.jpg", False),
-        ("Ocean arch", "wp_07_ocean_arch.jpg", False),
-        ("Moonlit lake", "wp_08_moonlit_lake.jpg", False),
-        ("Cherry bee", "wp_11_cherry_bee.jpg", True),
-        ("Snow valley", "wp_12_snowy_valley.jpg", False),
-    ]
-    for i, (name, art, selected) in enumerate(gallery):
-        x = 132 + i * 285
-        m.panel(x, 760, 265, 96, 20, "rgba(117,164,187,0.13)", "rgba(230,250,255,0.30)" if selected else "rgba(241,251,255,0.18)")
-        m.image(wallpaper(art), x + 9, 769, 247, 56, 13)
-        m.text(x + 15, 846, name, 11, CYAN if selected else WHITE, True)
-    return m.finish("08-wallpapers.png")
-
-
-def accounts_skin() -> Path:
-    m = Mockup(wallpaper("wp_14_cozy_village.jpg"), "Account & skin", "HOME")
-    m.title("YOUR PRESENCE", "A familiar face in every world", "Manage linked accounts and make your player skin feel unmistakably yours.")
-    m.panel(132, 230, 427, 606, 30, "rgba(127,172,196,0.16)")
-    avatar = DRAWABLES / "img_avatar_entitybrian.png"
-    m.image(avatar, 283, 263, 128, 128, 64)
-    m.circle(418, 367, 10, GREEN, "rgba(255,255,255,0.70)", 1)
-    m.text(167, 435, "MICROSOFT ACCOUNT", 10, CYAN, True, 1.3)
-    m.text(167, 476, "EntityBrian69", 25, WHITE, True)
-    m.text(167, 502, "Connected  ·  Verified", 12, GREEN, True)
-    m.line(167, 527, 524, 527, "rgba(240,251,255,0.18)")
-    m.text(167, 566, "PLAYER UUID", 9, QUIET, True, 1)
-    m.text(167, 590, "72a4c13d  ·  918e  ·  4c6f", 11, WHITE)
-    m.text(167, 630, "PROFILE VISIBILITY", 9, QUIET, True, 1)
-    m.pill(167, 643, 151, 36, "PUBLIC  ·  LIVE", "rgba(145,239,231,0.13)", "rgba(222,255,252,0.30)", CYAN, 9)
-    m.button(167, 703, 212, 44, "MANAGE ACCOUNTS", CYAN, INK, 11)
-    m.pill(167, 764, 357, 42, "SIGN OUT SAFELY", "rgba(225,242,249,0.06)", "rgba(242,251,255,0.18)", MUTED, 10)
-    m.panel(587, 230, 961, 606, 30, "rgba(126,172,198,0.16)")
-    m.image(wallpaper("wp_09_flower_meadow.jpg"), 605, 248, 925, 339, 25)
-    m.photo_dim(605, 248, 925, 339, 25, 0.19)
-    m.panel_outline(587, 230, 961, 606, 30)
-    m.pill(640, 277, 129, 34, "SKIN STUDIO", "rgba(9,20,33,0.42)", "rgba(241,251,255,0.32)", WHITE, 9)
-    m.image(DRAWABLES / "img_avatar_fireplayz.png", 965, 312, 168, 168, 84)
-    m.circle(1049, 403, 85, "none", "rgba(200,248,248,0.44)", 2)
-    m.text(649, 530, "THE CRAFTSMAN", 24, WHITE, True)
-    m.text(650, 557, "A classic silhouette with your own signature.", 12, MUTED)
-    m.text(623, 632, "YOUR WARDROBE", 10, CYAN, True, 1.2)
-    skins = [("Current", CYAN), ("Explorer", BLUE), ("Builder", VIOLET), ("Seasonal", ROSE)]
-    for i, (label, accent) in enumerate(skins):
-        x = 623 + i * 216
-        m.panel(x, 649, 197, 119, 20, "rgba(228,245,250,0.055)", "rgba(155,244,236,0.50)" if i == 0 else "rgba(239,250,255,0.16)")
-        m.circle(x + 40, 690, 22, f"{accent}55", f"{accent}99", 1)
-        m.text(x + 76, 695, label, 12, CYAN if i == 0 else WHITE, True)
-        m.text(x + 21, 746, "EDIT SKIN  →", 9, MUTED, True)
-    m.button(1309, 778, 194, 42, "OPEN SKIN STUDIO", CYAN, INK, 10)
-    return m.finish("09-account-skin.png")
-
-
-def instance_detail() -> Path:
-    m = Mockup(wallpaper("wp_12_snowy_valley.jpg"), "Instance overview", "LIBRARY")
-    m.title("INSTANCE CONTROL", "Your world, from the inside out", "One place for launch settings, installed content, folders, logs and health.")
-    m.panel(132, 232, 1416, 223, 30, "rgba(126,171,195,0.17)")
-    m.image(wallpaper("wp_13_frozen_glacier.jpg"), 1002, 245, 530, 196, 23)
-    m.photo_dim(1002, 245, 530, 196, 23, 0.23)
-    m.panel_outline(132, 232, 1416, 223, 30)
-    m.text(171, 274, "ACTIVE INSTANCE  /  FABRIC", 10, CYAN, True, 1.3)
-    m.text(171, 326, "Sodium 1.20.1", 31, WHITE, True)
-    m.text(172, 354, "A tuned, lightweight profile built for a smooth session.", 13, MUTED)
-    m.pill(171, 378, 169, 42, "FABRIC  ·  32 MODS", "rgba(223,244,250,0.08)", "rgba(242,251,255,0.22)", WHITE, 10)
-    m.button(358, 377, 176, 44, "LAUNCH", CYAN, INK, 12)
-    m.pill(551, 377, 141, 44, "INSTANCE SETTINGS", "rgba(224,242,249,0.07)", "rgba(242,251,255,0.20)", WHITE, 9)
-    m.pill(710, 377, 124, 44, "OPEN FOLDER", "rgba(224,242,249,0.07)", "rgba(242,251,255,0.20)", WHITE, 9)
-    cards = [
-        (132, "CONTENT", "32 mods", "Sodium · Iris · Lithium", CYAN, "VIEW MODS"),
-        (418, "VISUALS", "4 packs", "Shader and resource profiles", BLUE, "MANAGE PACKS"),
-        (704, "SESSION HEALTH", "All clear", "Runtime and files verified", GREEN, "RUN CHECK"),
-    ]
-    for x, title, number, detail, accent, action in cards:
-        m.panel(x, 484, 268, 352, 25, "rgba(123,169,193,0.14)")
-        m.text(x + 24, 527, title, 9, accent, True, 1.2)
-        m.text(x + 24, 576, number, 24, WHITE, True)
-        m.text(x + 24, 604, detail, 11, MUTED)
-        if title == "CONTENT":
-            mods = [("Sodium", "Performance"), ("Iris", "Shaders"), ("Lithium", "Optimization")]
-            for i, (name, kind) in enumerate(mods):
-                y = 650 + i * 43
-                m.circle(x + 35, y - 5, 7, f"{accent}55", f"{accent}99", 1)
-                m.text(x + 55, y, name, 11, WHITE, True)
-                m.text(x + 186, y, kind, 9, QUIET)
-        elif title == "VISUALS":
-            for i, (name, art) in enumerate([("Lush shader", "wp_01_lush_caves.jpg"), ("Soft light", "wp_20_sakura_sunbeams.jpg")]):
-                y = 646 + i * 55
-                m.image(wallpaper(art), x + 22, y - 17, 72, 42, 10)
-                m.text(x + 107, y, name, 10, WHITE, True)
-        else:
-            checks = [("Java runtime", "Ready"), ("Game files", "Verified"), ("Memory", "Optimized")]
-            for i, (name, status) in enumerate(checks):
-                y = 652 + i * 42
-                m.circle(x + 34, y - 4, 5, GREEN)
-                m.text(x + 49, y, name, 10, WHITE)
-                m.text(x + 201, y, status, 9, GREEN, True)
-        m.pill(x + 23, 788, 221, 34, action + "   →", "rgba(225,243,250,0.055)", "rgba(241,251,255,0.18)", accent, 9)
-    m.panel(1010, 484, 538, 352, 26, "rgba(134,173,198,0.16)")
-    m.text(1044, 527, "RUNTIME & PERFORMANCE", 10, CYAN, True, 1.2)
-    m.text(1044, 573, "A balanced profile, ready for play.", 17, WHITE, True)
-    m.text(1044, 601, "The launcher keeps resource controls visible without crowding your world.", 11, MUTED)
-    metrics = [("JAVA", "21"), ("MEMORY", "4096 MB"), ("RENDERER", "LTW")]
-    for i, (label, value) in enumerate(metrics):
-        x = 1044 + i * 155
-        m.text(x, 661, label, 9, QUIET, True, 1)
-        m.text(x, 691, value, 13, WHITE, True)
-    m.rect(1044, 714, 470, 1, "rgba(241,251,255,0.18)")
-    m.text(1044, 750, "LAST SESSION", 9, QUIET, True, 1)
-    m.text(1044, 777, "Today  ·  2h 18m", 12, WHITE, True)
-    m.text(1044, 810, "OPEN LOGS  →", 9, CYAN, True, 1)
-    return m.finish("10-instance-overview.png")
+    s.save("10-instance-overview.png")
 
 
 def main() -> None:
-    OUTPUT.mkdir(parents=True, exist_ok=True)
-    generators = [home, library, create_instance, discover, mod_details, multiplayer, settings, wallpapers, accounts_skin, instance_detail]
-    for generator in generators:
-        out = generator()
-        print(out.relative_to(ROOT))
+    OUT.mkdir(parents=True, exist_ok=True)
+    create_home()
+    create_library()
+    create_new_instance()
+    create_discover()
+    create_pack_detail()
+    create_multiplayer()
+    create_settings()
+    create_wallpapers()
+    create_account()
+    create_instance_control()
+    print(f"Rendered 10 mockups to {OUT}")
 
 
 if __name__ == "__main__":

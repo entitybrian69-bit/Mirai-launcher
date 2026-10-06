@@ -2,7 +2,7 @@
  * Aerix Launcher visual tokens.
  *
  * Keep shared surface colors, spacing, and corner radii here so launcher screens
- * use the same obsidian-and-cyan glass language instead of inventing local values.
+ * share one translucent, refractive Liquid Glass language.
  */
 package com.movtery.zalithlauncher.ui.theme
 
@@ -11,26 +11,29 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object AerixSurface {
-    val canvas = Color(0xFF07121C)
-    // Translucent, blue-shifted panes let the wallpaper remain a visible part of the material.
-    val panel = Color(0xA6193042)
-    val panelRaised = Color(0xB8234054)
-    val panelTrack = Color(0x63395368)
-    val panelGlassTint = Color(0x7F24465C)
-    val border = Color(0x72E7FBFF)
-    val borderSoft = Color(0x45EAFBFF)
-    val borderHighlight = Color(0xE1E5FBFF)
-    val glassTint = Color(0xFF31546B)
-    val glassBlue = Color(0xFF8DEBFF)
-    val glassViolet = Color(0xFFB6A2FF)
-    val glassRose = Color(0xFFF4A8D8)
-    val glassShadow = Color(0x70000612)
-    val accent = Color(0xFF93F1E8)
-    val accentSecondary = Color(0xFFBDAFFF)
-    val accentGlow = Color(0x6693F1E8)
-    val accentContainer = Color(0x5536CFC8)
-    val onAccent = Color(0xFF071417)
-    val onAccentContainer = Color(0xFFBDF7F7)
+    val canvas = Color(0xFF07131D)
+    // Glass panels deliberately retain enough alpha for text contrast while allowing
+    // the wallpaper and the ambient light field to remain visible beneath them.
+    val panel = Color(0x9D172B3A)
+    val panelRaised = Color(0xB0223B4E)
+    val panelTrack = Color(0x68344F63)
+    val panelGlassTint = Color(0x7D22445A)
+    val border = Color(0x78E6FAFF)
+    val borderSoft = Color(0x48E6FAFF)
+    val borderHighlight = Color(0xE0E6FCFF)
+    val glassTint = Color(0xFF2B5063)
+    val glassBlue = Color(0xFF91E9FF)
+    val glassViolet = Color(0xFFB7A9FF)
+    val glassRose = Color(0xFFF3A9D9)
+    val auroraCyan = Color(0xFF37DCEC)
+    val auroraViolet = Color(0xFF7A71F5)
+    val glassShadow = Color(0x66000610)
+    val accent = Color(0xFF8DEFE0)
+    val accentSecondary = Color(0xFFC1B5FF)
+    val accentGlow = Color(0x668DEFE0)
+    val accentContainer = Color(0x5539C8C1)
+    val onAccent = Color(0xFF06201D)
+    val onAccentContainer = Color(0xFFBDFAF3)
     val accentLight = Color(0xFF006D73)
     val accentLightContainer = Color(0xFFA8F0F1)
     val onAccentLightContainer = Color(0xFF002021)
@@ -58,10 +61,10 @@ object AerixSurface {
     val shadowSubtle = Color(0x1A000000)
     val scrimSoft = Color(0x33000000)
     val textPrimary = Color(0xFFF1F6FA)
-    val textSecondary = Color(0xFFA8B5C2)
-    val textMuted = Color(0xFF748392)
-    val success = Color(0xFF56D99A)
-    val warning = Color(0xFFFFC857)
+    val textSecondary = Color(0xFFA8B9C5)
+    val textMuted = Color(0xFF7D909D)
+    val success = Color(0xFF73E5B0)
+    val warning = Color(0xFFFFC777)
     val danger = Color(0xFFFF7189)
     val glassShine = Color(0x48FFFFFF)
 
@@ -113,14 +116,15 @@ object AerixRadii {
 object AerixMetrics {
     val pillTabHeight: Dp = 38.dp
     val pageHeaderHeight: Dp = 44.dp
-    val shellHeaderHeight: Dp = 58.dp
+    val shellHeaderHeight: Dp = 60.dp
     val shellActionHeight: Dp = 40.dp
-    val navigationRailWidth: Dp = 70.dp
+    val navigationRailWidth: Dp = 68.dp
+    val expandedNavigationRailWidth: Dp = 78.dp
     val favoritesEmptyStateTopInset: Dp = 80.dp
     val exportTreeLabelStartInset: Dp = 46.dp
     val expandedKeyboardEndInset: Dp = 58.dp
     val assetSearchBottomInset: Dp = 58.dp
-    val glassRimInset: Dp = 16.dp
+    val glassRimInset: Dp = 14.dp
     val glassSurfaceElevation: Dp = 3.dp
     val glassFloatingElevation: Dp = 8.dp
     val glassRailElevation: Dp = 8.dp
