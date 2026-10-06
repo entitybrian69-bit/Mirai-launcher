@@ -24,7 +24,7 @@ import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.theme.AerixSurface
 
 /**
- * Adds the layered sheen and refractive rim that make a translucent surface read as
+ * Adds the layered sheen and spectral rim that make a translucent surface read as
  * glass rather than as a flat semi-transparent card.
  *
  * Apply this to a transparent [androidx.compose.material3.Surface], or to content
@@ -53,10 +53,11 @@ fun Modifier.liquidGlass(
             val longEdge = maxOf(width, height)
             val prismFill = Brush.linearGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.12f * intensity),
-                    tint.copy(alpha = 0.10f * intensity),
-                    AerixSurface.glassBlue.copy(alpha = 0.075f * intensity),
+                    Color.White.copy(alpha = 0.10f * intensity),
+                    tint.copy(alpha = 0.11f * intensity),
+                    AerixSurface.glassBlue.copy(alpha = 0.085f * intensity),
                     AerixSurface.glassViolet.copy(alpha = 0.065f * intensity),
+                    AerixSurface.glassRose.copy(alpha = 0.035f * intensity),
                     Color.Transparent
                 ),
                 start = Offset.Zero,
@@ -64,10 +65,10 @@ fun Modifier.liquidGlass(
             )
             val topReflection = Brush.verticalGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.24f * intensity),
-                    Color.White.copy(alpha = 0.08f * intensity),
+                    Color.White.copy(alpha = 0.27f * intensity),
+                    AerixSurface.glassBlue.copy(alpha = 0.10f * intensity),
                     Color.Transparent,
-                    AerixSurface.glassBlue.copy(alpha = 0.035f * intensity)
+                    AerixSurface.glassRose.copy(alpha = 0.025f * intensity)
                 ),
                 startY = 0f,
                 endY = height
@@ -94,9 +95,10 @@ fun Modifier.liquidGlass(
                 colors = listOf(
                     Color.White.copy(alpha = 0.68f * intensity),
                     Color.White.copy(alpha = 0.20f * intensity),
-                    AerixSurface.glassBlue.copy(alpha = 0.32f * intensity),
-                    AerixSurface.glassViolet.copy(alpha = 0.23f * intensity),
-                    Color.White.copy(alpha = 0.46f * intensity)
+                    AerixSurface.glassBlue.copy(alpha = 0.34f * intensity),
+                    AerixSurface.glassViolet.copy(alpha = 0.24f * intensity),
+                    AerixSurface.glassRose.copy(alpha = 0.17f * intensity),
+                    Color.White.copy(alpha = 0.48f * intensity)
                 ),
                 start = Offset.Zero,
                 end = Offset(width, height)

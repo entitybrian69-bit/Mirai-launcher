@@ -11,23 +11,24 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object AerixSurface {
-    val canvas = Color(0xFF090D13)
-    // These are deliberately translucent: the wallpaper remains visible beneath each pane.
-    val panel = Color(0xC016202C)
-    val panelRaised = Color(0xB4203040)
-    val panelTrack = Color(0x8832475A)
-    val panelGlassTint = Color(0x90283C52)
-    val border = Color(0x70E9F7FF)
-    val borderSoft = Color(0x4CEAF6FF)
-    val borderHighlight = Color(0xCCBFF7FF)
-    val glassTint = Color(0xFF27384C)
-    val glassBlue = Color(0xFF8EDBFF)
-    val glassViolet = Color(0xFFBCA5FF)
-    val glassShadow = Color(0x66000A18)
-    val accent = Color(0xFF8EEBFF)
-    val accentSecondary = Color(0xFFC0AEFF)
-    val accentGlow = Color(0x668EEBFF)
-    val accentContainer = Color(0x5539C8DB)
+    val canvas = Color(0xFF07121C)
+    // Translucent, blue-shifted panes let the wallpaper remain a visible part of the material.
+    val panel = Color(0xA6193042)
+    val panelRaised = Color(0xB8234054)
+    val panelTrack = Color(0x63395368)
+    val panelGlassTint = Color(0x7F24465C)
+    val border = Color(0x72E7FBFF)
+    val borderSoft = Color(0x45EAFBFF)
+    val borderHighlight = Color(0xE1E5FBFF)
+    val glassTint = Color(0xFF31546B)
+    val glassBlue = Color(0xFF8DEBFF)
+    val glassViolet = Color(0xFFB6A2FF)
+    val glassRose = Color(0xFFF4A8D8)
+    val glassShadow = Color(0x70000612)
+    val accent = Color(0xFF93F1E8)
+    val accentSecondary = Color(0xFFBDAFFF)
+    val accentGlow = Color(0x6693F1E8)
+    val accentContainer = Color(0x5536CFC8)
     val onAccent = Color(0xFF071417)
     val onAccentContainer = Color(0xFFBDF7F7)
     val accentLight = Color(0xFF006D73)
@@ -99,31 +100,31 @@ object AerixRadii {
     val compact: Dp = 8.dp
     val controlSmall: Dp = 10.dp
     val control: Dp = 12.dp
-    val cardSmall: Dp = 14.dp
-    val card: Dp = 16.dp
-    val cardLarge: Dp = 18.dp
-    val panelSmall: Dp = 20.dp
-    val panel: Dp = 22.dp
-    val dialog: Dp = 24.dp
-    val hero: Dp = 28.dp
+    val cardSmall: Dp = 16.dp
+    val card: Dp = 18.dp
+    val cardLarge: Dp = 20.dp
+    val panelSmall: Dp = 22.dp
+    val panel: Dp = 24.dp
+    val dialog: Dp = 28.dp
+    val hero: Dp = 32.dp
     val pill: Dp = 50.dp
 }
 
 object AerixMetrics {
     val pillTabHeight: Dp = 38.dp
     val pageHeaderHeight: Dp = 44.dp
-    val shellHeaderHeight: Dp = 56.dp
+    val shellHeaderHeight: Dp = 58.dp
     val shellActionHeight: Dp = 40.dp
-    val navigationRailWidth: Dp = 64.dp
+    val navigationRailWidth: Dp = 70.dp
     val favoritesEmptyStateTopInset: Dp = 80.dp
     val exportTreeLabelStartInset: Dp = 46.dp
     val expandedKeyboardEndInset: Dp = 58.dp
     val assetSearchBottomInset: Dp = 58.dp
-    val glassRimInset: Dp = 14.dp
-    val glassSurfaceElevation: Dp = 6.dp
-    val glassFloatingElevation: Dp = 14.dp
-    val glassRailElevation: Dp = 16.dp
-    val glassDialogElevation: Dp = 12.dp
-    val glassSelectedElevation: Dp = 4.dp
-    val glassSubtleElevation: Dp = 2.dp
+    val glassRimInset: Dp = 16.dp
+    val glassSurfaceElevation: Dp = 3.dp
+    val glassFloatingElevation: Dp = 8.dp
+    val glassRailElevation: Dp = 8.dp
+    val glassDialogElevation: Dp = 8.dp
+    val glassSelectedElevation: Dp = 1.dp
+    val glassSubtleElevation: Dp = 0.dp
 }

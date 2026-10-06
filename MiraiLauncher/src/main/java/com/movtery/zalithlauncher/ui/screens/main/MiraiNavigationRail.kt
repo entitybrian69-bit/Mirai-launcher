@@ -97,14 +97,15 @@ fun MiraiNavigationRail(
                 .fillMaxHeight()
                 .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.smPlus)
                 .liquidGlass(
-                    shape = CircleShape,
+                    shape = RoundedCornerShape(AerixRadii.pill),
                     tint = AerixSurface.glassTint,
-                    strength = 0.94f,
+                    strength = 1f,
                     elevation = AerixMetrics.glassRailElevation
                 ),
-            shape = CircleShape,
+            shape = RoundedCornerShape(AerixRadii.pill),
             color = Color.Transparent,
-            contentColor = Color.White
+            contentColor = Color.White,
+            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
         ) {
             Column(
                 modifier = Modifier
@@ -117,8 +118,20 @@ fun MiraiNavigationRail(
                 // Aerix 'M' Logo Button
                 Box(
                     modifier = Modifier
-                        .size(38.dp)
-                        .clip(RoundedCornerShape(AerixRadii.control))
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(AerixRadii.panelSmall))
+                        .background(activeAccent.copy(alpha = 0.18f))
+                        .liquidGlass(
+                            shape = RoundedCornerShape(AerixRadii.panelSmall),
+                            tint = activeAccent,
+                            strength = 1f,
+                            elevation = AerixMetrics.glassSelectedElevation
+                        )
+                        .border(
+                            AerixSpacing.hairline,
+                            AerixSurface.borderHighlight.copy(alpha = 0.72f),
+                            RoundedCornerShape(AerixRadii.panelSmall)
+                        )
                         .clickable(role = Role.Button) { onNavigate(LauncherSection.HOME) }
                         .semantics { contentDescription = "Aerix Home" },
                     contentAlignment = Alignment.Center
@@ -146,6 +159,7 @@ fun MiraiNavigationRail(
                     label = "New Instance",
                     selected = false,
                     accentColor = activeAccent,
+                    emphasized = true,
                     onClick = onCreateInstance
                 )
 
@@ -212,39 +226,53 @@ private fun RailIconItem(
     label: String,
     selected: Boolean,
     accentColor: Color,
+    emphasized: Boolean = false,
     onClick: () -> Unit
 ) {
+    val active = selected || emphasized
     val containerColor by animateColorAsState(
-        targetValue = if (selected) accentColor.copy(alpha = 0.18f) else Color.Transparent,
-        animationSpec = tween(140),
+        targetValue = when {
+            emphasized -> accentColor.copy(alpha = 0.78f)
+            selected -> accentColor.copy(alpha = 0.18f)
+            else -> Color.Transparent
+        },
+        animationSpec = tween(150),
         label = "railContainerColor"
     )
     val iconTint by animateColorAsState(
-        targetValue = if (selected) accentColor else AerixSurface.textSecondary,
-        animationSpec = tween(140),
+        targetValue = when {
+            emphasized -> AerixSurface.onAccent
+            selected -> accentColor
+            else -> AerixSurface.textSecondary
+        },
+        animationSpec = tween(150),
         label = "railIconTint"
     )
+    val shape = RoundedCornerShape(AerixRadii.panelSmall)
 
     Box(
         modifier = Modifier
-            .size(width = 42.dp, height = 38.dp)
-            .clip(RoundedCornerShape(AerixRadii.control))
+            .size(width = 46.dp, height = 42.dp)
+            .clip(shape)
             .background(containerColor)
             .then(
-                if (selected) {
+                if (active) {
                     Modifier.liquidGlass(
-                        shape = RoundedCornerShape(AerixRadii.control),
+                        shape = shape,
                         tint = accentColor,
-                        strength = 0.9f,
+                        strength = if (emphasized) 1f else 0.94f,
                         elevation = AerixMetrics.glassSubtleElevation
                     )
                 } else Modifier
             )
             .then(
-                if (selected) {
+                if (selected || emphasized) {
                     Modifier.border(
-                        BorderStroke(1.5.dp, accentColor.copy(alpha = 0.75f)),
-                        RoundedCornerShape(AerixRadii.control)
+                        BorderStroke(
+                            width = if (selected) 1.5.dp else AerixSpacing.hairline,
+                            color = if (emphasized) Color.White.copy(alpha = 0.68f) else accentColor.copy(alpha = 0.72f)
+                        ),
+                        shape
                     )
                 } else Modifier
             )

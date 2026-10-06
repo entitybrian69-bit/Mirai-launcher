@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,7 @@ import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.AerixPillTab
 import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
+import com.movtery.zalithlauncher.ui.components.AerixSectionHeader
 import com.movtery.zalithlauncher.ui.screens.NestedNavKey
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
 import com.movtery.zalithlauncher.ui.screens.TitledNavKey
@@ -170,25 +173,31 @@ private fun NavigationUI(
             if (useLandscapeCategories) {
                 Surface(
                     modifier = Modifier
-                        .width(204.dp)
+                        .width(224.dp)
                         .fillMaxHeight()
                         .liquidGlass(
-                            shape = RoundedCornerShape(AerixRadii.card),
+                            shape = RoundedCornerShape(AerixRadii.panel),
                             tint = AerixSurface.glassTint,
-                            strength = 0.88f,
+                            strength = 0.98f,
                             elevation = AerixMetrics.glassFloatingElevation
                         ),
-                    shape = RoundedCornerShape(AerixRadii.card),
-                    color = AerixSurface.panel.copy(alpha = 0.66f),
+                    shape = RoundedCornerShape(AerixRadii.panel),
+                    color = Color.Transparent,
                     border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
-                            .padding(AerixSpacing.sm),
+                            .padding(AerixSpacing.md),
                         verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                     ) {
+                        AerixSectionHeader(
+                            title = "Discover",
+                            subtitle = "Curated for your next world",
+                            modifier = Modifier.padding(horizontal = AerixSpacing.sm)
+                        )
+                        HorizontalDivider(color = AerixSurface.borderSoft)
                         categories.forEach { category ->
                             val selected = stackTopKey?.javaClass == category.target.javaClass
                             DiscoverCategoryPill(

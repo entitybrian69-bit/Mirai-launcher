@@ -92,6 +92,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
 import com.movtery.zalithlauncher.ui.theme.AerixRadii
 import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.theme.AerixSurface
@@ -107,6 +108,7 @@ import com.movtery.zalithlauncher.ui.activities.MainActivity
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.AerixPillTab
 import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
+import com.movtery.zalithlauncher.ui.components.liquidGlass
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.ScalingActionButton
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
@@ -816,8 +818,9 @@ private fun ModrinthLibraryInstanceCard(
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         label = "libCardScale"
     )
+    val activeAccent = MiraiThemeManager.currentAccent()
     val borderColor by animateColorAsState(
-        targetValue = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised,
+        targetValue = if (selected) activeAccent.copy(alpha = 0.84f) else AerixSurface.borderSoft,
         animationSpec = tween(220),
         label = "libCardBorder"
     )
@@ -827,13 +830,21 @@ private fun ModrinthLibraryInstanceCard(
     val loaderName = info?.loaderInfo?.loader?.displayName ?: "Vanilla"
     var menuExpanded by remember { mutableStateOf(false) }
 
+    val cardShape = RoundedCornerShape(AerixRadii.cardLarge)
     Surface(
-        modifier = modifier.graphicsLayer {
-            scaleX = scale
-            scaleY = scale
-        },
-        shape = RoundedCornerShape(AerixRadii.cardSmall),
-        color = AerixSurface.panel,
+        modifier = modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .liquidGlass(
+                shape = cardShape,
+                tint = if (selected) activeAccent else AerixSurface.glassBlue,
+                strength = if (selected) 0.92f else 0.62f,
+                elevation = AerixMetrics.glassSubtleElevation
+            ),
+        shape = cardShape,
+        color = Color.Transparent,
         border = BorderStroke(if (selected) 1.5.dp else AerixSpacing.hairline, borderColor),
         onClick = onSelect
     ) {
