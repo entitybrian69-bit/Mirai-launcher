@@ -102,8 +102,8 @@ def from_gradle_log(log_path: pathlib.Path) -> None:
 
 
 def main() -> int:
-    report_dir = pathlib.Path(os.environ.get("MIRAI_TEST_REPORT_DIR", ""))
-    log_path = pathlib.Path(os.environ.get("MIRAI_TEST_LOG", ""))
+    report_dir = pathlib.Path(os.environ.get("AERIX_TEST_REPORT_DIR", ""))
+    log_path = pathlib.Path(os.environ.get("AERIX_TEST_LOG", ""))
 
     if report_dir.is_dir() and any(report_dir.glob("TEST-*.xml")):
         emitted = from_reports(report_dir)

@@ -170,9 +170,9 @@ private val rendererStackOptions = listOf(
     ),
     RendererStackOption(
         keyMatch = "MOBILEGLUES",
-        title = "MobileGlues (1.17+ Fastest)",
-        badge = "FASTEST",
-        description = "Modern MG-ES wrapper: fastest path for 1.17+ & Sodium."
+        title = "MobileGlues (1.17+)",
+        badge = "MODERN",
+        description = "Modern MG-ES wrapper for Minecraft 1.17+ and Sodium."
     )
 )
 

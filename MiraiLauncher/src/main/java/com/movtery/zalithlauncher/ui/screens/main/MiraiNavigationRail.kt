@@ -141,9 +141,9 @@ fun MiraiNavigationRail(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_mirai_mark),
+                            painter = painterResource(R.drawable.ic_aerix_mark),
                             contentDescription = "Aerix",
-                            tint = activeAccent,
+                            tint = Color.Unspecified,
                             modifier = Modifier.size(24.dp)
                         )
                     }

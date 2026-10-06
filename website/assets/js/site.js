@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Mirai Launcher — site behaviour
+   Aerix Launcher — site behaviour
    Theme engine (mode + accent) · mobile nav · scroll reveal · sticky header
    ========================================================================== */
 (function () {

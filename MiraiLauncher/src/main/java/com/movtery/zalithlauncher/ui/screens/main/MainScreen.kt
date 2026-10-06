@@ -424,9 +424,9 @@ private fun <E : TitledNavKey> MainShellHeader(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_mirai_mark),
+                        painter = painterResource(R.drawable.ic_aerix_mark),
                         contentDescription = "Aerix",
-                        tint = AerixSurface.accent,
+                        tint = Color.Unspecified,
                         modifier = Modifier.size(22.dp)
                     )
                 }

@@ -1,4 +1,4 @@
-name: Debug Build CI
+name: Aerix Debug Build CI
 
 on:
   push:

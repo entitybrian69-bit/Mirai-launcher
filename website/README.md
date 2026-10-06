@@ -1,4 +1,4 @@
-# Mirai Launcher website
+# Aerix Launcher website
 
 A static site for the launcher. No build step, no dependencies, no framework — plain HTML, one
 stylesheet and one small script. It is published to GitHub Pages by
@@ -9,7 +9,7 @@ stylesheet and one small script. It is published to GitHub Pages by
 
 | File | Purpose |
 | --- | --- |
-| `index.html` | Home — hero, why Mirai, screenshots, renderer teaser, privacy, download |
+| `index.html` | Home — hero, why Aerix, screenshots, renderer teaser, privacy, download |
 | `features.html` | The full feature list, grouped |
 | `renderers.html` | The renderer lineup, the two-LTW split, how selection works |
 | `guide.html` | Install and first-launch walkthrough, tuning, troubleshooting |
@@ -86,7 +86,7 @@ sed -i "s|https://entitybrian69-bit.github.io/Mirai-launcher|$BASE|g" *.html
 
 ### Discord
 
-Invite: **<https://discord.gg/RS7q9KaCm6>** (server: **MIRAI LAUNCHER**)
+Invite: **<https://discord.gg/RS7q9KaCm6>** (server: **AERIX LAUNCHER**)
 Appears in the README and in the header, footer and CTAs of all six pages.
 
 > **Set this invite to never expire.** Discord's default is 7 days, and two earlier invites

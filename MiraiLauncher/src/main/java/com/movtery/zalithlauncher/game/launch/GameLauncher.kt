@@ -553,8 +553,8 @@ class GameLauncher(
     /**
      * Writes the MobileGlues MG-ES config.json when MobileGlues is the active renderer.
      * MG reads <MG_DIR_PATH>/config.json at startup; writing it explicitly pins the
-     * tested performance profile: error checking off (fastest path), everything else
-     * at upstream defaults (no ANGLE, no FSR, stock multidraw and extension set).
+     * selected profile: error checking off, everything else at upstream defaults
+     * (no ANGLE, no FSR, stock multidraw and extension set).
      */
     private fun writeMobileGluesConfig() {
         if (!Renderers.isCurrentRendererValid()) return
