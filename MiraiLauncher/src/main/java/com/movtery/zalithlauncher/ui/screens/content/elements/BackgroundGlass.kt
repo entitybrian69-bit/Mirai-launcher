@@ -81,8 +81,9 @@ fun Modifier.backgroundGlass(
     enabled: Boolean = true,
 ): Modifier {
     val store = LocalBackgroundViewModel.current ?: return this
-    if (!enabled || !store.isValid || AllSettings.launcherBackgroundOpacity.state >= 100) return this
-    return this.then(GlassElement(blur.coerceAtLeast(0), color, store))
+    // Blur level zero is the default; skip the per-surface draw node entirely.
+    if (!enabled || blur <= 0 || AllSettings.launcherBackgroundOpacity.state >= 100 || !store.isValid) return this
+    return this.then(GlassElement(blur, color, store))
 }
 
 /** Capture the wallpaper once per frame; blur itself stays cached between captures. */

@@ -203,6 +203,10 @@ class PlayerSkin(
         webview?.evaluateJavascript("setInteractionEnabled($enabled)", null)
     }
 
+    fun setRenderPaused(paused: Boolean) {
+        webview?.evaluateJavascript("setRenderPaused($paused)", null)
+    }
+
     fun destroy() {
         webview?.apply {
             stopLoading()
@@ -249,6 +253,7 @@ fun SkinPreview3D(
     pitch: Int = 10,
     interactionEnabled: Boolean = false,
     refreshKey: Any? = null,
+    isVisible: Boolean = true,
 ) {
     val context = LocalContext.current
     val playerSkin = remember { PlayerSkin(context) }
@@ -277,31 +282,32 @@ fun SkinPreview3D(
                 }
             },
             update = { container ->
-                container.gateOpen = interactionEnabled
+                container.gateOpen = interactionEnabled && isVisible
             }
         )
 
-        LaunchedEffect(pageFinished, animation) {
+        LaunchedEffect(pageFinished, animation, isVisible) {
             if (!pageFinished) return@LaunchedEffect
-            if (animation != null) playerSkin.startAnim(animation)
+            if (animation != null && isVisible) playerSkin.startAnim(animation)
+            playerSkin.setRenderPaused(!isVisible || animation == null)
         }
-        //Cheap observer: every drag tick only offers the newest angle to the channel.
-        LaunchedEffect(pageFinished, azimuth, pitch) {
-            if (!pageFinished) return@LaunchedEffect
+        //Cheap observer: only visible previews forward camera changes to WebGL.
+        LaunchedEffect(pageFinished, azimuth, pitch, isVisible) {
+            if (!pageFinished || !isVisible) return@LaunchedEffect
             cameraAngles.trySend(azimuth to pitch)
         }
         //Paced reader: camera JS calls are capped at ~60fps and always carry the
         //latest angle, so fast drags and flings stay smooth instead of queueing up.
-        LaunchedEffect(pageFinished) {
-            if (!pageFinished) return@LaunchedEffect
+        LaunchedEffect(pageFinished, isVisible) {
+            if (!pageFinished || !isVisible) return@LaunchedEffect
             for ((azimuthDeg, pitchDeg) in cameraAngles) {
                 playerSkin.setAzimuthAndPitch(azimuthDeg, pitchDeg)
                 delay(16)
             }
         }
-        LaunchedEffect(pageFinished, interactionEnabled) {
+        LaunchedEffect(pageFinished, interactionEnabled, isVisible) {
             if (!pageFinished) return@LaunchedEffect
-            playerSkin.setInteractionEnabled(interactionEnabled)
+            playerSkin.setInteractionEnabled(interactionEnabled && isVisible)
         }
         LaunchedEffect(pageFinished, skinFile, capeFile, modelType, refreshKey) {
             if (!pageFinished) return@LaunchedEffect

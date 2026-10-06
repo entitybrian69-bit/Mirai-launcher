@@ -420,7 +420,8 @@ private fun ActionsLayout(
                             currentAccount?.getCapeFile()?.takeIf { it.exists() }
                         },
                         modelType = currentAccount?.skinModelType,
-                        animation = null
+                        animation = null,
+                        isVisible = isVisible
                     )
                 }
             }

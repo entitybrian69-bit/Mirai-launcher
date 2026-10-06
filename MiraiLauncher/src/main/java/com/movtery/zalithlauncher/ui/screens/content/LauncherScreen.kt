@@ -685,6 +685,7 @@ private const val DOLL_FLING_STOP_VELOCITY = 20f
 @Composable
 private fun ActionMenuCardContent(
     modifier: Modifier = Modifier,
+    isVisible: Boolean,
     account: Account?,
     onLaunchGame: (Version?) -> Unit,
     toAccountManageScreen: () -> Unit,
@@ -704,6 +705,13 @@ private fun ActionMenuCardContent(
     val flingScope = rememberCoroutineScope()
     val dollVelocityTracker = remember(account?.username) { VelocityTracker() }
     var dollFlingJob by remember(account?.username) { mutableStateOf<Job?>(null) }
+
+    LaunchedEffect(isVisible) {
+        if (!isVisible) {
+            dollFlingJob?.cancel()
+            dollFlingJob = null
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -807,6 +815,7 @@ private fun ActionMenuCardContent(
                     animation = null,
                     interactionEnabled = false,
                     azimuth = dollAzimuth.roundToInt(),
+                    isVisible = isVisible,
                 )
             }
 
@@ -823,6 +832,7 @@ private fun ActionMenuCardContent(
 @Composable
 private fun ActionMenuTallerContent(
     modifier: Modifier = Modifier,
+    isVisible: Boolean,
     account: Account?,
     dockedSide: ActionMenuSide,
     onLaunchGame: (Version?) -> Unit,
@@ -833,6 +843,7 @@ private fun ActionMenuTallerContent(
 ) {
     ActionMenuCardContent(
         modifier = modifier,
+        isVisible = isVisible,
         account = account,
         onLaunchGame = onLaunchGame,
         toAccountManageScreen = toAccountManageScreen,
@@ -872,6 +883,7 @@ private fun ActionMenu(
     if (isTaller) {
         ActionMenuTallerContent(
             modifier = contentModifier,
+            isVisible = isVisible,
             account = account,
             dockedSide = dockedSide,
             onLaunchGame = onLaunchGame,
@@ -883,6 +895,7 @@ private fun ActionMenu(
     } else {
         ActionMenuCardContent(
             modifier = contentModifier,
+            isVisible = isVisible,
             account = account,
             onLaunchGame = onLaunchGame,
             toAccountManageScreen = toAccountManageScreen,

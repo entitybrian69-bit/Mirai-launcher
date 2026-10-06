@@ -9,6 +9,11 @@ const skinViewer = new skinview3d.SkinViewer({
     height: getHeight()
 });
 
+// Skin previews are usually static. Cap the WebGL backing resolution on high-DPI
+// phones and stop the library's unconditional requestAnimationFrame render loop.
+skinViewer.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+skinViewer.renderPaused = true;
+
 container.appendChild(skinViewer.canvas);
 
 //参考 Modrinth 启动器默认的 idle 动画
@@ -119,11 +124,18 @@ function startAnim(name, speed) {
     if (speed0 !== null && skinViewer.animation) {
         skinViewer.animation.speed = speed0;
     }
+    // Explicitly requested animations need the continuous render loop.
+    skinViewer.renderPaused = false;
 }
 
 skinViewer.controls.enableRotate = true;
 skinViewer.controls.enableZoom = false;
 skinViewer.controls.enablePan = false;
+
+// In paused/static mode, redraw only when OrbitControls actually changes the camera.
+skinViewer.controls.addEventListener("change", () => {
+    if (skinViewer.renderPaused) skinViewer.render();
+});
 
 //记录默认的相机位置和控制器目标点
 const defaultCameraPos = skinViewer.camera.position.clone();
@@ -270,6 +282,7 @@ function resize() {
     if (w > 0 && h > 0) {
         skinViewer.width = w;
         skinViewer.height = h;
+        if (skinViewer.renderPaused) skinViewer.render();
     }
 }
 
@@ -278,11 +291,21 @@ setTimeout(resize, 100);
 setTimeout(resize, 500);
 
 function loadSkin(skinUrl, model = "auto-detect") {
-    skinViewer.loadSkin(skinUrl, { model: model });
+    Promise.resolve(skinViewer.loadSkin(skinUrl, { model: model }))
+        .then(() => skinViewer.render())
+        .catch(error => console.warn("Unable to render skin preview", error));
 }
 
 function loadCape(capeUrl) {
-    skinViewer.loadCape(capeUrl);
+    Promise.resolve(skinViewer.loadCape(capeUrl))
+        .then(() => skinViewer.render())
+        .catch(error => console.warn("Unable to render cape preview", error));
+}
+
+function setRenderPaused(paused) {
+    const shouldPause = paused !== false;
+    skinViewer.renderPaused = shouldPause;
+    if (shouldPause) skinViewer.render();
 }
 
 function setInteractionEnabled(enabled) {
