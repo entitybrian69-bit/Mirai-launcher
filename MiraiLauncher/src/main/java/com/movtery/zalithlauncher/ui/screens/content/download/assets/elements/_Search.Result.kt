@@ -554,13 +554,14 @@ fun ResultProjectLayout(
                 overflow = TextOverflow.Ellipsis
             )
 
-            // Bottom Row: Loader/Platform Pill on left + Emerald 'Install' Button on right (Mockup #4)
+            // Keep loader and favorite controls together, then give Install a full-width target below.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 Surface(
+                    modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(AerixRadii.control),
                     color = AerixSurface.panelRaised
                 ) {
@@ -575,30 +576,33 @@ fun ResultProjectLayout(
                     )
                 }
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    onFavoriteClick?.let { onFavorite ->
-                        FavoriteToggleLabel(
-                            isFavorite = isFavorite,
-                            onClick = onFavorite
-                        )
-                    }
+                onFavoriteClick?.let { onFavorite ->
+                    FavoriteToggleLabel(
+                        isFavorite = isFavorite,
+                        onClick = onFavorite,
+                        modifier = Modifier.height(36.dp)
+                    )
+                }
+            }
 
-                    Surface(
-                        shape = RoundedCornerShape(AerixRadii.card),
-                        color = if (isInstalled) AerixSurface.accentContainer else MiraiThemeManager.currentAccent(),
-                        contentColor = if (isInstalled) MiraiThemeManager.currentAccent() else AerixSurface.onAccent,
-                        onClick = onClick
-                    ) {
-                        Text(
-                            text = if (isInstalled) "Installed" else "Install",
-                            modifier = Modifier.padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.xsPlus),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = if (isInstalled) AerixSurface.accentContainer else MiraiThemeManager.currentAccent(),
+                contentColor = if (isInstalled) MiraiThemeManager.currentAccent() else AerixSurface.onAccent,
+                onClick = onClick
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (isInstalled) "Installed" else "Install",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
                 }
             }
         }
