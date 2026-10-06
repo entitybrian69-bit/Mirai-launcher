@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.screens.content.elements.DisabledAlpha
 import com.movtery.zalithlauncher.utils.math.addBigDecimal
@@ -125,14 +126,14 @@ fun SimpleTextSlider(
         Surface(
             modifier = Modifier
                 .alpha(alpha = if (enabled) 1f else DisabledAlpha)
-                .padding(start = 12.dp)
+                .padding(start = AerixSpacing.md)
                 .align(Alignment.CenterVertically),
             shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ) {
             Row(
-                modifier = Modifier.padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp)),
+                modifier = Modifier.padding(PaddingValues(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs)),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
@@ -152,7 +153,7 @@ fun SimpleTextSlider(
                     }
                 }
                 if (fineTuningControl) {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(AerixSpacing.sm))
                     IconButton(
                         enabled = enabled,
                         modifier = Modifier.size(26.dp),
@@ -170,7 +171,7 @@ fun SimpleTextSlider(
                             contentDescription = null
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(AerixSpacing.sm))
                     IconButton(
                         enabled = enabled,
                         modifier = Modifier.size(26.dp),

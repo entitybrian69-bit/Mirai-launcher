@@ -58,6 +58,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.AndroidStringText
 import com.movtery.zalithlauncher.ui.androidText
@@ -155,7 +158,7 @@ fun MicrophoneCheckDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -164,14 +167,14 @@ fun MicrophoneCheckDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     VoiceDbShower(
                         modifier = Modifier.fillMaxWidth(),
@@ -179,7 +182,7 @@ fun MicrophoneCheckDialog(
                         height = 45.dp
                     )
 
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     Button(
                         modifier = Modifier.fillMaxWidth(),
@@ -201,7 +204,7 @@ fun VoiceDbShower(
     level: Double,
     modifier: Modifier = Modifier,
     height: Dp = 24.dp,
-    shape: Shape = RoundedCornerShape(50.dp),
+    shape: Shape = RoundedCornerShape(AerixRadii.pill),
     backgroundColor: Color = itemColor()
 ) {
     val normalizedDb = level.coerceIn(0.0, 100.0) //0~100db
@@ -209,10 +212,10 @@ fun VoiceDbShower(
 
     val color = if (level <= 50) {
         //0~50：绿色到黄色的渐变
-        lerp(Color(0xFF4CAF50), Color(0xFFFFEB3B), (level / 50).toFloat())
+        lerp(AerixSurface.success, AerixSurface.warning, (level / 50).toFloat())
     } else {
         //50~100+：黄色到红色的渐变
-        lerp(Color(0xFFFFEB3B), Color(0xFFF44336), ((level - 50) / 50).toFloat().coerceIn(0f, 1f))
+        lerp(AerixSurface.warning, AerixSurface.danger, ((level - 50) / 50).toFloat().coerceIn(0f, 1f))
     }
 
     Box(
@@ -236,7 +239,7 @@ fun VoiceDbShower(
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = AerixSpacing.sm),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         )

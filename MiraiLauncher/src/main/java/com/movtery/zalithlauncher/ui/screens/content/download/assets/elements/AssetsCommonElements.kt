@@ -54,6 +54,8 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
@@ -126,8 +128,8 @@ fun Platform.getDrawable() = when (this) {
  * 平台品牌卡片背景色，取自平台官方LOGO主色
  */
 fun Platform.getBrandColor(): Color = when (this) {
-    Platform.CURSEFORGE -> Color(0xFFF16436)
-    Platform.MODRINTH -> Color(0xFF1BD96A)
+    Platform.CURSEFORGE -> AerixSurface.curseForgeBrand
+    Platform.MODRINTH -> AerixSurface.modrinthBrand
 }
 
 /**
@@ -135,7 +137,7 @@ fun Platform.getBrandColor(): Color = when (this) {
  */
 fun Platform.getBrandContentColor(): Color = when (this) {
     Platform.CURSEFORGE -> Color.White
-    Platform.MODRINTH -> Color(0xFF072314)
+    Platform.MODRINTH -> AerixSurface.onModrinthBrand
 }
 
 /**
@@ -197,9 +199,9 @@ private fun BasicIdentifier(
         shape = shape
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+            modifier = Modifier.padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Icon(
                 modifier = Modifier.size(iconSize),
@@ -296,9 +298,9 @@ fun PackIdentifier(
         shape = shape
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+            modifier = Modifier.padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Image(
                 modifier = Modifier.size(iconSize),

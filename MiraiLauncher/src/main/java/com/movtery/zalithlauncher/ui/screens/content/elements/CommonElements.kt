@@ -76,6 +76,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.context.copyLocalFile
 import com.movtery.zalithlauncher.context.getFileName
@@ -376,7 +378,7 @@ fun TitleTaskFlowDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight()
                     .then(
@@ -395,12 +397,12 @@ fun TitleTaskFlowDialog(
                         tasks = tasks,
                         onCancel = onCancel,
                         onMinimize = onMinimize,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(AerixSpacing.lg)
                     )
                 } else {
                     Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        modifier = Modifier.padding(AerixSpacing.lg),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         TaskFlowListColumn(
                             title = title,
@@ -433,7 +435,7 @@ private fun TaskFlowListColumn(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
     ) {
         Text(
             text = title,
@@ -451,7 +453,7 @@ private fun TaskFlowListColumn(
                 InstallingTaskItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 6.dp),
+                        .padding(vertical = AerixSpacing.smCompact),
                     title = task.title,
                     runningIcon = task.runningIcon,
                     task = task.task
@@ -463,7 +465,7 @@ private fun TaskFlowListColumn(
             //最小化按钮在左，取消按钮在右
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 OutlinedButton(
                     modifier = Modifier.weight(1f),
@@ -504,7 +506,7 @@ private fun InstallingTaskItem(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         val icon = when (taskStage) {
             TaskStage.PREPARING -> R.drawable.ic_schedule_outlined
@@ -525,7 +527,7 @@ private fun InstallingTaskItem(
             if (taskStage == TaskStage.RUNNING) {
                 taskMessage?.let { message ->
                     AndroidStringText(
-                        modifier = Modifier.padding(top = 4.dp),
+                        modifier = Modifier.padding(top = AerixSpacing.xs),
                         text = message,
                         style = MaterialTheme.typography.labelMedium,
                     )
@@ -543,7 +545,7 @@ private fun InstallingTaskItem(
                 if (taskProgress < 0) { //负数则代表不确定
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         LinearProgressIndicator(
@@ -556,7 +558,7 @@ private fun InstallingTaskItem(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         LinearProgressIndicator(
@@ -628,7 +630,7 @@ fun MemoryPreview(
     Box(
         modifier = modifier
             .height(IntrinsicSize.Min)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(AerixRadii.control))
             .background(backgroundColor)
     ) {
         val usedText = usedText(usedMemory, totalMemory)
@@ -660,7 +662,7 @@ fun MemoryPreview(
 
         if (preview == null) {
             UsedMemoryText(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(horizontal = AerixSpacing.sm),
                 textColor = textColorOnBackground,
                 marquee = false,
             )
@@ -675,10 +677,10 @@ fun MemoryPreview(
                         .fillMaxWidth(usedRatio)
                         .clip(
                             RoundedCornerShape(
-                                topStart = 12.dp,
-                                bottomStart = 12.dp,
-                                topEnd = if (usedRatio == 1f) 12.dp else 0.dp,
-                                bottomEnd = if (usedRatio == 1f) 12.dp else 0.dp
+                                topStart = AerixRadii.control,
+                                bottomStart = AerixRadii.control,
+                                topEnd = if (usedRatio == 1f) AerixRadii.control else AerixRadii.square,
+                                bottomEnd = if (usedRatio == 1f) AerixRadii.control else AerixRadii.square
                             )
                         )
                         .background(mainColor),
@@ -686,13 +688,13 @@ fun MemoryPreview(
                 ) {
                     if (preview != null) {
                         UsedMemoryText(
-                            modifier = Modifier.padding(horizontal = 8.dp)
+                            modifier = Modifier.padding(horizontal = AerixSpacing.sm)
                         )
                     } else {
                         UsedMemoryText(
                             modifier = Modifier
                                 .width(IntrinsicSize.Max)
-                                .padding(start = 8.dp),
+                                .padding(start = AerixSpacing.sm),
                             textColor = textColorOnMemory,
                             marquee = false,
                         )
@@ -709,10 +711,10 @@ fun MemoryPreview(
                             .fillMaxWidth(previewRatio)
                             .clip(
                                 RoundedCornerShape(
-                                    topStart = if (usedRatio == 0f) 12.dp else 0.dp,
-                                    bottomStart = if (usedRatio == 0f) 12.dp else 0.dp,
-                                    topEnd = if (previewRatio == 1f) 12.dp else 0.dp,
-                                    bottomEnd = if (previewRatio == 1f) 12.dp else 0.dp
+                                    topStart = if (usedRatio == 0f) AerixRadii.control else AerixRadii.square,
+                                    bottomStart = if (usedRatio == 0f) AerixRadii.control else AerixRadii.square,
+                                    topEnd = if (previewRatio == 1f) AerixRadii.control else AerixRadii.square,
+                                    bottomEnd = if (previewRatio == 1f) AerixRadii.control else AerixRadii.square
                                 )
                             )
                             .background(mainColor.copy(alpha = 0.5f)),
@@ -720,7 +722,7 @@ fun MemoryPreview(
                     ) {
                         previewText?.invoke(preview)?.let { text ->
                             MarqueeText(
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                                modifier = Modifier.padding(horizontal = AerixSpacing.sm),
                                 text = text,
                                 style = textStyle,
                                 color = textColorOnMemory

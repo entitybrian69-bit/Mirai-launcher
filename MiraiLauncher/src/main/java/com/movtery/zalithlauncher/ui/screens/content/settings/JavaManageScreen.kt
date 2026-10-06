@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ZLApplication
 import com.movtery.zalithlauncher.context.getFileName
@@ -161,16 +162,16 @@ fun JavaManageScreen(
         SettingsCard(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 12.dp)
+                .padding(all = AerixSpacing.md)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             position = CardPosition.Single
         ) {
             CardTitleLayout {
                 Row(
                     modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm)
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                 ) {
                     IconTextButton(
                         onClick = { runtimes = getRuntimes(true) },
@@ -235,14 +236,14 @@ fun JavaManageScreen(
                         state = scrollState.scrollIndicatorState!!,
                         orientation = Orientation.Vertical,
                     ),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
                 state = scrollState,
             ) {
                 items(runtimes) { runtime ->
                     JavaRuntimeItem(
                         runtime = runtime,
                         modifier = Modifier
-                            .padding(vertical = 6.dp),
+                            .padding(vertical = AerixSpacing.smCompact),
                         onDeleteClick = {
                             runtimeOperation = RuntimeOperation.PreDelete(runtime)
                         }
@@ -387,7 +388,7 @@ private fun JavaRuntimeItem(
         onClick = onClick
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
@@ -400,7 +401,7 @@ private fun JavaRuntimeItem(
                 //环境标签
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     if (runtime.isProvidedByLauncher) {
                         Text(
@@ -442,7 +443,7 @@ private fun JavaRuntimeItem(
                     onClick = onDeleteClick
                 ) {
                     Icon(
-                        modifier = Modifier.padding(all = 8.dp),
+                        modifier = Modifier.padding(all = AerixSpacing.sm),
                         painter = painterResource(R.drawable.ic_delete_filled),
                         contentDescription = stringResource(R.string.generic_delete)
                     )
@@ -464,7 +465,7 @@ private fun SelectJavaRuntimeDialog(
     ) {
         BoxWithConstraints(
             modifier = Modifier
-                .padding(all = 16.dp)
+                .padding(all = AerixSpacing.lg)
                 .heightIn(max = rememberDialogMaxHeight())
                 .fillMaxHeight()
                 .fillMaxWidth(0.55f),
@@ -472,7 +473,7 @@ private fun SelectJavaRuntimeDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .fillMaxWidth()
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
@@ -482,9 +483,9 @@ private fun SelectJavaRuntimeDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     Text(
                         text = stringResource(R.string.execute_jar_title),
@@ -501,7 +502,7 @@ private fun SelectJavaRuntimeDialog(
                                 orientation = Orientation.Vertical,
                             ),
                         state = scrollState,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                     ) {
                         items(runtimes) { runtime ->
                             JavaRuntimeItem(

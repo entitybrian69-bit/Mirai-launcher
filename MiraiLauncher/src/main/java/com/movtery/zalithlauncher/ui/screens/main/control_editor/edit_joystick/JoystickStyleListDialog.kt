@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.movtery.layer_controller.observable.ObservableJoystickStyle
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.enums.isLauncherInDarkTheme
 import com.movtery.zalithlauncher.ui.components.MarqueeText
@@ -92,7 +93,7 @@ fun JoystickStyleListDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 3.dp)
+                    .padding(all = AerixSpacing.tiny)
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shadowElevation = 3.dp,
@@ -101,7 +102,7 @@ fun JoystickStyleListDialog(
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Column(
-                    modifier = Modifier.padding(all = 16.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     MarqueeText(
@@ -109,7 +110,7 @@ fun JoystickStyleListDialog(
                         style = MaterialTheme.typography.titleMedium
                     )
 
-                    val itemModifier = Modifier.padding(horizontal = 2.dp)
+                    val itemModifier = Modifier.padding(horizontal = AerixSpacing.xxs)
 
                     if (styles.isNotEmpty()) {
                         val scrollState = rememberLazyListState()
@@ -124,8 +125,8 @@ fun JoystickStyleListDialog(
                                 )
                                 .animateContentSize(),
                             state = scrollState,
-                            contentPadding = PaddingValues(vertical = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            contentPadding = PaddingValues(vertical = AerixSpacing.md),
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                         ) {
                             items(styles) { style ->
                                 JoystickStyleItem(
@@ -139,7 +140,7 @@ fun JoystickStyleListDialog(
                         }
                     } else {
                         InfoLayoutTextItem(
-                            modifier = Modifier.padding(vertical = 12.dp),
+                            modifier = Modifier.padding(vertical = AerixSpacing.md),
                             title = stringResource(R.string.control_editor_edit_joystick_style_list_empty),
                             onClick = onCreate
                         )
@@ -155,7 +156,7 @@ fun JoystickStyleListDialog(
                         ) {
                             MarqueeText(text = stringResource(R.string.control_manage_create_new))
                         }
-                        Spacer(Modifier.width(16.dp))
+                        Spacer(Modifier.width(AerixSpacing.lg))
                         Button(
                             modifier = Modifier.weight(1f, fill = false),
                             onClick = onClose
@@ -188,11 +189,11 @@ private fun JoystickStyleItem(
             modifier = Modifier.size(50.dp),
             config = config
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(AerixSpacing.sm))
 
         MarqueeText(
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = AerixSpacing.sm)
                 .weight(1f),
             text = style.name.takeIf { it.isNotEmptyOrBlank() } ?: stringResource(R.string.generic_unspecified),
             style = MaterialTheme.typography.bodyMedium

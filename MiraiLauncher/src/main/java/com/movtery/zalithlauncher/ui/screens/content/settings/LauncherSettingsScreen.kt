@@ -73,6 +73,7 @@ import com.materialkolor.PaletteStyle
 import com.movtery.colorpicker.ColorPickerController
 import com.movtery.colorpicker.components.HueBarPicker
 import com.movtery.colorpicker.rememberColorPickerController
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.contract.MediaPickerContract
 import com.movtery.zalithlauncher.coroutine.Task
@@ -151,7 +152,7 @@ fun LauncherSettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScrollWithBar(state = rememberScrollState())
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             isVisible = isVisible
         ) { scope ->
             AnimatedItem(scope) { yOffset ->
@@ -172,7 +173,7 @@ fun LauncherSettingsScreen(
                         unit = AllSettings.launcherColorTheme,
                         title = stringResource(R.string.settings_launcher_color_theme_title),
                         summary = stringResource(R.string.settings_launcher_color_theme_summary),
-                        entries = ColorThemeType.entries,
+                        entries = ColorThemeType.entries.filter { it != ColorThemeType.MIRAI },
                         getRadioEnable = { enum ->
                             if (enum == ColorThemeType.DYNAMIC) Build.VERSION.SDK_INT >= Build.VERSION_CODES.S else true
                         },
@@ -187,7 +188,7 @@ fun LauncherSettingsScreen(
                                 ColorThemeType.URBAN_ASH -> stringResource(R.string.theme_color_urban_ash)
                                 ColorThemeType.VERDANT_DAWN -> stringResource(R.string.theme_color_verdant_dawn)
                                 ColorThemeType.CUSTOM -> stringResource(R.string.generic_custom)
-                                ColorThemeType.MIRAI -> stringResource(R.string.theme_color_mirai)
+                                ColorThemeType.MIRAI, ColorThemeType.AERIX -> stringResource(R.string.theme_color_mirai)
                             }
                         },
                         maxItemsInEachRow = 5,
@@ -293,7 +294,7 @@ fun LauncherSettingsScreen(
                                 val state = unit.state
                                 IconButton(
                                     modifier = Modifier
-                                        .padding(start = 12.dp)
+                                        .padding(start = AerixSpacing.md)
                                         .size(32.dp),
                                     colors = IconButtonDefaults.iconButtonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
@@ -537,7 +538,7 @@ private fun CustomThemeDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 16.dp)
+                    .padding(all = AerixSpacing.lg)
                     .heightIn(max = (maxHeight - 32.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shadowElevation = 3.dp,
@@ -546,9 +547,9 @@ private fun CustomThemeDialog(
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Column(
-                    modifier = Modifier.padding(all = 16.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     Text(
                         text = stringResource(R.string.settings_launcher_color_theme_title),
@@ -564,7 +565,7 @@ private fun CustomThemeDialog(
                             modifier = Modifier
                                 .wrapContentHeight()
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             val scrollState = rememberLazyListState()
@@ -577,7 +578,7 @@ private fun CustomThemeDialog(
                                         state = scrollState.scrollIndicatorState!!,
                                         orientation = Orientation.Vertical,
                                     ),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                                 state = scrollState,
                             ) {
                                 //标题
@@ -603,7 +604,7 @@ private fun CustomThemeDialog(
                                 modifier = Modifier
                                     .weight(1f)
                                     .verticalScrollWithBar(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                             ) {
                                 HueBarPicker(
                                     modifier = Modifier
@@ -641,7 +642,7 @@ private fun CustomThemeDialog(
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                                     ) {
                                         Box(
                                             modifier = Modifier
@@ -667,7 +668,7 @@ private fun CustomThemeDialog(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(1f),
@@ -777,13 +778,13 @@ private fun CustomBackground(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
                 .clickable { filePicker.launch(Unit) }
-                .padding(all = 16.dp),
+                .padding(all = AerixSpacing.lg),
         ) {
             TitleAndSummary(
                 title = stringResource(R.string.settings_launcher_background_title),
@@ -792,7 +793,7 @@ private fun CustomBackground(
         }
 
         AnimatedVisibility(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = AerixSpacing.lg),
             visible = backgroundViewModel.isValid
         ) {
             IconTextButton(

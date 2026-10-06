@@ -40,8 +40,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SecondaryScrollableTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +53,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.sdl.SdlBridge
 import com.movtery.zalithlauncher.setting.AllSettings
@@ -65,6 +64,8 @@ import com.movtery.zalithlauncher.setting.enums.ResolutionRule
 import com.movtery.zalithlauncher.setting.unit.floatRange
 import com.movtery.zalithlauncher.ui.AndroidStringText
 import com.movtery.zalithlauncher.ui.androidText
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 import com.movtery.zalithlauncher.ui.components.DualMenuSubscreen
 import com.movtery.zalithlauncher.ui.components.IntInputField
@@ -129,27 +130,18 @@ fun GameMenuSubscreen(
             }
 
             Column {
-                //顶贴标签栏
-                SecondaryScrollableTabRow(
-                    selectedTabIndex = controlMenuTabIndex,
-                    edgePadding = 0.dp,
-                    minTabWidth = 58.dp,
-                    containerColor = cardTitleColor(),
-                ) {
+                AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
                     controlTabs.forEachIndexed { index, iconTab ->
-                        Tab(
+                        AerixPillTab(
                             selected = index == controlMenuTabIndex,
-                            onClick = {
-                                onControlMenuTabChange(index)
-                            },
-                            icon = {
-                                Icon(
-                                    modifier = Modifier.size(iconTab.iconSize),
-                                    painter = painterResource(iconTab.iconRes),
-                                    contentDescription = null
-                                )
-                            }
-                        )
+                            onClick = { onControlMenuTabChange(index) }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(iconTab.iconSize),
+                                painter = painterResource(iconTab.iconRes),
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
 
@@ -184,7 +176,7 @@ fun GameMenuSubscreen(
         },
         rightMenuTitle = {
             Text(
-                modifier = Modifier.padding(all = 8.dp),
+                modifier = Modifier.padding(all = AerixSpacing.sm),
                 text = stringResource(R.string.game_menu_title),
                 style = MaterialTheme.typography.titleMedium
             )
@@ -220,8 +212,8 @@ private fun GameActionContent(
     LazyColumn(
         modifier = modifier.lazyScrollWithBar(listState),
         state = listState,
-        contentPadding = PaddingValues(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         //强制关闭
         item {
@@ -247,7 +239,7 @@ private fun GameActionContent(
         //如果开启多人联机，则展示这个按钮
         if (enableTerracotta) {
             item {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(AerixSpacing.sm))
             }
 
             //打开联机菜单
@@ -263,7 +255,7 @@ private fun GameActionContent(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         //开启菜单悬浮窗
@@ -364,7 +356,7 @@ private fun GameActionContent(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
+                            .padding(top = AerixSpacing.sm)
                     ) {
                         MenuSliderLayout(
                             modifier = Modifier.fillMaxWidth(),
@@ -396,7 +388,7 @@ private fun GameActionContent(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
+                            .padding(top = AerixSpacing.sm)
                     ) {
                         CustomResolutionContent(onValueCommitted = onRefreshWindowSize)
                     }
@@ -425,8 +417,8 @@ private fun CustomResolutionContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(all = AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             Text(
                 text = stringResource(R.string.settings_renderer_resolution_scale_title),
@@ -434,7 +426,7 @@ private fun CustomResolutionContent(
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 IntInputField(
                     modifier = Modifier.weight(1f),
@@ -478,8 +470,8 @@ private fun ControlOverview(
     LazyColumn(
         modifier = modifier.lazyScrollWithBar(listState),
         state = listState,
-        contentPadding = PaddingValues(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         //切换输入法
         item {
@@ -508,7 +500,7 @@ private fun ControlOverview(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         //发送键值
@@ -577,8 +569,8 @@ private fun ControlMouse(
     LazyColumn(
         modifier = modifier.lazyScrollWithBar(listState),
         state = listState,
-        contentPadding = PaddingValues(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         //隐藏虚拟鼠标
         item {
@@ -690,8 +682,8 @@ private fun ControlGamepad(
     LazyColumn(
         modifier = modifier.lazyScrollWithBar(listState),
         state = listState,
-        contentPadding = PaddingValues(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         //手柄控制总开关
         item {
@@ -706,7 +698,7 @@ private fun ControlGamepad(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         //手柄输入模式
@@ -725,7 +717,7 @@ private fun ControlGamepad(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         //手柄死区缩放
@@ -821,8 +813,8 @@ private fun ControlGesture(
     LazyColumn(
         modifier = modifier.lazyScrollWithBar(listState),
         state = listState,
-        contentPadding = PaddingValues(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         //手势控制
         item {
@@ -883,7 +875,7 @@ private fun ControlGesture(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         //快捷栏定位规则
@@ -1001,8 +993,8 @@ private fun ControlGyroscope(
     LazyColumn(
         modifier = modifier.lazyScrollWithBar(listState),
         state = listState,
-        contentPadding = PaddingValues(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         //陀螺仪控制
         item {

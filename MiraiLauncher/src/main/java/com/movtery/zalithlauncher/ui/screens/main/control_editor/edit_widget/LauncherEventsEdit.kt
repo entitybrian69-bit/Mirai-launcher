@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.movtery.inputmap.keycodes.ControlEventKeycode
 import com.movtery.layer_controller.event.ClickEvent
 import com.movtery.layer_controller.observable.ObservableClickEventsProvider
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.verticalScrollWithBar
 import com.movtery.zalithlauncher.ui.control.event.LAUNCHER_EVENT_SCROLL_DOWN
@@ -118,7 +119,7 @@ fun LauncherEventsEdit(
         modifier = Modifier
             .verticalScrollWithBar(rememberScrollState())
             .then(modifier),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         // 切换输入法
         InfoLayoutSwitchItem(
@@ -136,7 +137,7 @@ fun LauncherEventsEdit(
             onValueChange = { toggleEvent(it, ClickEvent(ClickEvent.Type.LauncherEvent, LAUNCHER_EVENT_SWITCH_MENU)) }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.sm))
 
         // 鼠标左键
         InfoLayoutSwitchItem(
@@ -162,7 +163,7 @@ fun LauncherEventsEdit(
             onValueChange = { toggleEvent(it, ClickEvent(ClickEvent.Type.LauncherEvent, ControlEventKeycode.GLFW_MOUSE_BUTTON_RIGHT)) }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.sm))
 
         // 持续鼠标滚轮上
         InfoLayoutSwitchItem(
@@ -196,7 +197,7 @@ fun LauncherEventsEdit(
             onValueChange = { toggleEvent(it, ClickEvent(ClickEvent.Type.LauncherEvent, LAUNCHER_EVENT_SCROLL_DOWN_SINGLE)) }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.sm))
 
         // 发送文本
         InfoLayoutTextItem(

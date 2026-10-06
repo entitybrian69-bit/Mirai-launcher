@@ -50,6 +50,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.gson.JsonSyntaxException
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.version.download.DownloadFailedException
@@ -683,7 +684,7 @@ private fun PackExportOperation(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(text = stringResource(R.string.versions_export_task_error_message))
                         Text(text = message)

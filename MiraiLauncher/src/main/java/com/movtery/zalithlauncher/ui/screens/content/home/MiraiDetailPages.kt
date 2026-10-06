@@ -27,26 +27,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.setting.AllSettings
 import java.io.File
 
-private val PageBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val PageBg = AerixSurface.canvas
+private val CardBg = AerixSurface.canvas
+private val Muted = AerixSurface.textMuted
+private val Green = AerixSurface.accent
 
 @Composable
 fun MiraiInstanceDetail(version: Version, onOpenContent: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
     var tab by remember { mutableStateOf("Mods") }
     val tabs = listOf("Mods", "Saves", "Resource packs", "Shaders", "Settings")
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
         Text("Back", color = Green, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onBack))
         Text(version.getVersionName(), color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
         Text(if (version.isValid()) "Installed instance" else "This instance is missing files", color = Muted)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
             tabs.forEach { name ->
-                Text(name, color = if (tab == name) Color(0xFF0E0E10) else Color.White, modifier = Modifier.clip(RoundedCornerShape(20.dp)).background(if (tab == name) Green else CardBg).clickable { tab = name }.padding(horizontal = 12.dp, vertical = 8.dp))
+                Text(name, color = if (tab == name) AerixSurface.canvas else Color.White, modifier = Modifier.clip(RoundedCornerShape(AerixRadii.panelSmall)).background(if (tab == name) Green else CardBg).clickable { tab = name }.padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm))
             }
         }
         when (tab) {
@@ -59,7 +62,7 @@ fun MiraiInstanceDetail(version: Version, onOpenContent: () -> Unit, onBack: () 
 
 @Composable
 fun MiraiSettingsDetail(title: String, onOpenEditor: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
         Text("Back", color = Green, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onBack))
         Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
         ReadRow("Renderer", AllSettings.renderer.getValue())
@@ -72,22 +75,22 @@ fun MiraiSettingsDetail(title: String, onOpenEditor: () -> Unit, onBack: () -> U
 @Composable
 fun MiraiDiscoverResults(title: String, onOpenSearch: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
     var query by remember { mutableStateOf("") }
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
         Text("Back", color = Green, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onBack))
         Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
-        BasicTextField(value = query, onValueChange = { query = it }, singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White), cursorBrush = SolidColor(Green), modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(CardBg).padding(14.dp), decorationBox = { inner -> if (query.isEmpty()) Text("Search this category", color = Muted); inner() })
+        BasicTextField(value = query, onValueChange = { query = it }, singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White), cursorBrush = SolidColor(Green), modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.control)).background(CardBg).padding(AerixSpacing.mdPlus), decorationBox = { inner -> if (query.isEmpty()) Text("Search this category", color = Muted); inner() })
         Text(if (query.isBlank()) "Enter a name, then search to install." else "Search for $query", color = Muted)
-        Text("Search", color = Color(0xFF0E0E10), fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(14.dp)).background(Green).clickable(onClick = onOpenSearch).padding(14.dp))
+        Text("Search", color = AerixSurface.canvas, fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(AerixRadii.cardSmall)).background(Green).clickable(onClick = onOpenSearch).padding(AerixSpacing.mdPlus))
     }
 }
 
 @Composable
 fun MiraiServerDetail(onOpen: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val enabled = AllSettings.enableTerracotta.state
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
         Text("Back", color = Green, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onBack))
         Text("Servers", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
-        Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).padding(AerixSpacing.lg), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text("Multiplayer", color = Color.White, fontWeight = FontWeight.SemiBold)
                 Text(if (enabled) "On" else "Off", color = Muted)
@@ -102,7 +105,7 @@ fun MiraiServerDetail(onOpen: () -> Unit, onBack: () -> Unit, modifier: Modifier
 
 @Composable
 private fun SettingsReadout(version: Version) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
         ReadRow("Renderer", version.getRenderer())
         ReadRow("Java", version.getJavaRuntime().ifBlank { "Default" })
         ReadRow("Isolation", if (version.isIsolation()) "On" else "Off")
@@ -112,7 +115,7 @@ private fun SettingsReadout(version: Version) {
 
 @Composable
 private fun ReadRow(label: String, value: String) {
-    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(CardBg).padding(14.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.cardSmall)).background(CardBg).padding(AerixSpacing.mdPlus)) {
         Text(label, color = Muted, style = MaterialTheme.typography.bodySmall)
         Text(value, color = Color.White, fontWeight = FontWeight.Medium)
     }
@@ -120,7 +123,7 @@ private fun ReadRow(label: String, value: String) {
 
 @Composable
 private fun InfoCard(title: String, body: String) {
-    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).padding(AerixSpacing.lg)) {
         Text(title, color = Color.White, fontWeight = FontWeight.SemiBold)
         Text(body, color = Muted, style = MaterialTheme.typography.bodySmall)
     }
@@ -132,9 +135,9 @@ private fun FileList(dir: File) {
     if (!dir.exists() || files.isEmpty()) {
         Text("Nothing in ${dir.name} yet.", color = Muted)
     } else {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
             items(files, key = { it.name }) { file ->
-                Text(file.name, color = Color.White, modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(CardBg).padding(14.dp), maxLines = 1)
+                Text(file.name, color = Color.White, modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.cardSmall)).background(CardBg).padding(AerixSpacing.mdPlus), maxLines = 1)
             }
         }
     }

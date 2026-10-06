@@ -42,9 +42,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,7 +68,10 @@ import com.movtery.layer_controller.data.SHAPE_RANGE
 import com.movtery.layer_controller.layout.RendererStyleBox
 import com.movtery.layer_controller.observable.ObservableButtonStyle
 import com.movtery.layer_controller.observable.ObservableStyleConfig
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.OwnOutlinedTextField
 import com.movtery.zalithlauncher.ui.components.SingleLineTextCheck
@@ -152,7 +153,7 @@ fun EditButtonStyleDialog(
 
                     Surface(
                         modifier = Modifier
-                            .padding(16.dp)
+                            .padding(AerixSpacing.lg)
                             .constrainAs(config) {
                                 start.linkTo(preview.end)
                                 end.linkTo(parent.end)
@@ -174,10 +175,10 @@ fun EditButtonStyleDialog(
                             Column(
                                 modifier = Modifier
                                     .fillMaxHeight()
-                                    .padding(all = 12.dp)
+                                    .padding(all = AerixSpacing.md)
                                     .weight(0.4f)
                                     .verticalScroll(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                             ) {
                                 SingleLineTextCheck(
                                     text = style.name,
@@ -226,20 +227,14 @@ fun EditButtonStyleDialog(
                                     )
                                 } else {
                                     //顶贴标签栏
-                                    SecondaryTabRow(
-                                        selectedTabIndex = selectedTabIndex,
-                                        containerColor = cardColor(false)
-                                    ) {
+                                    AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
                                         tabs.forEachIndexed { index, item ->
-                                            Tab(
+                                            AerixPillTab(
                                                 selected = index == selectedTabIndex,
-                                                onClick = {
-                                                    selectedTabIndex = index
-                                                },
-                                                text = {
-                                                    MarqueeText(text = stringResource(item.titleRes))
-                                                }
-                                            )
+                                                onClick = { selectedTabIndex = index }
+                                            ) {
+                                                MarqueeText(text = stringResource(item.titleRes))
+                                            }
                                         }
                                     }
 
@@ -305,8 +300,8 @@ private fun RendererBox(
         shadowElevation = 6.dp
     ) {
         Column(
-            modifier = Modifier.padding(22.dp),
-            verticalArrangement = Arrangement.spacedBy(22.dp)
+            modifier = Modifier.padding(AerixSpacing.xlPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xlPlus)
         ) {
             val boxModifier = Modifier.size(50.dp)
 
@@ -338,12 +333,12 @@ private fun StyleConfigEditor(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(vertical = AerixSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         val itemModifier = Modifier
             .fillMaxWidth()
-            .padding(start = 4.dp, end = 12.dp)
+            .padding(start = AerixSpacing.xs, end = AerixSpacing.md)
 
         //普通
         item(key = "normal_title") {
@@ -375,8 +370,8 @@ private fun StyleConfigEditor(
         item(key = "divider") {
             HorizontalDivider(
                 modifier = Modifier
-                    .padding(end = 12.dp)
-                    .padding(vertical = 6.dp)
+                    .padding(end = AerixSpacing.md)
+                    .padding(vertical = AerixSpacing.smCompact)
                     .fillMaxWidth()
             )
         }
@@ -532,7 +527,7 @@ private fun LazyListScope.commonStyleConfig(
             modifier = Modifier
                 .fillMaxWidth()
                 .animateItem(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             //左上角
             InfoLayoutSliderItem(

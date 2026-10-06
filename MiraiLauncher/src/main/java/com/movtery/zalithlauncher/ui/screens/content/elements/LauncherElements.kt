@@ -62,6 +62,7 @@ import coil3.gif.GifDecoder
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.crossfade
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.coroutine.TaskSystem
 import com.movtery.zalithlauncher.game.account.Account
@@ -76,6 +77,7 @@ import com.movtery.zalithlauncher.game.plugin.renderer.RendererPluginManager
 import com.movtery.zalithlauncher.game.renderer.RendererInterface
 import com.movtery.zalithlauncher.game.renderer.RendererPicker
 import com.movtery.zalithlauncher.game.renderer.Renderers
+import com.movtery.zalithlauncher.game.version.installed.GraphicsApi
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.hasVulkanBackend
 import com.movtery.zalithlauncher.game.version.installed.utils.isBiggerVer
@@ -315,8 +317,13 @@ fun LaunchGameOperation(
 
                 val mcVer = version.getVersionInfo()!!.minecraftVersion
 
-                // 设备完全支持 Vulkan 时跳过渲染器的版本支持检查
-                if (!version.hasVulkanBackend() || !ensureVulkanSupported(version)) {
+                // Versions 26.0+ can run on any backend/renderer without requiring Vulkan.
+                // Vulkan compatibility check is only run if Vulkan backend is actually targeted.
+                val graphicsApi = version.getGraphicsApi()
+                val isVulkanTargeted = graphicsApi == GraphicsApi.VULKAN ||
+                        (graphicsApi == GraphicsApi.DEFAULT && version.hasVulkanBackend())
+
+                if (isVulkanTargeted && !ensureVulkanSupported(version)) {
                     val isRendererUnsupported =
                         (currentRenderer.getMinMCVersion()?.let { mcVer.isLowerVer(it) } ?: false) ||
                                 (currentRenderer.getMaxMCVersion()?.let { mcVer.isBiggerVer(it) } ?: false)
@@ -481,7 +488,7 @@ private fun AccountRefreshFailedDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -490,13 +497,13 @@ private fun AccountRefreshFailedDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(AerixSpacing.lg)
                 ) {
                     Text(
                         text = stringResource(R.string.account_refresh_failed_title),
                         style = MaterialTheme.typography.headlineSmall
                     )
-                    Spacer(modifier = Modifier.size(12.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.md))
 
                     Column(
                         modifier = Modifier
@@ -508,17 +515,17 @@ private fun AccountRefreshFailedDialog(
                             text = accountErrorText(error),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        Spacer(modifier = Modifier.size(8.dp))
+                        Spacer(modifier = Modifier.size(AerixSpacing.sm))
                         Text(
                             text = stringResource(R.string.account_refresh_failed_skip_message),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
                     ) {
                         PositionButton(
                             modifier = Modifier.fillMaxWidth(),

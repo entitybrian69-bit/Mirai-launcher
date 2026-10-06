@@ -36,7 +36,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
 import com.movtery.zalithlauncher.BuildKeys
+import com.movtery.zalithlauncher.ui.components.AerixSectionHeader
 import com.movtery.zalithlauncher.components.InstallableItem
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
 import com.movtery.zalithlauncher.ui.screens.rememberTransitionSpec
@@ -60,7 +62,7 @@ fun SplashScreen(
         TopBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(40.dp),
+                .height(AerixMetrics.pageHeaderHeight),
             contentColor = onBackgroundColor()
         )
 
@@ -87,9 +89,9 @@ private fun TopBar(
             modifier = modifier,
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                text = BuildKeys.LAUNCHER_NAME
+            AerixSectionHeader(
+                title = BuildKeys.LAUNCHER_NAME,
+                modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
     }

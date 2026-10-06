@@ -74,6 +74,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.screens.content.elements.DisabledAlpha
 import kotlinx.coroutines.launch
 
@@ -222,15 +223,15 @@ fun BaseIconTextButton(
         modifier = modifier
             .clip(shape = shape)
             .combinedClickable(enabled = enabled, onClick = onClick, onLongClick = onLongClick)
-            .padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp))
+            .padding(PaddingValues(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs))
             .alpha(if (enabled) 1f else DisabledAlpha),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         icon(Modifier.align(Alignment.CenterVertically))
         Text(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .padding(end = 4.dp),
+                .padding(end = AerixSpacing.xs),
             text = text,
             style = style
         )
@@ -295,7 +296,7 @@ fun TooltipIconButton(
         modifier = modifier,
         tooltip = {
             RichTooltip(
-                modifier = Modifier.padding(all = 3.dp),
+                modifier = Modifier.padding(all = AerixSpacing.tiny),
                 title = { Text(text = tooltipTitle) },
                 shadowElevation = 3.dp
             ) {

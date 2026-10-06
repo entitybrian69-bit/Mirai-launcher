@@ -77,6 +77,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.DisabledAlpha
@@ -123,7 +125,7 @@ enum class MenuState {
 fun MenuSubscreen(
     state: MenuState,
     closeScreen: () -> Unit,
-    shape: Shape = RoundedCornerShape(21.0.dp),
+    shape: Shape = RoundedCornerShape(AerixRadii.panel),
     backgroundColor: Color = Color.Black.copy(alpha = 0.25f),
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -155,7 +157,7 @@ fun MenuSubscreen(
                 .align(Alignment.CenterEnd)
                 .fillMaxWidth(fraction = 1f / 3f)
                 .fillMaxHeight()
-                .padding(top = 12.dp, end = 12.dp, bottom = 12.dp)
+                .padding(top = AerixSpacing.md, end = AerixSpacing.md, bottom = AerixSpacing.md)
         ) {
             AnimatedVisibility(
                 visible = visible,
@@ -183,7 +185,7 @@ fun MenuSubscreen(
 fun DualMenuSubscreen(
     state: MenuState,
     closeScreen: () -> Unit,
-    shape: Shape = RoundedCornerShape(21.0.dp),
+    shape: Shape = RoundedCornerShape(AerixRadii.panel),
     backgroundColor: Color = Color.Black.copy(alpha = 0.25f),
     titleHeight: Dp = 48.dp,
     leftMenuTitle: (@Composable BoxScope.() -> Unit)? = null,
@@ -219,7 +221,7 @@ fun DualMenuSubscreen(
                 .align(Alignment.CenterStart)
                 .fillMaxWidth(fraction = 1f / 3f)
                 .fillMaxHeight()
-                .padding(top = 12.dp, start = 12.dp, bottom = 12.dp)
+                .padding(top = AerixSpacing.md, start = AerixSpacing.md, bottom = AerixSpacing.md)
         ) {
             AnimatedVisibility(
                 visible = visible,
@@ -256,7 +258,7 @@ fun DualMenuSubscreen(
                 .align(Alignment.CenterEnd)
                 .fillMaxWidth(fraction = 1f / 3f)
                 .fillMaxHeight()
-                .padding(top = 12.dp, end = 12.dp, bottom = 12.dp)
+                .padding(top = AerixSpacing.md, end = AerixSpacing.md, bottom = AerixSpacing.md)
         ) {
             AnimatedVisibility(
                 visible = visible,
@@ -334,7 +336,7 @@ fun MenuTextButton(
     ) {
         MarqueeText(
             modifier = Modifier
-                .padding(all = 16.dp)
+                .padding(all = AerixSpacing.lg)
                 .alpha(if (enabled) 1f else DisabledAlpha)
                 .weight(1f),
             text = text,
@@ -367,14 +369,14 @@ fun MenuSwitchButton(
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
             MarqueeText(
                 modifier = Modifier
-                    .padding(horizontal = 4.dp)
+                    .padding(horizontal = AerixSpacing.xs)
                     .weight(1f)
                     .alpha(if (enabled) 1f else DisabledAlpha),
                 text = text,
@@ -448,14 +450,14 @@ fun <E> MenuListLayout(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(max = maxListHeight)
-                                .padding(vertical = 4.dp),
-                            contentPadding = PaddingValues(horizontal = 4.dp)
+                                .padding(vertical = AerixSpacing.xs),
+                            contentPadding = PaddingValues(horizontal = AerixSpacing.xs)
                         ) {
                             items(items) { item ->
                                 MenuListItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(all = 4.dp),
+                                        .padding(all = AerixSpacing.xs),
                                     text = getItemText(item),
                                     selected = currentItem == item,
                                     onClick = {
@@ -487,14 +489,14 @@ private fun <E> MenuListHeader(
     Row(
         modifier = modifier
             .clickable(onClick = onClick, enabled = enable)
-            .padding(vertical = 4.dp),
+            .padding(vertical = AerixSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             MarqueeText(
                 text = title,
@@ -505,9 +507,9 @@ private fun <E> MenuListHeader(
 
         if (!items.isEmpty()) {
             Row(
-                modifier = Modifier.padding(end = 4.dp),
+                modifier = Modifier.padding(end = AerixSpacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 val rotation by animateFloatAsState(
                     targetValue = if (expanded) -180f else 0f,
@@ -543,7 +545,7 @@ private fun MenuListItem(
             onClick = onClick
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             MarqueeText(
                 text = text,
@@ -585,14 +587,14 @@ fun MenuSliderLayout(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = AerixSpacing.sm)
         ) {
             Row(
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(top = AerixSpacing.sm)
                     .fillMaxWidth()
                     .alpha(if (enabled) 1f else DisabledAlpha),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 MarqueeText(
                     modifier = Modifier.weight(1f),
@@ -668,14 +670,14 @@ fun MenuSliderLayout(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = AerixSpacing.sm)
         ) {
             Row(
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(top = AerixSpacing.sm)
                     .fillMaxWidth()
                     .alpha(if (enabled) 1f else DisabledAlpha),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 MarqueeText(
                     modifier = Modifier.weight(1f),

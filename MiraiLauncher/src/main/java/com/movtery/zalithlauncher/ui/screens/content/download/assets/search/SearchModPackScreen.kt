@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
@@ -179,7 +180,7 @@ fun SearchModPackScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(all = 16.dp),
+                            .padding(all = AerixSpacing.lg),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -209,14 +210,14 @@ private fun SelectUriOperation(
                 text = {
                     Text(text = stringResource(R.string.import_modpack_tip))
 
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(AerixSpacing.sm))
                     AllSupportPackDisplay(modifier = Modifier.fillMaxWidth())
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(AerixSpacing.sm))
 
                     Text(text = stringResource(R.string.download_modpack_warning1))
                     Text(text = stringResource(R.string.download_modpack_warning2))
 
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(AerixSpacing.sm))
                     Text(
                         text = stringResource(R.string.download_modpack_warning3),
                         fontWeight = FontWeight.Bold

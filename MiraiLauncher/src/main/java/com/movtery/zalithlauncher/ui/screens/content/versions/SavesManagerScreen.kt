@@ -83,6 +83,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.context.COPY_LABEL_SAVE_SEED
@@ -299,7 +302,7 @@ fun SavesManagerScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 12.dp)
+                .padding(all = AerixSpacing.md)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -401,8 +404,8 @@ private fun SavesActionsHeader(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .padding(top = 4.dp)
+                .padding(horizontal = AerixSpacing.sm)
+                .padding(top = AerixSpacing.xs)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box {
@@ -429,7 +432,7 @@ private fun SavesActionsHeader(
                 SimpleTextInputField(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 4.dp),
+                        .padding(start = AerixSpacing.xs),
                     value = savesFilter.saveName,
                     onValueChange = { onSavesFilterChange(savesFilter.copy(saveName = it)) },
                     hint = {
@@ -468,7 +471,7 @@ private fun SavesActionsHeader(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(AerixSpacing.md))
 
                     val taskBuilder = rememberMultipleUriImportTaskBuilder(
                         id = "ContentManager.Saves.Import",
@@ -533,8 +536,8 @@ private fun SavesList(
                     state = scrollState.scrollIndicatorState!!,
                     orientation = Orientation.Vertical,
                 ),
-                contentPadding = PaddingValues(all = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(all = AerixSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                 state = scrollState,
             ) {
                 items(list) { saveData ->
@@ -603,14 +606,14 @@ private fun SaveItemLayout(
         contentColor = itemContentColor,
     ) {
         Row(
-            modifier = Modifier.padding(all = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(all = AerixSpacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             //存档的封面图标
             SaveIcon(
                 modifier = Modifier
                     .size(42.dp)
-                    .clip(shape = RoundedCornerShape(10.dp)),
+                    .clip(shape = RoundedCornerShape(AerixRadii.controlSmall)),
                 saveData = saveData
             )
 
@@ -618,11 +621,11 @@ private fun SaveItemLayout(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 val levelName = saveData.levelName
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                 ) {
                     MinecraftColorTextNormal(
                         modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE),
@@ -661,7 +664,7 @@ private fun SaveItemLayout(
                 if (saveData.isValid) {
                     Row(
                         modifier = Modifier.alpha(0.75f),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val timeString = formatDate(
@@ -674,14 +677,14 @@ private fun SaveItemLayout(
                         )
                         saveData.worldSeed?.let { seedValue ->
                             Surface(
-                                shape = RoundedCornerShape(6.dp),
+                                shape = RoundedCornerShape(AerixRadii.micro),
                                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
                                 onClick = { copyText(COPY_LABEL_SAVE_SEED, seedValue.toString(), context) }
                             ) {
                                 Text(
                                     text = "Seed: $seedValue 📋",
                                     style = MaterialTheme.typography.labelSmall,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    modifier = Modifier.padding(horizontal = AerixSpacing.smCompact, vertical = AerixSpacing.xxs)
                                 )
                             }
                         }
@@ -691,21 +694,21 @@ private fun SaveItemLayout(
 
             Row(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (saveData.isValid) {
                     // 1-Tap Backup .zip Pill Button
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(AerixRadii.compact),
                         color = MaterialTheme.colorScheme.secondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         onClick = { updateOperation(SavesOperation.BackupSave(saveData)) }
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                            modifier = Modifier.padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.smCompact),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_save_filled),
@@ -722,15 +725,15 @@ private fun SaveItemLayout(
                     // 1-Tap Quick Join World Pill Button
                     if (quickPlay.isQuickPlaySingleplayer) {
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(AerixRadii.compact),
                             color = MiraiThemeManager.currentAccent(),
-                            contentColor = Color(0xFF06210F),
+                            contentColor = AerixSurface.onAccent,
                             onClick = { updateOperation(SavesOperation.QuickPlay(saveData)) }
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 9.dp, vertical = 6.dp),
+                                modifier = Modifier.padding(horizontal = AerixSpacing.smNarrow, vertical = AerixSpacing.smCompact),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_play_arrow_filled),
@@ -750,7 +753,7 @@ private fun SaveItemLayout(
                         modifier = Modifier.size(38.dp),
                         tooltip = {
                             RichTooltip(
-                                modifier = Modifier.padding(all = 3.dp),
+                                modifier = Modifier.padding(all = AerixSpacing.tiny),
                                 title = { Text(text = stringResource(R.string.saves_manage_info)) },
                                 shadowElevation = 3.dp
                             ) {
@@ -849,7 +852,7 @@ private fun SaveInfoTooltip(
             )
         )
         //游戏难度
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
             //游戏难度，不存在则展示为未知
             Text(
                 text = stringResource(
@@ -877,7 +880,7 @@ private fun SaveInfoTooltip(
         val worldSeed = saveData.worldSeed?.toString()
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             Text(
                 text = stringResource(

@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.movtery.colorpicker.components.TransparentChecker
 import com.movtery.colorpicker.rememberColorPickerController
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.ColorPickerDialog
 import com.movtery.zalithlauncher.ui.components.DefaultSwitch
@@ -196,8 +197,8 @@ fun <E> InfoLayoutListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(max = maxListHeight)
-                                .padding(vertical = 4.dp),
-                            contentPadding = PaddingValues(horizontal = 4.dp)
+                                .padding(vertical = AerixSpacing.xs),
+                            contentPadding = PaddingValues(horizontal = AerixSpacing.xs)
                         ) {
                             items(items) { item ->
                                 Row(
@@ -215,7 +216,7 @@ fun <E> InfoLayoutListItem(
                                         }
                                     )
                                     Column(
-                                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                                         content = {
                                             MarqueeText(
                                                 text = getItemText(item),
@@ -245,7 +246,7 @@ private fun <E> InfoListLayoutHeader(
     Row(
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 20.dp),
+            .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.xl),
         verticalAlignment = Alignment.CenterVertically
     ) {
         MarqueeText(
@@ -255,7 +256,7 @@ private fun <E> InfoListLayoutHeader(
         Row(
             Modifier
                 .weight(1f)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = AerixSpacing.sm),
             horizontalArrangement = Arrangement.End
         ) {
             selectedItemLayout()
@@ -263,9 +264,9 @@ private fun <E> InfoListLayoutHeader(
 
         if (!items.isEmpty()) {
             Row(
-                modifier = Modifier.padding(end = 4.dp),
+                modifier = Modifier.padding(end = AerixSpacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 val rotation by animateFloatAsState(
                     targetValue = if (expanded) -180f else 0f,
@@ -412,7 +413,7 @@ fun InfoLayoutTextItem(
     ) {
         MarqueeText(
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = AerixSpacing.sm)
                 .weight(1f),
             text = title,
             style = MaterialTheme.typography.bodyMedium
@@ -436,7 +437,7 @@ fun InfoLayoutColorItem(
         icon = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 Box(modifier = Modifier.size(28.dp)) {
                     TransparentChecker(
@@ -520,9 +521,9 @@ fun InfoLayoutItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = MaterialTheme.shapes.large)
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             content = content
         )
     }

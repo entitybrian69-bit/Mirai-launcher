@@ -40,6 +40,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 
 /**
@@ -72,9 +73,9 @@ fun FavoriteToggleLabel(
         modifier = modifier
             .clip(shape)
             .clickable(onClick = onClick)
-            .padding(horizontal = 4.dp, vertical = 2.dp),
+            .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         Icon(
             modifier = Modifier.size(iconSize),
@@ -126,9 +127,9 @@ fun FavoriteIdentifier(
             onClick = onClick
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                modifier = Modifier.padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 Icon(
                     modifier = Modifier.size(iconSize),

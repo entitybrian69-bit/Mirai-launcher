@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.bridge.CursorShape
 import com.movtery.zalithlauncher.context.copyLocalFile
@@ -117,7 +118,7 @@ fun ControlSettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScrollWithBar(state = rememberScrollState())
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             isVisible = isVisible
         ) { scope ->
             AnimatedItem(scope) { yOffset ->
@@ -136,7 +137,7 @@ fun ControlSettingsScreen(
                             TooltipIconButton(
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
-                                    .padding(horizontal = 8.dp),
+                                    .padding(horizontal = AerixSpacing.sm),
                                 tooltipTitle = stringResource(R.string.generic_warning),
                                 tooltipMessage = stringResource(R.string.settings_control_mouse_physical_mouse_warning)
                             ) {
@@ -158,7 +159,7 @@ fun ControlSettingsScreen(
                         PhysicalKeyImeTrigger(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(all = 16.dp),
+                                .padding(all = AerixSpacing.lg),
                             operation = operation,
                             changeOperation = { operation = it },
                             eventViewModel = eventViewModel
@@ -449,7 +450,7 @@ fun ControlSettingsScreen(
                                 TooltipIconButton(
                                     modifier = Modifier
                                         .align(Alignment.CenterVertically)
-                                        .padding(horizontal = 8.dp),
+                                        .padding(horizontal = AerixSpacing.sm),
                                     tooltipTitle = stringResource(R.string.generic_warning),
                                     tooltipMessage = stringResource(R.string.settings_control_gyroscope_unsupported)
                                 ) {
@@ -575,7 +576,7 @@ private fun PhysicalKeyImeTrigger(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                     ) {
                         LittleTextLabel(text = stringResource(R.string.control_keyboard_bind_title))
                         MarqueeText(
@@ -594,13 +595,13 @@ private fun PhysicalKeyImeTrigger(
         }
 
         Row(
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = AerixSpacing.sm)
         ) {
             val code = AllSettings.physicalKeyImeCode.state
             when {
                 code == null -> {
                     Text(
-                        modifier = Modifier.padding(end = 12.dp),
+                        modifier = Modifier.padding(end = AerixSpacing.md),
                         text = stringResource(R.string.settings_control_physical_key_bind_ime_un_bind),
                         style = MaterialTheme.typography.labelMedium
                     )
@@ -704,7 +705,7 @@ private fun MousePointerCard(
                 modifier = Modifier
                     .weight(1f)
                     .clickable { filePicker.launch(Unit) }
-                    .padding(all = 16.dp)
+                    .padding(all = AerixSpacing.lg)
             ) {
                 TitleAndSummary(
                     title = title,
@@ -715,11 +716,11 @@ private fun MousePointerCard(
             Row(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = AerixSpacing.lg),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 MousePointer(
-                    modifier = Modifier.padding(all = 8.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.sm),
                     mouseSize = mouseSize.dp,
                     cursorShape = cursorShape,
                     mouseFile = mousePointerFile,

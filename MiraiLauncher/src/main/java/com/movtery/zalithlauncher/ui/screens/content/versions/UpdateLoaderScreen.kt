@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.addons.modloader.ModLoader
 import com.movtery.zalithlauncher.game.addons.modloader.cleanroom.CleanroomVersions
@@ -524,7 +525,7 @@ fun UpdateLoaderScreen(
                     orientation = Orientation.Vertical,
                 ),
             isVisible = isVisible,
-            contentPadding = PaddingValues(all = 12.dp),
+            contentPadding = PaddingValues(all = AerixSpacing.md),
             state = scrollState,
         ) { scope ->
             animatedItem(scope) { yOffset ->

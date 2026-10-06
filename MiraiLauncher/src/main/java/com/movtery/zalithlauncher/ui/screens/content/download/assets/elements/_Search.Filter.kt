@@ -74,6 +74,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.movtery.layer_controller.utils.animateShapeAsState
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformDisplayLabel
@@ -134,7 +136,7 @@ fun SearchFilter(
     LazyColumn(
         modifier = modifier,
         contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         item {
             SuggestionsText(
@@ -294,10 +296,10 @@ private fun <E> SuggestionsText(
     ) {
         val fieldShape by animateShapeAsState(
             if (showSuggestions) RoundedCornerShape(
-                topStart = 16.0.dp, topEnd = 16.0.dp,
-                bottomStart = 0.dp, bottomEnd = 0.dp
+                topStart = AerixRadii.card, topEnd = AerixRadii.card,
+                bottomStart = AerixRadii.square, bottomEnd = AerixRadii.square
             )
-            else RoundedCornerShape(16.0.dp)
+            else RoundedCornerShape(AerixRadii.card)
         )
         OwnOutlinedTextField(
             modifier = modifier
@@ -337,8 +339,8 @@ private fun <E> SuggestionsText(
                 focusManager.clearFocus(false)
             },
             shape = RoundedCornerShape(
-                topStart = 0.dp, topEnd = 0.dp,
-                bottomStart = 16.0.dp, bottomEnd = 16.0.dp,
+                topStart = AerixRadii.square, topEnd = AerixRadii.square,
+                bottomStart = AerixRadii.card, bottomEnd = AerixRadii.card,
             )
         ) {
             suggestions.forEach { item ->
@@ -346,7 +348,7 @@ private fun <E> SuggestionsText(
                     text = {
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                             verticalArrangement = Arrangement.Center
                         ) {
                             suggestionLabel(item)
@@ -465,15 +467,15 @@ fun <E> FilterListLayout(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = maxListHeight)
-                        .padding(vertical = 4.dp),
-                    contentPadding = PaddingValues(horizontal = 4.dp)
+                        .padding(vertical = AerixSpacing.xs),
+                    contentPadding = PaddingValues(horizontal = AerixSpacing.xs)
                 ) {
                     items(items) { item ->
                         val isSelected = selectedItems.contains(item)
                         FilterListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(all = 4.dp),
+                                .padding(all = AerixSpacing.xs),
                             selected = isSelected,
                             selectionMode = selectionMode,
                             onCheckedChange = { checked ->
@@ -524,7 +526,7 @@ fun PlatformListLayout(
         itemLayout = { platform ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 Icon(
                     modifier = Modifier.size(14.dp),
@@ -555,26 +557,26 @@ private fun FilterHeader(
     Row(
         modifier = Modifier
             .clickable(onClick = onExpandToggle)
-            .padding(vertical = 4.dp),
+            .padding(vertical = AerixSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(title, style = MaterialTheme.typography.titleSmall)
             FlowRow(
                 modifier = Modifier.animateContentSize(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                 content = selectedLabels
             )
         }
 
         Row(
-            modifier = Modifier.padding(end = 4.dp),
+            modifier = Modifier.padding(end = AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val rotation by animateFloatAsState(

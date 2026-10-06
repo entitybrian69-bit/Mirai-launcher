@@ -60,6 +60,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.plugin.renderer_v2.data.EnvSettingUnit
 import com.movtery.zalithlauncher.ui.components.DefaultSwitch
@@ -104,7 +105,7 @@ fun RendererV2ConfigDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 3.dp)
+                    .padding(all = AerixSpacing.tiny)
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shadowElevation = 3.dp,
@@ -113,7 +114,7 @@ fun RendererV2ConfigDialog(
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Column(
-                    modifier = Modifier.padding(all = 16.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     //标题
@@ -134,8 +135,8 @@ fun RendererV2ConfigDialog(
                                 orientation = Orientation.Vertical,
                             ),
                         state = scrollState,
-                        contentPadding = PaddingValues(vertical = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                        contentPadding = PaddingValues(vertical = AerixSpacing.md),
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
                     ) {
                         itemsIndexed(
                             items = units,
@@ -227,9 +228,9 @@ private fun SelectableEnvItem(
                 .clickable(enabled = unit.isEnabled) { expanded = !expanded }
                 .then(
                     if (hasCheckbox) {
-                        Modifier.padding(vertical = 16.dp)
-                            .padding(start = 8.dp, end = 16.dp)
-                    } else Modifier.padding(all = 16.dp)
+                        Modifier.padding(vertical = AerixSpacing.lg)
+                            .padding(start = AerixSpacing.sm, end = AerixSpacing.lg)
+                    } else Modifier.padding(all = AerixSpacing.lg)
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -244,7 +245,7 @@ private fun SelectableEnvItem(
             }
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 TitleAndSummary(
                     modifier = Modifier.fillMaxWidth(),
@@ -282,7 +283,7 @@ private fun SelectableEnvItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                    .padding(start = AerixSpacing.sm, end = AerixSpacing.sm, bottom = AerixSpacing.sm)
             ) {
                 unit.values.forEach { value ->
                     SimpleListItem(
@@ -316,8 +317,8 @@ private fun CustomizableEnvItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(all = AerixSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             TitleAndSummary(
                 title = stringResource(R.string.settings_renderer_env_title, unit.rawEnv.key),
@@ -356,13 +357,13 @@ private fun ToggleableEnvItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { unit.save(if (unit.isEnabled) "" else unit.envValue) }
-                .padding(all = 16.dp),
+                .padding(all = AerixSpacing.lg),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TitleAndSummary(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 16.dp),
+                    .padding(end = AerixSpacing.lg),
                 title = stringResource(R.string.settings_renderer_env_title, unit.rawEnv.key),
                 summary = unit.summary
             )

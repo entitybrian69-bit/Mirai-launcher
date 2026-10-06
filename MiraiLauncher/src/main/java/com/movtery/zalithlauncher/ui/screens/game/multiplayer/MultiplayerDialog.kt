@@ -65,6 +65,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.terracotta.TerracottaState
 import com.movtery.zalithlauncher.terracotta.profile.TerracottaProfile
@@ -139,7 +140,7 @@ fun MultiplayerDialog(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -148,8 +149,8 @@ fun MultiplayerDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(all = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.padding(all = AerixSpacing.lg),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     Text(
                         text = stringResource(R.string.terracotta_menu),
@@ -332,7 +333,7 @@ private fun WaitingUI(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
         ) {
             //房主
             SimpleCardButton(
@@ -397,7 +398,7 @@ private fun GuestStartingUI(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 Icon(
                     painter = when (difficulty) {
@@ -412,7 +413,7 @@ private fun GuestStartingUI(
                 if (difficulty != TerracottaState.GuestStarting.Difficulty.UNKNOWN) {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
@@ -463,7 +464,7 @@ private fun OkRoomUI(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         Column(
             modifier = Modifier.weight(1f),
@@ -474,7 +475,7 @@ private fun OkRoomUI(
                     .weight(1f)
                     .fillMaxWidth()
                     .verticalScrollWithBar(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 Text(text = okText)
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -530,7 +531,7 @@ private fun ProfileListPanel(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         Text(text = title)
         HorizontalDivider()
@@ -543,7 +544,7 @@ private fun ProfileListPanel(
                     state = scrollState.scrollIndicatorState!!,
                     orientation = Orientation.Vertical,
                 ),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             state = scrollState,
         ) {
             items(items = profiles, key = { it.toString() }) { profile ->
@@ -564,7 +565,7 @@ private fun TerracottaProfileLayout(
     Column(modifier = modifier) {
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             maxLines = 2
         ) {
             //玩家名字
@@ -592,14 +593,14 @@ private fun ExceptionUI(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         //文字部分
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScrollWithBar(scrollState),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(text = title)
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -631,13 +632,13 @@ private fun LogUI(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScrollWithBar(scrollState),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(text = logString)
         }
@@ -664,14 +665,14 @@ private fun CommonProgressLayout(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         //文字部分
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScrollWithBar(scrollState),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) c1@{
             Text(text = progress)
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -714,9 +715,9 @@ private fun SimpleCardButton(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
         ) {
             Icon(
                 painter = icon,
@@ -725,7 +726,7 @@ private fun SimpleCardButton(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 //标题
                 Text(
@@ -760,9 +761,9 @@ private fun SimpleRowButton(
     Row(
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(all = 4.dp),
+            .padding(all = AerixSpacing.xs),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         Icon(
             modifier = Modifier.size(18.dp),
@@ -772,7 +773,7 @@ private fun SimpleRowButton(
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             //标题
             Text(

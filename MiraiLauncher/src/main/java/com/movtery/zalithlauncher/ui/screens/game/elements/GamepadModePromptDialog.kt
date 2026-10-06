@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.GamepadInputMode
@@ -85,7 +86,7 @@ fun GamepadModePromptDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -94,8 +95,8 @@ fun GamepadModePromptDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(all = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier.padding(all = AerixSpacing.xxl),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     Text(
                         text = stringResource(R.string.settings_gamepad_input_mode_title),
@@ -107,7 +108,7 @@ fun GamepadModePromptDialog(
                         modifier = Modifier
                             .weight(1f, fill = false)
                             .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
                         Text(
                             text = stringResource(R.string.gamepad_mode_prompt_description),
@@ -128,7 +129,7 @@ fun GamepadModePromptDialog(
                                     onClick = { selected = mode }
                                 )
                                 Column(
-                                    modifier = Modifier.padding(start = 4.dp)
+                                    modifier = Modifier.padding(start = AerixSpacing.xs)
                                 ) {
                                     Text(
                                         text = stringResource(mode.titleRes),

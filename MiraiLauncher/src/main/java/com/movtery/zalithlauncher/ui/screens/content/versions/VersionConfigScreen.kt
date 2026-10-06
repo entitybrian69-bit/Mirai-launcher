@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.control.ControlManager
 import com.movtery.zalithlauncher.game.multirt.RuntimesManager
@@ -110,7 +111,7 @@ fun VersionConfigScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScrollWithBar(state = rememberScrollState())
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             isVisible = isVisible
         ) { scope ->
             AnimatedItem(scope) { yOffset ->
@@ -160,7 +161,7 @@ private fun VersionConfigs(
         modifier = modifier
     ) {
         Text(
-            modifier = Modifier.padding(all = 8.dp),
+            modifier = Modifier.padding(all = AerixSpacing.sm),
             text = stringResource(R.string.versions_config_version_settings),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.labelLarge
@@ -304,7 +305,7 @@ private fun GameConfigs(
         modifier = modifier
     ) {
         Text(
-            modifier = Modifier.padding(all = 8.dp),
+            modifier = Modifier.padding(all = AerixSpacing.sm),
             text = stringResource(R.string.versions_config_game_settings),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.labelLarge
@@ -352,7 +353,7 @@ private fun GameConfigs(
                     MemoryPreview(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 2.dp, end = 8.dp),
+                            .padding(start = AerixSpacing.xxs, end = AerixSpacing.sm),
                         preview = ramAllocation.takeIf { it >= 256 }?.toDouble(),
                         usedText = { usedMemory, totalMemory ->
                             stringResource(R.string.settings_game_java_memory_used_text, usedMemory.toInt(), totalMemory.toInt())
@@ -455,7 +456,7 @@ private fun SupportConfigs(
 
     SettingsCardColumn(modifier = modifier) {
         Text(
-            modifier = Modifier.padding(all = 8.dp),
+            modifier = Modifier.padding(all = AerixSpacing.sm),
             text = stringResource(R.string.versions_config_support_settings),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.labelLarge

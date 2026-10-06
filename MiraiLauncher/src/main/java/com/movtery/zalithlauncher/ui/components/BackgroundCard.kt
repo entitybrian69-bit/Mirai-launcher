@@ -33,6 +33,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
 import com.movtery.zalithlauncher.ui.theme.cardColor
@@ -65,7 +69,9 @@ fun BackgroundCard(
         border = border,
     ) {
         Column(
-            modifier = Modifier.backgroundGlass(blur, colors.containerColor, influencedByBackground),
+            modifier = Modifier
+                .liquidGlass(shape = shape, tint = AerixSurface.glassTint, strength = 0.9f, elevation = AerixSpacing.zero)
+                .backgroundGlass(blur, colors.containerColor, influencedByBackground),
             content = content
         )
     }
@@ -102,7 +108,9 @@ fun BackgroundCard(
         enabled = enabled,
     ) {
         Column(
-            modifier = Modifier.backgroundGlass(blur, colors.containerColor, influencedByBackground),
+            modifier = Modifier
+                .liquidGlass(shape = shape, tint = AerixSurface.glassTint, strength = 0.9f, elevation = AerixSpacing.zero)
+                .backgroundGlass(blur, colors.containerColor, influencedByBackground),
             content = content
         )
     }
@@ -134,7 +142,14 @@ fun CardTitleLayout(
             contentColor = contentColor,
         ) {
             Column(
-                modifier = Modifier.backgroundGlass(blur, color, influencedByBackground),
+                modifier = Modifier
+                    .liquidGlass(
+                        shape = RoundedCornerShape(topStart = AerixRadii.card, topEnd = AerixRadii.card),
+                        tint = AerixSurface.glassTint,
+                        strength = 0.75f,
+                        elevation = AerixSpacing.zero
+                    )
+                    .backgroundGlass(blur, color, influencedByBackground),
                 content = content
             )
         }

@@ -45,6 +45,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.google.gson.JsonSyntaxException
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.game.GameDownloadInfo
 import com.movtery.zalithlauncher.game.download.game.GameInstaller
@@ -368,7 +369,7 @@ private fun GameInstallOperation(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(text = stringResource(R.string.download_install_error_message))
                         Text(text = message)

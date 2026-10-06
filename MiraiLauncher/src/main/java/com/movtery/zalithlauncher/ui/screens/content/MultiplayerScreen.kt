@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,9 +53,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -78,6 +76,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.BuildConfig
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
@@ -89,6 +90,8 @@ import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.terracotta.Terracotta
 import com.movtery.zalithlauncher.ui.androidText
 import com.movtery.zalithlauncher.ui.base.BaseScreen
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.NotificationCheck
@@ -140,15 +143,15 @@ fun MultiplayerScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) }
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             // Left Column: Touch Controls & Gamepad
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
             ) {
                 TouchControlsAndGamepadBentoCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -199,15 +202,15 @@ private fun TouchControlsAndGamepadBentoCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF21242B),
-        border = BorderStroke(1.dp, Color(0xFF2E333E))
+        shape = RoundedCornerShape(AerixRadii.cardSmall),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(AerixSpacing.mdPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
         ) {
             Text(
                 text = "Touch Controls & Gamepad",
@@ -218,15 +221,15 @@ private fun TouchControlsAndGamepadBentoCard(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 Surface(
                     modifier = Modifier
                         .weight(1f)
                         .height(38.dp),
-                    shape = RoundedCornerShape(19.dp),
-                    color = Color(0xFF17191E),
-                    border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                    shape = RoundedCornerShape(AerixRadii.cardLarge),
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                     onClick = onOpenControlManager
                 ) {
                     Box(
@@ -246,9 +249,9 @@ private fun TouchControlsAndGamepadBentoCard(
                     modifier = Modifier
                         .weight(1f)
                         .height(38.dp),
-                    shape = RoundedCornerShape(19.dp),
-                    color = Color(0xFF17191E),
-                    border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                    shape = RoundedCornerShape(AerixRadii.cardLarge),
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                     onClick = onOpenGamepadSettings
                 ) {
                     Box(
@@ -273,16 +276,16 @@ private fun HudKeyBox(label: String, small: Boolean = false) {
     Box(
         modifier = Modifier
             .size(if (small) 26.dp else 28.dp, if (small) 18.dp else 26.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(Color(0xFF222731))
-            .border(1.dp, Color(0xFF394050), RoundedCornerShape(6.dp)),
+            .clip(RoundedCornerShape(AerixRadii.micro))
+            .background(AerixSurface.panelRaised)
+            .border(AerixSpacing.hairline, AerixSurface.borderSoft, RoundedCornerShape(AerixRadii.micro)),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = label,
             fontSize = if (small) 8.sp else 10.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFE5E7EB)
+            color = AerixSurface.textPrimary
         )
     }
 }
@@ -293,10 +296,10 @@ private fun HudActionCircle(label: String, highlighted: Boolean) {
         modifier = Modifier
             .size(32.dp)
             .clip(CircleShape)
-            .background(if (highlighted) Color(0xFF143825) else Color(0xFF222731))
+            .background(if (highlighted) AerixSurface.accentContainer else AerixSurface.panelRaised)
             .border(
-                1.dp,
-                if (highlighted) MiraiThemeManager.currentAccent() else Color(0xFF394050),
+                AerixSpacing.hairline,
+                if (highlighted) MiraiThemeManager.currentAccent() else AerixSurface.borderSoft,
                 CircleShape
             ),
         contentAlignment = Alignment.Center
@@ -305,7 +308,7 @@ private fun HudActionCircle(label: String, highlighted: Boolean) {
             text = label,
             fontSize = 8.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = if (highlighted) MiraiThemeManager.currentAccent() else Color(0xFFE5E7EB)
+            color = if (highlighted) MiraiThemeManager.currentAccent() else AerixSurface.textPrimary
         )
     }
 }
@@ -359,15 +362,15 @@ private fun LiveDiagnosticsConsoleCard(
 
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF21242B),
-        border = BorderStroke(1.dp, Color(0xFF2E333E))
+        shape = RoundedCornerShape(AerixRadii.cardSmall),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(AerixSpacing.mdPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -382,17 +385,17 @@ private fun LiveDiagnosticsConsoleCard(
                 )
 
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     LogLevelFilter.entries.forEach { filter ->
                         val selected = levelFilter == filter
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF17191E),
+                            shape = RoundedCornerShape(AerixRadii.control),
+                            color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.panel,
                             border = BorderStroke(
-                                1.dp,
-                                if (selected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                                AerixSpacing.hairline,
+                                if (selected) MiraiThemeManager.currentAccent() else AerixSurface.border
                             ),
                             onClick = {
                                 cleared = false
@@ -401,10 +404,10 @@ private fun LiveDiagnosticsConsoleCard(
                         ) {
                                 Text(
                                 text = filter.label,
-                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+                                modifier = Modifier.padding(horizontal = AerixSpacing.smTight, vertical = AerixSpacing.tiny),
                                 fontSize = 10.sp,
                                 fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                                color = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB),
+                                color = if (selected) AerixSurface.onAccent else AerixSurface.textSecondary,
                                 maxLines = 1,
                                 softWrap = false
                             )
@@ -412,17 +415,17 @@ private fun LiveDiagnosticsConsoleCard(
                     }
 
                     Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFF17191E),
-                        border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                        shape = RoundedCornerShape(AerixRadii.control),
+                        color = AerixSurface.panel,
+                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                         onClick = { cleared = true }
                     ) {
                         Text(
                             text = "Clear",
-                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+                            modifier = Modifier.padding(horizontal = AerixSpacing.smTight, vertical = AerixSpacing.tiny),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFFD1D5DB),
+                            color = AerixSurface.textSecondary,
                             maxLines = 1,
                             softWrap = false
                         )
@@ -435,23 +438,23 @@ private fun LiveDiagnosticsConsoleCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                shape = RoundedCornerShape(10.dp),
-                color = Color(0xFF111318),
-                border = BorderStroke(1.dp, Color(0xFF262A34))
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = AerixSurface.canvas,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                        .padding(AerixSpacing.smPlus),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                 ) {
                     filteredLines.forEach { line ->
                         val lineColor = when {
-                            line.contains("ERROR", true) || line.contains("Exception", true) -> Color(0xFFF87171)
-                            line.contains("WARN", true) -> Color(0xFFFBBF24)
+                            line.contains("ERROR", true) || line.contains("Exception", true) -> AerixSurface.danger
+                            line.contains("WARN", true) -> AerixSurface.warning
                             line.contains("Renderer", true) || line.contains("LTW", true) -> MiraiThemeManager.currentAccent()
-                            else -> Color(0xFFD1D5DB)
+                            else -> AerixSurface.textSecondary
                         }
                         Text(
                             text = line,
@@ -467,16 +470,16 @@ private fun LiveDiagnosticsConsoleCard(
             // Bottom Actions Row (Mockup #8: Share Crash Log + Open File Manager)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
                     modifier = Modifier
                         .weight(1f)
                         .height(38.dp),
-                    shape = RoundedCornerShape(19.dp),
-                    color = Color(0xFF17191E),
-                    border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                    shape = RoundedCornerShape(AerixRadii.cardLarge),
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                     onClick = onShareLog
                 ) {
                     Box(
@@ -497,12 +500,12 @@ private fun LiveDiagnosticsConsoleCard(
                         .weight(1f)
                         .height(38.dp),
                     onClick = onOpenFileManager,
-                    shape = RoundedCornerShape(19.dp),
+                    shape = RoundedCornerShape(AerixRadii.cardLarge),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MiraiThemeManager.currentAccent(),
-                        contentColor = Color(0xFF06210F)
+                        contentColor = AerixSurface.onAccent
                     ),
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                    contentPadding = PaddingValues(horizontal = AerixSpacing.sm)
                 ) {
                     Text(
                         text = "Open File Manager",
@@ -587,15 +590,15 @@ private fun MainMenu(
 
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF21242B),
-        border = BorderStroke(1.dp, Color(0xFF2E333E))
+        shape = RoundedCornerShape(AerixRadii.cardSmall),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(AerixSpacing.mdPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -617,21 +620,21 @@ private fun MainMenu(
             // Host Room / Join Room Segmented Toggle (Mockup #8)
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                color = Color(0xFF17191E),
-                border = BorderStroke(1.dp, Color(0xFF2E333E))
+                shape = RoundedCornerShape(AerixRadii.cardLarge),
+                color = AerixSurface.panel,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(3.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        .padding(AerixSpacing.tiny),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                 ) {
                     Surface(
                         modifier = Modifier
                             .weight(1f)
                             .height(30.dp),
-                        shape = RoundedCornerShape(15.dp),
+                        shape = RoundedCornerShape(AerixRadii.card),
                         color = if (isHostMode) MiraiThemeManager.currentAccent() else Color.Transparent,
                         onClick = { isHostMode = true }
                     ) {
@@ -640,7 +643,7 @@ private fun MainMenu(
                                 text = "Host Room",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = if (isHostMode) Color(0xFF06210F) else Color(0xFF9CA3AF)
+                                color = if (isHostMode) AerixSurface.onAccent else AerixSurface.textSecondary
                             )
                         }
                     }
@@ -649,7 +652,7 @@ private fun MainMenu(
                         modifier = Modifier
                             .weight(1f)
                             .height(30.dp),
-                        shape = RoundedCornerShape(15.dp),
+                        shape = RoundedCornerShape(AerixRadii.card),
                         color = if (!isHostMode) MiraiThemeManager.currentAccent() else Color.Transparent,
                         onClick = { isHostMode = false }
                     ) {
@@ -658,7 +661,7 @@ private fun MainMenu(
                                 text = "Join Room",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = if (!isHostMode) Color(0xFF06210F) else Color(0xFF9CA3AF)
+                                color = if (!isHostMode) AerixSurface.onAccent else AerixSurface.textSecondary
                             )
                         }
                     }
@@ -668,14 +671,14 @@ private fun MainMenu(
             // Room Code Box + Copy Button (Mockup #8)
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
-                color = Color(0xFF17191E),
-                border = BorderStroke(1.dp, Color(0xFF2E333E))
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = AerixSurface.panel,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                        .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -684,17 +687,17 @@ private fun MainMenu(
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE5E7EB)
+                        color = AerixSurface.textPrimary
                     )
 
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = Color(0xFF262A34),
+                        shape = RoundedCornerShape(AerixRadii.compact),
+                        color = AerixSurface.border,
                         onClick = onShareLogs
                     ) {
                         Text(
                             text = if (isHostMode) "Copy" else "Paste",
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -722,10 +725,10 @@ private fun MainMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(AerixRadii.panelSmall),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MiraiThemeManager.currentAccent(),
-                    contentColor = Color(0xFF06210F)
+                    contentColor = AerixSurface.onAccent
                 )
             ) {
                 Text(
@@ -765,23 +768,15 @@ private fun TutorialMenu(
             pagerState.animateScrollToPage(selectedTabIndex)
         }
 
-        SecondaryTabRow(
-            containerColor = influencedByBackgroundColor(
-                color = cardTitleColor(),
-                influencedAlpha = 0.5f * (AllSettings.launcherBackgroundOpacity.state.toFloat() / 100f)
-            ),
-            selectedTabIndex = selectedTabIndex
-        ) {
+        AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
             tabs.forEachIndexed { index, item ->
-                Tab(
-                    selected = index == selectedTabIndex,
-                    onClick = {
-                        selectedTabIndex = index
-                    },
-                    text = {
-                        MarqueeText(text = stringResource(item.text))
-                    }
-                )
+                val selected = index == selectedTabIndex
+                AerixPillTab(
+                    selected = selected,
+                    onClick = { selectedTabIndex = index }
+                ) {
+                    MarqueeText(text = stringResource(item.text))
+                }
             }
         }
 
@@ -856,7 +851,7 @@ private fun SingleTitleColumn(
     TitleTextLayout(
         modifier = modifier
             .verticalScrollWithBar(scrollState)
-            .padding(all = 16.dp),
+            .padding(all = AerixSpacing.lg),
         title = title,
         text = text
     )
@@ -874,8 +869,8 @@ private fun DoubleTitleColumn(
     Column(
         modifier = modifier
             .verticalScrollWithBar(scrollState)
-            .padding(all = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(all = AerixSpacing.lg),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
     ) {
         TitleTextLayout(firstTitle, firstText)
         TitleTextLayout(secondTitle, secondText)
@@ -890,7 +885,7 @@ private fun TitleTextLayout(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         Text(
             text = title,

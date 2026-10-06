@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -91,6 +92,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.game.path.GamePathManager
@@ -101,6 +105,8 @@ import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.game.version.installed.cleanup.GameAssetCleaner
 import com.movtery.zalithlauncher.ui.activities.MainActivity
 import com.movtery.zalithlauncher.ui.base.BaseScreen
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.ScalingActionButton
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
@@ -285,8 +291,8 @@ fun VersionsManageScreen(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(240.dp),
-                    color = Color(0xFF17191F),
-                    border = BorderStroke(1.dp, Color(0xFF282C36))
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
                 ) {
                     LeftMenu(
                         isVisible = isVisible,
@@ -397,10 +403,10 @@ private fun LeftMenu(
                 .fillMaxWidth()
                 .weight(1f),
             contentPadding = PaddingValues(
-                start = 12.dp,
-                end = 12.dp,
-                top = 12.dp,
-                bottom = 12.dp
+                start = AerixSpacing.md,
+                end = AerixSpacing.md,
+                top = AerixSpacing.md,
+                bottom = AerixSpacing.md
             )
         ) {
             items(gamePaths, key = { it.id }) { pathItem ->
@@ -438,8 +444,8 @@ private fun LeftMenu(
 
         ScalingActionButton(
             modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .padding(top = 8.dp)
+                .padding(horizontal = AerixSpacing.md)
+                .padding(top = AerixSpacing.sm)
                 .fillMaxWidth(),
             onClick = {
                 (context as? MainActivity)?.let { activity ->
@@ -460,7 +466,7 @@ private fun LeftMenu(
 
         ScalingActionButton(
             modifier = Modifier
-                .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 12.dp)
+                .padding(start = AerixSpacing.md, end = AerixSpacing.md, top = AerixSpacing.sm, bottom = AerixSpacing.md)
                 .fillMaxWidth(),
             onClick = onCleanupGameFiles
         ) {
@@ -557,19 +563,24 @@ private fun VersionsLayout(
             )
 
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                val columns = if (maxWidth >= 440.dp) 2 else 1
+                val columns = when {
+                    maxWidth > maxHeight && maxWidth >= 1040.dp -> 4
+                    maxWidth > maxHeight && maxWidth >= 700.dp -> 3
+                    else -> 2
+                }
+                val compactToolbar = maxWidth < 520.dp
 
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                        .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
                 ) {
                     // Top Mobile Library Toolbar (Mockup #2: Search + Sort Icon + New Instance CTA)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                     ) {
                         ModrinthCompactSearchField(
                             value = searchQuery,
@@ -581,16 +592,16 @@ private fun VersionsLayout(
                         Box {
                             Surface(
                                 modifier = Modifier.size(36.dp),
-                                shape = RoundedCornerShape(10.dp),
-                                color = Color(0xFF21242B),
-                                border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                color = AerixSurface.panel,
+                                border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                                 onClick = { showSortMenu = true }
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_sort),
                                         contentDescription = "Sort",
-                                        tint = Color(0xFFD1D5DB),
+                                        tint = AerixSurface.textSecondary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
@@ -613,11 +624,11 @@ private fun VersionsLayout(
 
                         Surface(
                             modifier = Modifier.size(36.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            color = if (showGamePathDrawer) Color(0xFF143825) else Color(0xFF21242B),
+                            shape = RoundedCornerShape(AerixRadii.controlSmall),
+                            color = if (showGamePathDrawer) AerixSurface.accentContainer else AerixSurface.panel,
                             border = BorderStroke(
-                                1.dp,
-                                if (showGamePathDrawer) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                                AerixSpacing.hairline,
+                                if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixSurface.border
                             ),
                             onClick = onToggleGamePathDrawer
                         ) {
@@ -625,65 +636,63 @@ private fun VersionsLayout(
                                 Icon(
                                     painter = painterResource(R.drawable.ic_folder_outlined),
                                     contentDescription = "Directories",
-                                    tint = if (showGamePathDrawer) MiraiThemeManager.currentAccent() else Color(0xFFD1D5DB),
+                                    tint = if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
                         }
 
-                        Button(
-                            onClick = onInstall,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MiraiThemeManager.currentAccent(),
-                                contentColor = Color(0xFF06210F)
-                            ),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp),
-                            modifier = Modifier.height(36.dp)
+                        Surface(
+                            modifier = Modifier
+                                .height(36.dp)
+                                .widthIn(min = 36.dp),
+                            shape = RoundedCornerShape(AerixRadii.control),
+                            color = MiraiThemeManager.currentAccent(),
+                            contentColor = AerixSurface.onAccent,
+                            onClick = onInstall
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_add),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            Text(
-                                text = "New Instance",
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.ExtraBold
-                            )
+                            Row(
+                                modifier = Modifier.padding(
+                                    horizontal = if (compactToolbar) AerixSpacing.sm else AerixSpacing.mdPlus,
+                                    vertical = AerixSpacing.smTight
+                                ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_add),
+                                    contentDescription = if (compactToolbar) "New Instance" else null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                if (!compactToolbar) {
+                                    Text(
+                                        text = "New Instance",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
+                            }
                         }
                     }
 
-                    // Compact Filter Pills Row (Mockup #2: All, Modpacks, Vanilla, 1.17+ LTW, Legacy)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
                         LibraryFilterGroup.entries.forEach { group ->
                             val selected = selectedFilter == group
-                            Surface(
-                                shape = RoundedCornerShape(16.dp),
-                                color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF21242B),
-                                border = BorderStroke(
-                                    1.dp,
-                                    if (selected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
-                                ),
+                            AerixPillTab(
+                                selected = selected,
                                 onClick = { selectedFilter = group }
                             ) {
                                 Text(
                                     text = group.label,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                                     style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                                    color = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB)
+                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                    maxLines = 1
                                 )
                             }
                         }
                     }
 
-                    // 3-Column Modrinth Instance Cards Grid
+                    // Adaptive library grid expands to 3–4 cards across in landscape.
                     if (displayedVersions.isEmpty()) {
                         Box(
                             modifier = Modifier
@@ -692,14 +701,14 @@ private fun VersionsLayout(
                             contentAlignment = Alignment.Center
                         ) {
                             Surface(
-                                shape = RoundedCornerShape(16.dp),
-                                color = Color(0xFF21242B),
-                                border = BorderStroke(1.dp, Color(0xFF2E323C))
+                                shape = RoundedCornerShape(AerixRadii.card),
+                                color = AerixSurface.panel,
+                                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(24.dp),
+                                    modifier = Modifier.padding(AerixSpacing.xxl),
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
                                 ) {
                                     Text(
                                         text = stringResource(R.string.versions_manage_no_versions),
@@ -711,7 +720,7 @@ private fun VersionsLayout(
                                         onClick = onInstall,
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = MiraiThemeManager.currentAccent(),
-                                            contentColor = Color(0xFF06210F)
+                                            contentColor = AerixSurface.onAccent
                                         )
                                     ) {
                                         Icon(
@@ -719,7 +728,7 @@ private fun VersionsLayout(
                                             contentDescription = null,
                                             modifier = Modifier.size(16.dp)
                                         )
-                                        Spacer(Modifier.width(6.dp))
+                                        Spacer(Modifier.width(AerixSpacing.smCompact))
                                         Text(
                                             text = "Create First Instance",
                                             fontWeight = FontWeight.Bold
@@ -734,8 +743,8 @@ private fun VersionsLayout(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            contentPadding = PaddingValues(bottom = 14.dp)
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+                            contentPadding = PaddingValues(bottom = AerixSpacing.mdPlus)
                         ) {
                             items(
                                 count = rows.size,
@@ -744,7 +753,7 @@ private fun VersionsLayout(
                                 val rowItems = rows[idx]
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                                 ) {
                                     rowItems.forEach { version ->
                                         ModrinthLibraryInstanceCard(
@@ -808,7 +817,7 @@ private fun ModrinthLibraryInstanceCard(
         label = "libCardScale"
     )
     val borderColor by animateColorAsState(
-        targetValue = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF2E323C),
+        targetValue = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised,
         animationSpec = tween(220),
         label = "libCardBorder"
     )
@@ -823,38 +832,38 @@ private fun ModrinthLibraryInstanceCard(
             scaleX = scale
             scaleY = scale
         },
-        shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF21242B),
-        border = BorderStroke(if (selected) 1.5.dp else 1.dp, borderColor),
+        shape = RoundedCornerShape(AerixRadii.cardSmall),
+        color = AerixSurface.panel,
+        border = BorderStroke(if (selected) 1.5.dp else AerixSpacing.hairline, borderColor),
         onClick = onSelect
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
             ) {
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = Color(0xFF2B2F3A),
-                    border = BorderStroke(1.dp, Color(0xFF343946))
+                    shape = RoundedCornerShape(AerixRadii.controlSmall),
+                    color = AerixSurface.panelRaised,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
                 ) {
                     VersionIconImage(
                         version = version,
                         modifier = Modifier
-                            .padding(5.dp)
+                            .padding(AerixSpacing.xsPlus)
                             .size(36.dp)
                     )
                 }
 
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xsPlus)
                 ) {
                     Text(
                         text = version.getVersionName(),
@@ -866,13 +875,13 @@ private fun ModrinthLibraryInstanceCard(
                     )
 
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         ModrinthMetaPill(
                             text = "$loaderName $mcVer",
-                            backgroundColor = Color(0xFF2C303C),
-                            textColor = Color(0xFFE5E7EB)
+                            backgroundColor = AerixSurface.panelRaised,
+                            textColor = AerixSurface.textPrimary
                         )
                     }
                 }
@@ -886,10 +895,10 @@ private fun ModrinthLibraryInstanceCard(
                 // Left: Overflow Options Gear Button (Mockup #2)
                 Box {
                     Surface(
-                        shape = RoundedCornerShape(9.dp),
-                        color = Color(0xFF282C36),
-                        border = BorderStroke(1.dp, Color(0xFF343946)),
-                        contentColor = Color(0xFFD1D5DB),
+                        shape = RoundedCornerShape(AerixRadii.compact),
+                        color = AerixSurface.panelRaised,
+                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                        contentColor = AerixSurface.textSecondary,
                         onClick = { menuExpanded = true }
                     ) {
                         Box(
@@ -970,14 +979,14 @@ private fun ModrinthLibraryInstanceCard(
                             text = {
                                 Text(
                                     text = stringResource(R.string.generic_delete),
-                                    color = Color(0xFFF87171)
+                                    color = AerixSurface.danger
                                 )
                             },
                             leadingIcon = {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_delete_filled),
                                     contentDescription = null,
-                                    tint = Color(0xFFF87171),
+                                    tint = AerixSurface.danger,
                                     modifier = Modifier.size(18.dp)
                                 )
                             },
@@ -991,14 +1000,14 @@ private fun ModrinthLibraryInstanceCard(
 
                 // Right: Settings Gear + Emerald '▶ Play' Pill Button (Mockup #2)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        shape = RoundedCornerShape(9.dp),
-                        color = Color(0xFF282C36),
-                        border = BorderStroke(1.dp, Color(0xFF343946)),
-                        contentColor = Color(0xFFD1D5DB),
+                        shape = RoundedCornerShape(AerixRadii.compact),
+                        color = AerixSurface.panelRaised,
+                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                        contentColor = AerixSurface.textSecondary,
                         onClick = onSettingsClick
                     ) {
                         Box(
@@ -1014,17 +1023,17 @@ private fun ModrinthLibraryInstanceCard(
                     }
 
                     Surface(
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(AerixRadii.card),
                         color = MiraiThemeManager.currentAccent(),
-                        contentColor = Color(0xFF06210F),
+                        contentColor = AerixSurface.onAccent,
                         onClick = onPlayClick
                     ) {
                         Row(
                             modifier = Modifier
                                 .height(32.dp)
-                                .padding(horizontal = 14.dp),
+                                .padding(horizontal = AerixSpacing.mdPlus),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_play_arrow_filled),

@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.screens.content.elements.DisabledAlpha
 
 /**
@@ -72,7 +73,7 @@ fun TextRailItem(
     onClick: () -> Unit,
     icon: @Composable RowScope.() -> Unit = {},
     selected: Boolean,
-    selectedPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+    selectedPadding: PaddingValues = PaddingValues(horizontal = AerixSpacing.lg, vertical = AerixSpacing.sm),
     unSelectedPadding: PaddingValues = selectedPadding,
     shape: Shape = MaterialTheme.shapes.extraLarge,
     backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,

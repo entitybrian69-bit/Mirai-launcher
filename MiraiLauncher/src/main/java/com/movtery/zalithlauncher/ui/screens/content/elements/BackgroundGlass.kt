@@ -27,6 +27,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.GraphicsContext
 import androidx.compose.ui.graphics.TileMode
@@ -49,6 +50,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.lerp
 import androidx.core.graphics.withSave
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.BackgroundBlur
 import com.movtery.zalithlauncher.viewmodel.BackgroundViewModel
@@ -77,17 +80,26 @@ fun Modifier.backgroundGlass(
     blur: Int,
     color: Color,
     enabled: Boolean = true,
-): Modifier = this
+): Modifier {
+    val store = LocalBackgroundViewModel.current ?: return this
+    if (!enabled || !store.isValid || AllSettings.launcherBackgroundOpacity.state >= 100) return this
+    return this.then(GlassElement(blur.coerceAtLeast(0), color, store))
+}
 
-/**
- * 启动器背景捕获：在移动端直接透传，避免全屏 GraphicsLayer 每帧重绘造成卡顿
- */
+/** Capture the wallpaper once per frame; blur itself stays cached between captures. */
 internal fun Modifier.backgroundCapture(
     store: BackgroundViewModel,
     recordContent: Boolean,
     blurRadiusPx: Float,
     whiteOverlayAlpha: Float,
-): Modifier = this
+): Modifier = this.then(
+    BackgroundCaptureElement(
+        store = store,
+        recordContent = recordContent,
+        blurRadiusPx = blurRadiusPx.coerceAtLeast(0f),
+        whiteOverlayAlpha = whiteOverlayAlpha.coerceIn(0f, 1f)
+    )
+)
 
 internal fun whiteOverlayAlpha(blur: Int): Float {
     val t = (blur / 80f).coerceIn(0f, 1f)
@@ -148,43 +160,86 @@ private class GlassNode(
     }
 
     private fun DrawScope.drawGlass() {
-        if (blur <= 0 || AllSettings.launcherBackgroundOpacity.state >= 100) return
+        if (AllSettings.launcherBackgroundOpacity.state >= 100) return
+
+        var drewCapturedBackdrop = false
         val bounds = store.backgroundBounds
-        if (bounds.isEmpty || !hasOrigin) return
+        if (blur > 0 && !bounds.isEmpty && hasOrigin) {
+            val nativeCanvas = drawContext.canvas.nativeCanvas
+            nativeCanvas.withSave {
+                val current = Matrix()
+                getMatrix(current)
+                val inverted = Matrix()
+                if (current.invert(inverted)) {
+                    val values = FloatArray(9).also(current::getValues)
+                    val left = bounds.left - screenOrigin.x + values[Matrix.MTRANS_X]
+                    val top = bounds.top - screenOrigin.y + values[Matrix.MTRANS_Y]
 
-        val nativeCanvas = drawContext.canvas.nativeCanvas
-        nativeCanvas.withSave {
-            val current = Matrix()
-            getMatrix(current)
-            val inverted = Matrix()
-            if (current.invert(inverted)) {
-                val values = FloatArray(9).also(current::getValues)
-                val left = bounds.left - screenOrigin.x + values[Matrix.MTRANS_X]
-                val top = bounds.top - screenOrigin.y + values[Matrix.MTRANS_Y]
-
-                concat(inverted)
-                if (Build.VERSION.SDK_INT >= 31) {
-                    store.glassLayer?.let { layer ->
-                        this@drawGlass.translate(left, top) {
-                            drawLayer(layer)
+                    concat(inverted)
+                    if (Build.VERSION.SDK_INT >= 31) {
+                        store.glassLayer?.let { layer ->
+                            this@drawGlass.translate(left, top) { drawLayer(layer) }
+                            drewCapturedBackdrop = true
                         }
-                    }
-                } else {
-                    store.blurredBackground?.let { bitmap ->
-                        this@drawGlass.drawImage(
-                            image = bitmap,
-                            dstOffset = IntOffset(left.roundToInt(), top.roundToInt()),
-                            dstSize = IntSize(bounds.width.roundToInt(), bounds.height.roundToInt())
-                        )
+                    } else {
+                        store.blurredBackground?.let { bitmap ->
+                            this@drawGlass.drawImage(
+                                image = bitmap,
+                                dstOffset = IntOffset(left.roundToInt(), top.roundToInt()),
+                                dstSize = IntSize(bounds.width.roundToInt(), bounds.height.roundToInt())
+                            )
+                            drewCapturedBackdrop = true
+                        }
                     }
                 }
             }
         }
 
-        drawRect(color = color, blendMode = BlendMode.SrcOver)
+        // With blur=0, preserve the wallpaper's sharp pixels and build the material
+        // from a translucent wash plus reflected light, not an opaque replacement.
+        drawRect(
+            color = color.copy(alpha = if (drewCapturedBackdrop) 0.18f else AerixSurface.sharpGlassTintAlpha),
+            blendMode = BlendMode.SrcOver
+        )
+        drawRect(
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    Color.White.copy(alpha = 0.24f),
+                    AerixSurface.glassBlue.copy(alpha = 0.08f),
+                    Color.Transparent,
+                    Color.Transparent
+                )
+            ),
+            blendMode = BlendMode.Softlight
+        )
+        drawRect(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    Color.White.copy(alpha = 0.09f),
+                    Color.Transparent,
+                    AerixSurface.glassViolet.copy(alpha = 0.055f),
+                    Color.Transparent
+                ),
+                start = Offset.Zero,
+                end = Offset(size.width, size.height)
+            ),
+            blendMode = BlendMode.Screen
+        )
         drawRect(
             color = Color.White.copy(alpha = whiteOverlayAlpha(blur)),
             blendMode = BlendMode.Softlight
+        )
+        drawLine(
+            color = Color.White.copy(alpha = 0.55f),
+            start = Offset(AerixSpacing.md.toPx(), 0.7f),
+            end = Offset((size.width - AerixSpacing.md.toPx()).coerceAtLeast(0f), 0.7f),
+            strokeWidth = AerixSpacing.hairline.toPx()
+        )
+        drawLine(
+            color = AerixSurface.glassBlue.copy(alpha = 0.18f),
+            start = Offset(AerixSpacing.lg.toPx(), size.height - 0.8f),
+            end = Offset((size.width - AerixSpacing.lg.toPx()).coerceAtLeast(0f), size.height - 0.8f),
+            strokeWidth = AerixSpacing.hairline.toPx()
         )
     }
 }

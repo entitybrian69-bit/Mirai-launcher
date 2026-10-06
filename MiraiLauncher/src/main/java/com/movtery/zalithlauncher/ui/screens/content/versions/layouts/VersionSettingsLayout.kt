@@ -46,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.version.installed.SettingState
 import com.movtery.zalithlauncher.game.version.installed.Version
@@ -82,13 +83,13 @@ fun StatefulDropdownMenuFollowGlobal(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(all = AerixSpacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             TitleAndSummary(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 16.dp),
+                    .padding(end = AerixSpacing.lg),
                 title = title,
                 summary = summary
             )
@@ -182,7 +183,7 @@ fun ToggleableIntSliderSettingsCard(
         fineTuningControl = true,
         appendContent = {
             Checkbox(
-                modifier = Modifier.padding(start = 12.dp),
+                modifier = Modifier.padding(start = AerixSpacing.md),
                 checked = checked,
                 enabled = enabled,
                 onCheckedChange = {
@@ -208,7 +209,7 @@ fun VersionOverviewItem(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         VersionIconImage(
             version = version,

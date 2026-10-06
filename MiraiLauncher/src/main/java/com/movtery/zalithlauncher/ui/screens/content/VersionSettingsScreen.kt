@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.JsonSyntaxException
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
 import com.movtery.zalithlauncher.game.download.game.GameDownloadInfo
@@ -271,8 +274,8 @@ fun VersionSettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) }
-                .padding(horizontal = 14.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             // 1. Compact Mobile Instance Header Row (Mockup #3)
             ModrinthInstanceHeroBanner(
@@ -362,13 +365,13 @@ private fun ModrinthInstanceHeroBanner(
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         // Back Arrow Button
         Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
+            shape = RoundedCornerShape(AerixRadii.controlSmall),
+            color = AerixSurface.panelRaised,
+            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
             contentColor = Color.White,
             onClick = onBack
         ) {
@@ -386,14 +389,14 @@ private fun ModrinthInstanceHeroBanner(
 
         // Instance Icon
         Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E))
+            shape = RoundedCornerShape(AerixRadii.controlSmall),
+            color = AerixSurface.panelRaised,
+            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
         ) {
             VersionIconImage(
                 version = version,
                 modifier = Modifier
-                    .padding(5.dp)
+                    .padding(AerixSpacing.xsPlus)
                     .size(28.dp)
             )
         }
@@ -401,7 +404,7 @@ private fun ModrinthInstanceHeroBanner(
         // Title + Inline Subtitle
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(1.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.hairline)
         ) {
             Text(
                 text = version.getVersionName(),
@@ -414,68 +417,25 @@ private fun ModrinthInstanceHeroBanner(
             Text(
                 text = "$loaderName $mcVer • $ramMb MB",
                 style = MaterialTheme.typography.labelSmall,
-                color = Color(0xFF9CA3AF),
+                color = AerixSurface.textSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
 
-        // Smart Mod Dependency & Conflict Resolver Button (Feature #2)
+        // Quick Tools Pill Menu: Boost FPS & GC Tuning
         Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
-            onClick = { showModResolver = true }
-        ) {
-            Row(
-                modifier = Modifier
-                    .height(34.dp)
-                    .padding(horizontal = 9.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "🛡️ Mod Check",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFE5E7EB)
-                )
-            }
-        }
-
-        // JRE Auto-Tuner & GC Optimizer Button (Feature #17)
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
-            onClick = { showJreGcTuner = true }
-        ) {
-            Row(
-                modifier = Modifier
-                    .height(34.dp)
-                    .padding(horizontal = 9.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "☕ JRE & GC",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFE5E7EB)
-                )
-            }
-        }
-
-        // 1-Tap Mobile FPS Booster Button
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = activeAccent.copy(alpha = 0.16f),
-            border = BorderStroke(1.dp, activeAccent.copy(alpha = 0.7f)),
+            shape = RoundedCornerShape(AerixRadii.control),
+            color = activeAccent.copy(alpha = 0.14f),
+            border = BorderStroke(AerixSpacing.hairline, activeAccent.copy(alpha = 0.5f)),
             onClick = { showFpsBooster = true }
         ) {
             Row(
                 modifier = Modifier
-                    .height(34.dp)
-                    .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .height(32.dp)
+                    .padding(horizontal = AerixSpacing.smPlus),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 Text(
                     text = "⚡ Boost FPS",
@@ -486,12 +446,34 @@ private fun ModrinthInstanceHeroBanner(
             }
         }
 
+        Surface(
+            shape = RoundedCornerShape(AerixRadii.control),
+            color = AerixSurface.panel,
+            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+            onClick = { showJreGcTuner = true }
+        ) {
+            Row(
+                modifier = Modifier
+                    .height(32.dp)
+                    .padding(horizontal = AerixSpacing.smPlus),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+            ) {
+                Text(
+                    text = "☕ JRE & GC",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AerixSurface.textPrimary
+                )
+            }
+        }
+
         // Open Folder Button
         Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
-            contentColor = Color(0xFFE5E7EB),
+            shape = RoundedCornerShape(AerixRadii.controlSmall),
+            color = AerixSurface.panelRaised,
+            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+            contentColor = AerixSurface.textPrimary,
             onClick = onOpenFolder
         ) {
             Box(
@@ -509,12 +491,12 @@ private fun ModrinthInstanceHeroBanner(
         // Dynamic Accent '▶ Play' Button
         Button(
             onClick = onPlay,
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(AerixRadii.controlSmall),
             colors = ButtonDefaults.buttonColors(
                 containerColor = activeAccent,
-                contentColor = Color(0xFF06210F)
+                contentColor = AerixSurface.onAccent
             ),
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+            contentPadding = PaddingValues(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smCompact),
             modifier = Modifier.height(34.dp)
         ) {
             Icon(
@@ -522,7 +504,7 @@ private fun ModrinthInstanceHeroBanner(
                 contentDescription = stringResource(R.string.main_launch_game),
                 modifier = Modifier.size(16.dp)
             )
-            Spacer(Modifier.width(4.dp))
+            Spacer(Modifier.width(AerixSpacing.xs))
             Text(
                 text = "Play",
                 style = MaterialTheme.typography.labelMedium,
@@ -560,28 +542,28 @@ private fun ModrinthInstanceSubTabs(
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
         verticalAlignment = Alignment.CenterVertically
     ) {
         tabs.forEach { tab ->
             val selected = versionsScreenKey === tab.key
             val bgColor by animateColorAsState(
-                targetValue = if (selected) activeAccent else Color(0xFF21242B),
+                targetValue = if (selected) activeAccent else AerixSurface.panelRaised,
                 animationSpec = tween(140),
                 label = "subTabBg"
             )
             val textColor by animateColorAsState(
-                targetValue = if (selected) Color(0xFF06210F) else Color(0xFFE5E7EB),
+                targetValue = if (selected) AerixSurface.onAccent else AerixSurface.textPrimary,
                 animationSpec = tween(140),
                 label = "subTabText"
             )
 
             Surface(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(AerixRadii.card),
                 color = bgColor,
                 border = BorderStroke(
-                    1.dp,
-                    if (selected) activeAccent else Color(0xFF2E333E)
+                    AerixSpacing.hairline,
+                    if (selected) activeAccent else AerixSurface.borderSoft
                 ),
                 onClick = {
                     if (tab.key == NormalNavKey.Versions.UpdateLoader) {
@@ -596,7 +578,7 @@ private fun ModrinthInstanceSubTabs(
             ) {
                 Text(
                     text = tab.label,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                    modifier = Modifier.padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smCompact),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
                     color = textColor
@@ -827,7 +809,7 @@ private fun UpdateLoaderOperation(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(text = stringResource(R.string.versions_update_loader_diff_message))
 
@@ -909,7 +891,7 @@ private fun UpdateLoaderOperation(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(text = stringResource(R.string.versions_update_loader_error_message))
                         Text(text = message)

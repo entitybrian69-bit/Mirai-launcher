@@ -95,6 +95,7 @@ import com.movtery.layer_controller.utils.NAME_LENGTH
 import com.movtery.layer_controller.utils.VERSION_NAME_LENGTH
 import com.movtery.layer_controller.utils.newRandomFileName
 import com.movtery.layer_controller.utils.saveToFile
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.control.ControlData
 import com.movtery.zalithlauncher.game.control.ControlManager
@@ -271,7 +272,7 @@ fun ControlManageScreen(
         AnimatedRow(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             isVisible = isVisible
         ) { scope ->
             AnimatedItem(scope) { xOffset ->
@@ -480,14 +481,14 @@ private fun ControlLayoutList(
                             state = scrollState.scrollIndicatorState!!,
                             orientation = Orientation.Vertical,
                         ),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
                     state = scrollState,
                 ) {
                     items(dataList) { data ->
                         ControlLayoutItem(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 6.dp),
+                                .padding(vertical = AerixSpacing.smCompact),
                             data = data,
                             locale = locale,
                             selected = data.file.name == AllSettings.controlLayout.state,
@@ -532,9 +533,9 @@ private fun ControlListHeader(
                 .then(
                     modifier
                         .horizontalScroll(state = scrollState)
-                        .padding(all = 8.dp)
+                        .padding(all = AerixSpacing.sm)
                 ),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconTextButton(
@@ -592,7 +593,7 @@ private fun ControlLayoutItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = MaterialTheme.shapes.large)
-                .padding(all = 8.dp),
+                .padding(all = AerixSpacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
@@ -610,7 +611,7 @@ private fun ControlLayoutItem(
                 Row(
                     modifier = modifier.height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                 ) {
                     MarqueeText(
                         modifier = Modifier.weight(1f, fill = false),
@@ -701,8 +702,8 @@ private fun ControlLayoutInfo(
             val info = data.controlLayout.info
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = PaddingValues(all = 12.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
+                contentPadding = PaddingValues(all = AerixSpacing.md)
             ) {
                 item {
                     val name = info.name.translate(locale)
@@ -754,7 +755,7 @@ private fun ControlLayoutInfo(
                     }
                 } else {
                     item {
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(AerixSpacing.xs))
                         ControlInfoItem(
                             modifier = Modifier.fillMaxWidth(),
                             onEdit = {
@@ -763,7 +764,7 @@ private fun ControlLayoutInfo(
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                             ) {
                                 Text(
                                     text = stringResource(R.string.control_manage_info_description),
@@ -785,9 +786,9 @@ private fun ControlLayoutInfo(
             Row(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(horizontal = 12.dp)
-                    .padding(bottom = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(horizontal = AerixSpacing.md)
+                    .padding(bottom = AerixSpacing.md),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
             ) {
                 ScalingActionButton(
                     modifier = Modifier
@@ -860,9 +861,9 @@ private fun ControlInfoItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = MaterialTheme.shapes.large)
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             content = content
         )
     }
@@ -923,7 +924,7 @@ private fun CreateNewLayoutDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -932,9 +933,9 @@ private fun CreateNewLayoutDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     Text(
                         text = stringResource(R.string.control_manage_create_new_title),
@@ -1060,7 +1061,7 @@ private fun CreateNewLayoutDialog(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg),
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(1f),

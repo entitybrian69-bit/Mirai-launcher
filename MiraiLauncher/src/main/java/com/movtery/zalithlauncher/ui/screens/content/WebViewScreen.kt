@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation3.runtime.NavBackStack
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
@@ -107,7 +108,7 @@ fun WebViewScreen(
                     LinearProgressIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
+                            .padding(horizontal = AerixSpacing.md)
                     )
                 }
 
@@ -118,7 +119,7 @@ fun WebViewScreen(
                     MarqueeText(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
+                            .padding(horizontal = AerixSpacing.md)
                             .clickable(enabled = urlAvailable) {
                                 eventViewModel.sendEvent(EventViewModel.Event.OpenLink(webUrl))
                             },

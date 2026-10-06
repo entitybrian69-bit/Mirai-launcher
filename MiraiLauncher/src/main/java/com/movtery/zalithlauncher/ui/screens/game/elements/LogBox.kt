@@ -51,6 +51,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.bridge.LoggerBridge
 import com.movtery.zalithlauncher.setting.AllSettings
@@ -199,9 +200,9 @@ fun LogBox(
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 4.dp, vertical = 12.dp)
+                        .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.md)
                         .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                 ) {
                     //关闭
                     LogBoxIconButton(

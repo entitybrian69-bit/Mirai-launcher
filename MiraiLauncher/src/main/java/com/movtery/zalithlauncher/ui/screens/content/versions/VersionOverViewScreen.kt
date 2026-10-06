@@ -46,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.context.copyLocalFile
 import com.movtery.zalithlauncher.contract.MediaPickerContract
@@ -135,7 +136,7 @@ fun VersionOverViewScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScrollWithBar(state = rememberScrollState())
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             isVisible = isVisible
         ) { scope ->
             AnimatedItem(scope) { yOffset ->
@@ -223,25 +224,25 @@ private fun VersionInfoLayout(
 
     VersionChunkBackground(
         modifier = modifier,
-        paddingValues = PaddingValues(all = 8.dp)
+        paddingValues = PaddingValues(all = AerixSpacing.sm)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(all = AerixSpacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             VersionOverviewItem(
                 modifier = Modifier
-                    .padding(start = 4.dp)
+                    .padding(start = AerixSpacing.xs)
                     .weight(1f),
                 version = version,
                 versionSummary = versionSummary,
                 refreshKey = refreshKey
             )
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 //添加卡片到主界面
@@ -332,24 +333,24 @@ private fun VersionManagementLayout(
 
     VersionChunkBackground(
         modifier = modifier,
-        paddingValues = PaddingValues(all = 8.dp)
+        paddingValues = PaddingValues(all = AerixSpacing.sm)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp)
+                .padding(horizontal = AerixSpacing.xs)
         ) {
             Text(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .padding(top = 4.dp, bottom = 8.dp),
+                    .padding(horizontal = AerixSpacing.sm)
+                    .padding(top = AerixSpacing.xs, bottom = AerixSpacing.sm),
                 text = stringResource(R.string.versions_settings_overview_management),
                 style = MaterialTheme.typography.labelLarge
             )
 
             FlowRow {
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = onEditSummary
                 ) {
                     Text(
@@ -357,7 +358,7 @@ private fun VersionManagementLayout(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = onRename
                 ) {
                     Text(
@@ -365,7 +366,7 @@ private fun VersionManagementLayout(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = onExport
                 ) {
                     Text(
@@ -373,7 +374,7 @@ private fun VersionManagementLayout(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     enabled = logExists,
                     onClick = {
                         onShareLog(logFile)
@@ -406,24 +407,24 @@ private fun VersionQuickActions(
 ) {
     VersionChunkBackground(
         modifier = modifier,
-        paddingValues = PaddingValues(all = 8.dp)
+        paddingValues = PaddingValues(all = AerixSpacing.sm)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp)
+                .padding(horizontal = AerixSpacing.xs)
         ) {
             Text(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .padding(top = 4.dp, bottom = 8.dp),
+                    .padding(horizontal = AerixSpacing.sm)
+                    .padding(top = AerixSpacing.xs, bottom = AerixSpacing.sm),
                 text = stringResource(R.string.versions_settings_overview_quick_actions),
                 style = MaterialTheme.typography.labelLarge
             )
 
             FlowRow {
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = { accessFolder("") }
                 ) {
                     Text(
@@ -431,7 +432,7 @@ private fun VersionQuickActions(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = { accessFolder(VersionFolders.SAVES.folderName) }
                 ) {
                     Text(
@@ -439,7 +440,7 @@ private fun VersionQuickActions(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = { accessFolder(VersionFolders.RESOURCE_PACK.folderName) }
                 ) {
                     Text(
@@ -447,7 +448,7 @@ private fun VersionQuickActions(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = { accessFolder(VersionFolders.SHADERS.folderName) }
                 ) {
                     Text(
@@ -455,7 +456,7 @@ private fun VersionQuickActions(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = { accessFolder(VersionFolders.MOD.folderName) }
                 ) {
                     Text(
@@ -463,7 +464,7 @@ private fun VersionQuickActions(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = { accessFolder("screenshots") }
                 ) {
                     Text(
@@ -471,7 +472,7 @@ private fun VersionQuickActions(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = { accessFolder("logs") }
                 ) {
                     Text(
@@ -479,7 +480,7 @@ private fun VersionQuickActions(
                     )
                 }
                 OutlinedButton(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.md),
                     onClick = { accessFolder("crash-reports") }
                 ) {
                     Text(

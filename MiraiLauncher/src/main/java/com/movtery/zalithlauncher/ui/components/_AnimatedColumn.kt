@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.utils.animation.swapAnimateDpAsState
 
 /**
@@ -50,7 +51,7 @@ fun AnimatedColumn(
     isVisible: Boolean,
     baseDelay: Int = 0,
     delayIncrement: Int = 50,
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(12.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(AerixSpacing.md),
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     content: @Composable AnimatedColumnScope.(ColumnScope) -> Unit
 ) {
@@ -127,8 +128,8 @@ fun AnimatedLazyColumn(
     isVisible: Boolean,
     baseDelay: Int = 0,
     delayIncrement: Int = 50,
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(12.dp),
-    contentPadding: PaddingValues = PaddingValues(0.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(AerixSpacing.md),
+    contentPadding: PaddingValues = PaddingValues(AerixSpacing.zero),
     content: AnimatedLazyListScope.(LazyListScope) -> Unit
 ) {
     val scope = remember(isVisible, baseDelay, delayIncrement) {

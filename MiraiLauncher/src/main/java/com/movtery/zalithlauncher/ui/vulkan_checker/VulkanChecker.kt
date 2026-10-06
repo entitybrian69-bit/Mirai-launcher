@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.ui.components.SimpleAlertDialog
@@ -96,7 +97,7 @@ fun VulkanChecker(
                 ) {
                     Surface(
                         modifier = Modifier
-                            .padding(all = 6.dp)
+                            .padding(all = AerixSpacing.smCompact)
                             .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                             .wrapContentHeight(),
                         shape = MaterialTheme.shapes.extraLarge,
@@ -105,8 +106,8 @@ fun VulkanChecker(
                         shadowElevation = 6.dp
                     ) {
                         Column(
-                            modifier = Modifier.padding(all = 24.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            modifier = Modifier.padding(all = AerixSpacing.xxl),
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                         ) {
                             Text(
                                 text = stringResource(R.string.game_vulkan_check_title),
@@ -120,7 +121,7 @@ fun VulkanChecker(
                                     .fillMaxWidth()
                                     .fadeEdge(scrollState)
                                     .verticalScrollWithBar(scrollState),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                             ) {
                                 CompositionLocalProvider(
                                     LocalTextStyle provides MaterialTheme.typography.labelMedium
@@ -147,7 +148,7 @@ fun VulkanChecker(
                                             TextGroup(text = stringResource(R.string.game_vulkan_check_versions)) {
                                                 profiles.forEach { profile ->
                                                     Row(
-                                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                                                     ) {
                                                         Text(
                                                             text = "Minecraft ${profile.versionRangeText}"
@@ -226,7 +227,7 @@ private fun TextGroup(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp),
+                .padding(start = AerixSpacing.lg),
             content = content
         )
     }
@@ -262,7 +263,7 @@ private fun DependencyText(
             Row(modifier) {
                 Text(text = text)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     spans.forEach { span ->
                         Text(text = span.displayText)
@@ -273,14 +274,14 @@ private fun DependencyText(
 
         if (dependency.requiredIn.isNotEmpty()) {
             VersionSupp(
-                modifier = Modifier.padding(start = 12.dp),
+                modifier = Modifier.padding(start = AerixSpacing.md),
                 text = stringResource(R.string.game_vulkan_check_dep_required),
                 spans = dependency.requiredIn
             )
         }
         if (dependency.optionalIn.isNotEmpty()) {
             VersionSupp(
-                modifier = Modifier.padding(start = 12.dp),
+                modifier = Modifier.padding(start = AerixSpacing.md),
                 text = stringResource(R.string.game_vulkan_check_dep_optional),
                 spans = dependency.optionalIn
             )

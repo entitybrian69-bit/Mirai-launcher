@@ -28,12 +28,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 
 @Composable
 fun VersionChunkBackground(
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+    paddingValues: PaddingValues = PaddingValues(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs),
     shape: Shape = MaterialTheme.shapes.extraLarge,
     content: @Composable ColumnScope.() -> Unit
 ) {

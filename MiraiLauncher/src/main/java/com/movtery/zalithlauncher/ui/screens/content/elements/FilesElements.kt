@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.SimpleEditDialog
@@ -60,7 +61,7 @@ fun BaseFileItem(
 
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -84,7 +85,7 @@ fun BaseFileItem(
             )
             Row(
                 modifier = Modifier.basicMarquee(Int.MAX_VALUE),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 val date = Date(file.lastModified())
                 Text(

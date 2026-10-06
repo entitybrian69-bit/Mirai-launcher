@@ -577,80 +577,80 @@ private val verdantDawnDark = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark.verdantDawn,
 )
 
-private val miraiLight = lightColorScheme(
-    primary = Color(0xFF087A3B),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFC5F3D2),
-    onPrimaryContainer = Color(0xFF00210D),
-    secondary = Color(0xFF416B4D),
-    onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFC5EBCB),
-    onSecondaryContainer = Color(0xFF082B15),
-    tertiary = Color(0xFF3C6858),
-    onTertiary = Color(0xFFFFFFFF),
-    tertiaryContainer = Color(0xFFBFEEDB),
-    onTertiaryContainer = Color(0xFF002117),
-    error = Color(0xFFBA1A1A),
-    onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002),
-    background = Color(0xFFF5F9F5),
-    onBackground = Color(0xFF151D17),
-    surface = Color(0xFFF7FBF7),
-    onSurface = Color(0xFF151D17),
-    surfaceVariant = Color(0xFFDEE8DF),
-    onSurfaceVariant = Color(0xFF414B43),
-    outline = Color(0xFF718075),
-    outlineVariant = Color(0xFFC1CCC2),
-    scrim = Color(0xFF000000),
-    inverseSurface = Color(0xFF2A322B),
-    inverseOnSurface = Color(0xFFEEF5EE),
-    inversePrimary = Color(0xFF83D99A),
-    surfaceDim = Color(0xFFD7E0D8),
-    surfaceBright = Color(0xFFF7FBF7),
-    surfaceContainerLowest = Color(0xFFFFFFFF),
-    surfaceContainerLow = Color(0xFFF0F5F0),
-    surfaceContainer = Color(0xFFEAF0EA),
-    surfaceContainerHigh = Color(0xFFE4EBE4),
-    surfaceContainerHighest = Color(0xFFDEE6DF),
+private val aerixLight = lightColorScheme(
+    primary = AerixSurface.accentLight,
+    onPrimary = Color.White,
+    primaryContainer = AerixSurface.accentLightContainer,
+    onPrimaryContainer = AerixSurface.onAccentLightContainer,
+    secondary = AerixSurface.lightTextSecondary,
+    onSecondary = Color.White,
+    secondaryContainer = AerixSurface.lightPanelRaised,
+    onSecondaryContainer = AerixSurface.lightTextPrimary,
+    tertiary = AerixSurface.success,
+    onTertiary = AerixSurface.onAccent,
+    tertiaryContainer = AerixSurface.lightPanelRaised,
+    onTertiaryContainer = AerixSurface.lightTextPrimary,
+    error = AerixSurface.errorLight,
+    onError = Color.White,
+    errorContainer = AerixSurface.errorLightContainer,
+    onErrorContainer = AerixSurface.lightTextPrimary,
+    background = AerixSurface.lightCanvas,
+    onBackground = AerixSurface.lightTextPrimary,
+    surface = AerixSurface.lightPanel,
+    onSurface = AerixSurface.lightTextPrimary,
+    surfaceVariant = AerixSurface.lightPanelRaised,
+    onSurfaceVariant = AerixSurface.lightTextSecondary,
+    outline = AerixSurface.lightTextSecondary,
+    outlineVariant = AerixSurface.lightBorder,
+    scrim = Color.Black,
+    inverseSurface = AerixSurface.panel,
+    inverseOnSurface = AerixSurface.textPrimary,
+    inversePrimary = AerixSurface.accent,
+    surfaceDim = AerixSurface.lightPanelRaised,
+    surfaceBright = AerixSurface.lightPanel,
+    surfaceContainerLowest = Color.White,
+    surfaceContainerLow = AerixSurface.lightPanel,
+    surfaceContainer = AerixSurface.lightCanvas,
+    surfaceContainerHigh = AerixSurface.lightPanelRaised,
+    surfaceContainerHighest = AerixSurface.lightPanelRaised,
 )
 
-private val miraiDark = darkColorScheme(
-    primary = Color(0xFF1BD96A),
-    onPrimary = Color(0xFF06210F),
-    primaryContainer = Color(0xFF143825),
-    onPrimaryContainer = Color(0xFF1BD96A),
-    secondary = Color(0xFF9CA3AF),
-    onSecondary = Color(0xFF16181C),
-    secondaryContainer = Color(0xFF262930),
-    onSecondaryContainer = Color(0xFFE5E7EB),
-    tertiary = Color(0xFF38BDF8),
-    onTertiary = Color(0xFF082F49),
-    tertiaryContainer = Color(0xFF1E3A5F),
-    onTertiaryContainer = Color(0xFFBAE6FD),
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFFFDAD6),
-    background = Color(0xFF16181C),
-    onBackground = Color(0xFFF3F4F6),
-    surface = Color(0xFF1B1D22),
-    onSurface = Color(0xFFF3F4F6),
-    surfaceVariant = Color(0xFF262930),
-    onSurfaceVariant = Color(0xFF9CA3AF),
-    outline = Color(0xFF4B5563),
-    outlineVariant = Color(0xFF2F333C),
-    scrim = Color(0xFF000000),
-    inverseSurface = Color(0xFFF3F4F6),
-    inverseOnSurface = Color(0xFF16181C),
-    inversePrimary = Color(0xFF087A3B),
-    surfaceDim = Color(0xFF121418),
-    surfaceBright = Color(0xFF23262D),
-    surfaceContainerLowest = Color(0xFF0F1114),
-    surfaceContainerLow = Color(0xFF181A1F),
-    surfaceContainer = Color(0xFF16181C),
-    surfaceContainerHigh = Color(0xFF22252B),
-    surfaceContainerHighest = Color(0xFF2A2E37),
+private val aerixDark = darkColorScheme(
+    primary = AerixSurface.accent,
+    onPrimary = AerixSurface.onAccent,
+    primaryContainer = AerixSurface.accentContainer,
+    onPrimaryContainer = AerixSurface.onAccentContainer,
+    secondary = AerixSurface.accentSecondary,
+    onSecondary = AerixSurface.canvas,
+    secondaryContainer = AerixSurface.panelRaised,
+    onSecondaryContainer = AerixSurface.textPrimary,
+    tertiary = AerixSurface.success,
+    onTertiary = AerixSurface.canvas,
+    tertiaryContainer = AerixSurface.panelRaised,
+    onTertiaryContainer = AerixSurface.textPrimary,
+    error = AerixSurface.danger,
+    onError = AerixSurface.canvas,
+    errorContainer = AerixSurface.errorDarkContainer,
+    onErrorContainer = AerixSurface.textPrimary,
+    background = AerixSurface.canvas,
+    onBackground = AerixSurface.textPrimary,
+    surface = AerixSurface.panel,
+    onSurface = AerixSurface.textPrimary,
+    surfaceVariant = AerixSurface.panelRaised,
+    onSurfaceVariant = AerixSurface.textSecondary,
+    outline = AerixSurface.textMuted,
+    outlineVariant = AerixSurface.border,
+    scrim = Color.Black,
+    inverseSurface = AerixSurface.lightTextPrimary,
+    inverseOnSurface = AerixSurface.lightPanel,
+    inversePrimary = AerixSurface.accentLight,
+    surfaceDim = AerixSurface.canvas,
+    surfaceBright = AerixSurface.panelRaised,
+    surfaceContainerLowest = AerixSurface.canvas,
+    surfaceContainerLow = AerixSurface.panelTrack,
+    surfaceContainer = AerixSurface.canvas,
+    surfaceContainerHigh = AerixSurface.panel,
+    surfaceContainerHighest = AerixSurface.panelRaised,
 )
 
 private fun customLight(
@@ -685,6 +685,11 @@ fun ZalithLauncherTheme(
     content: @Composable () -> Unit
 ) {
     val colorTheme = AllSettings.launcherColorTheme.state
+    LaunchedEffect(colorTheme) {
+        if (colorTheme == ColorThemeType.MIRAI) {
+            AllSettings.launcherColorTheme.save(ColorThemeType.AERIX)
+        }
+    }
     val customColorInt = AllSettings.launcherCustomColor.state
     val customColor = Color(customColorInt)
     val customPaletteStyle = AllSettings.launcherCustomPaletteStyle.state
@@ -705,7 +710,7 @@ fun ZalithLauncherTheme(
                 ColorThemeType.VERDANTFIELD -> verdantFieldDark
                 ColorThemeType.URBAN_ASH -> urbanAshDark
                 ColorThemeType.VERDANT_DAWN -> verdantDawnDark
-                ColorThemeType.MIRAI -> miraiDark
+                ColorThemeType.AERIX, ColorThemeType.MIRAI -> aerixDark
                 ColorThemeType.CUSTOM -> customDark(
                     color = customColor,
                     style = customPaletteStyle
@@ -721,7 +726,7 @@ fun ZalithLauncherTheme(
                 ColorThemeType.VERDANTFIELD -> verdantFieldLight
                 ColorThemeType.URBAN_ASH -> urbanAshLight
                 ColorThemeType.VERDANT_DAWN -> verdantDawnLight
-                ColorThemeType.MIRAI -> miraiLight
+                ColorThemeType.AERIX, ColorThemeType.MIRAI -> aerixLight
                 ColorThemeType.CUSTOM -> customLight(
                     color = customColor,
                     style = customPaletteStyle

@@ -45,6 +45,7 @@ import com.movtery.layer_controller.observable.ObservableJoystickData
 import com.movtery.layer_controller.observable.ObservableNormalData
 import com.movtery.layer_controller.observable.ObservableTextData
 import com.movtery.layer_controller.observable.ObservableWidget
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.screens.TitledNavKey
@@ -78,10 +79,10 @@ fun EditWidgetInfo(
 
         LazyColumn(
             modifier = Modifier
-                .padding(start = 4.dp, end = 8.dp)
+                .padding(start = AerixSpacing.xs, end = AerixSpacing.sm)
                 .fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            contentPadding = PaddingValues(vertical = AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             when (data) {
                 is ObservableTextData -> {
@@ -151,7 +152,7 @@ private fun LazyListScope.commonInfos(
     }
 
     item {
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.xs))
     }
 
     //x
@@ -189,7 +190,7 @@ private fun LazyListScope.commonInfos(
     }
 
     item {
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.xs))
     }
 
     //尺寸类型
@@ -340,7 +341,7 @@ private fun LazyListScope.joystickInfos(
     }
 
     item {
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.xs))
     }
 
     // 位置 X
@@ -378,7 +379,7 @@ private fun LazyListScope.joystickInfos(
     }
 
     item {
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.xs))
     }
 
     // 尺寸类型

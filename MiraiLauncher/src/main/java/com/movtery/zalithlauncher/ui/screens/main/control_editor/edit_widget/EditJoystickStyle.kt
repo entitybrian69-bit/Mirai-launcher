@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.movtery.layer_controller.observable.ObservableJoystickData
 import com.movtery.layer_controller.observable.ObservableJoystickStyle
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.enums.isLauncherInDarkTheme
 import com.movtery.zalithlauncher.ui.base.BaseScreen
@@ -57,7 +58,7 @@ fun EditJoystickStyle(
                 ) {
                     items(joystickStyles) { style ->
                         ChoseStyleItem(
-                            modifier = Modifier.padding(all = 8.dp),
+                            modifier = Modifier.padding(all = AerixSpacing.sm),
                             style = style,
                             selected = data.joystickStyleId == style.uuid,
                             onSelectedChange = { selected ->
@@ -68,7 +69,7 @@ fun EditJoystickStyle(
                 }
             } else {
                 InfoLayoutTextItem(
-                    modifier = Modifier.padding(all = 24.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.xxl),
                     title = stringResource(R.string.control_editor_edit_joystick_style_list_empty),
                     onClick = openJoystickStyleList
                 )
@@ -103,7 +104,7 @@ private fun ChoseStyleItem(
                 config = config
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.xs))
 
             MarqueeText(
                 modifier = Modifier.fillMaxWidth(),

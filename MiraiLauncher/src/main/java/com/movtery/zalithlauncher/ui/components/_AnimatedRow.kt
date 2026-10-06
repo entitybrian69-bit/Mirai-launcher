@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.utils.animation.swapAnimateDpAsState
 
 /**
@@ -41,7 +42,7 @@ fun AnimatedRow(
     isVisible: Boolean,
     baseDelay: Int = 0,
     delayIncrement: Int = 50,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(12.dp),
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(AerixSpacing.md),
     content: @Composable AnimatedRowScope.(RowScope) -> Unit
 ) {
     Row(

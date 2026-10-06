@@ -91,6 +91,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movtery.cardgrid.state.rememberCardGridState
 import com.movtery.guide.GuideSide
 import com.movtery.guide.guideNode
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.account.Account
 import com.movtery.zalithlauncher.game.account.AccountsManager
@@ -329,7 +332,7 @@ private fun ContentMenu(
             modifier = modifier
                 .fillMaxSize()
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             MiraiHomeDashboard(
                 onLaunchVersion = { version -> onLaunchGame(version) },
@@ -357,7 +360,7 @@ private fun AccountAvatarCenter(
             .clickable(onClick = onClick)
     ) {
         Column(
-            modifier = Modifier.padding(all = 12.dp),
+            modifier = Modifier.padding(all = AerixSpacing.md),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (account != null) {
@@ -400,9 +403,9 @@ private fun AccountAvatarRow(
     refreshKey: Any? = null,
 ) {
     Row(
-        modifier = modifier.padding(all = 12.dp),
+        modifier = modifier.padding(all = AerixSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         if (account != null) {
             PlayerFace(
@@ -421,7 +424,7 @@ private fun AccountAvatarRow(
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(
                 text = account?.username ?: stringResource(R.string.account_add_new_account),
@@ -471,17 +474,17 @@ private fun VersionsContent(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         // Compact 2-line Instance Selector Pill
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = AerixSpacing.smPlus)
                 .onGloballyPositioned { coordinates ->
                     versionManagerRow = coordinates
                 }
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(AerixRadii.cardSmall))
                 .clickable {
                     if (version != null) showList = true else toVersionManageScreen()
                 }
@@ -489,17 +492,17 @@ private fun VersionsContent(
                     key = GuideKeys.Main.Step.VersionList,
                     preferSide = GuideSide.Above,
                 ),
-            shape = RoundedCornerShape(14.dp),
-            color = Color(0xFF171A20),
-            border = BorderStroke(1.dp, Color(0xFF2E333E))
+            shape = RoundedCornerShape(AerixRadii.cardSmall),
+            color = AerixSurface.panel,
+            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 7.dp),
+                        .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.smTight),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
                 ) {
                     Text(
                         text = if (isRefreshing) {
@@ -558,7 +561,7 @@ private fun VersionsContent(
                                         Icon(
                                             painter = painterResource(R.drawable.ic_play_arrow_filled),
                                             contentDescription = stringResource(R.string.main_launch_game),
-                                            tint = Color(0xFF1BD96A)
+                                            tint = AerixSurface.accent
                                         )
                                     }
                                 }
@@ -574,7 +577,7 @@ private fun VersionsContent(
                         text = {
                             Text(
                                 text = "Manage All Instances...",
-                                color = Color(0xFF1BD96A),
+                                color = AerixSurface.accent,
                                 fontWeight = FontWeight.SemiBold
                             )
                         },
@@ -592,18 +595,18 @@ private fun VersionsContent(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-                .padding(bottom = 10.dp)
+                .padding(horizontal = AerixSpacing.smPlus)
+                .padding(bottom = AerixSpacing.smPlus)
                 .height(42.dp)
-                .clip(RoundedCornerShape(21.dp))
+                .clip(RoundedCornerShape(AerixRadii.panel))
                 .combinedClickable(
                     role = Role.Button,
                     onClick = { onLaunchGame(null) },
                     onLongClick = { showPick = true }
                 ),
-            shape = RoundedCornerShape(21.dp),
+            shape = RoundedCornerShape(AerixRadii.panel),
             color = activeAccent,
-            contentColor = Color(0xFF06210F)
+            contentColor = AerixSurface.onAccent
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -614,13 +617,13 @@ private fun VersionsContent(
                     text = "PLAY",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF06210F)
+                    color = AerixSurface.onAccent
                 )
-                Spacer(Modifier.width(4.dp))
+                Spacer(Modifier.width(AerixSpacing.xs))
                 Icon(
                     painter = painterResource(R.drawable.ic_play_arrow_filled),
                     contentDescription = stringResource(R.string.main_launch_game),
-                    tint = Color(0xFF06210F),
+                    tint = AerixSurface.onAccent,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -707,9 +710,9 @@ private fun ActionMenuCardContent(
             .actionMenuDragAnchor()
             .guideNode(GuideKeys.Main.Step.CardDrag)
             .then(modifier),
-        shape = RoundedCornerShape(16.dp),
-        color = Color(0xFF1E2128),
-        border = BorderStroke(1.dp, Color(0xFF2C303A))
+        shape = RoundedCornerShape(AerixRadii.card),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -721,13 +724,13 @@ private fun ActionMenuCardContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(top = 6.dp, start = 8.dp, end = 8.dp)
+                    .padding(top = AerixSpacing.smCompact, start = AerixSpacing.sm, end = AerixSpacing.sm)
                     .actionMenuDragExclusion()
                     .guideNode(
                         key = GuideKeys.Main.Step.Account,
                         preferSide = GuideSide.Below
                     )
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(AerixRadii.control))
                     // Tap opens Account Manager; horizontal drag spins the doll 360°.
                     // The drag consumes movement past touch slop, so a tap never
                     // misfires while rotating (and vice versa).
@@ -780,9 +783,9 @@ private fun ActionMenuCardContent(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .offset(y = (-4).dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFF13151A),
-                    border = BorderStroke(1.dp, MiraiThemeManager.currentAccent().copy(alpha = 0.45f))
+                    shape = RoundedCornerShape(AerixRadii.compact),
+                    color = AerixSurface.canvas,
+                    border = BorderStroke(AerixSpacing.hairline, MiraiThemeManager.currentAccent().copy(alpha = 0.45f))
                 ) {
                     Text(
                         text = account?.username ?: "+ Add Account",
@@ -790,14 +793,14 @@ private fun ActionMenuCardContent(
                         fontWeight = FontWeight.Bold,
                         color = if (account != null) Color.White else MiraiThemeManager.currentAccent(),
                         maxLines = 1,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.tiny)
                     )
                 }
 
                 SkinPreview3D(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 14.dp),
+                        .padding(bottom = AerixSpacing.mdPlus),
                     skinFile = skinFile,
                     capeFile = capeFile,
                     modelType = account?.skinModelType,
@@ -911,7 +914,7 @@ private fun VersionManagerLayout(
             ).guideNode(
                 key = GuideKeys.Main.Step.VersionList,
                 preferSide = GuideSide.Above,
-            ).padding(PaddingValues(all = 8.dp))
+            ).padding(PaddingValues(all = AerixSpacing.sm))
     ) {
         if (isRefreshing) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -928,7 +931,7 @@ private fun VersionManagerLayout(
                     .size(28.dp)
                     .align(Alignment.CenterVertically)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(AerixSpacing.sm))
 
             if (version == null) {
                 Text(

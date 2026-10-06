@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.BuildConfig
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
@@ -93,6 +96,8 @@ import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.ResolutionRule
 import com.movtery.zalithlauncher.setting.unit.floatRange
 import com.movtery.zalithlauncher.ui.base.BaseScreen
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.AnimatedColumn
 import com.movtery.zalithlauncher.ui.components.IntInputField
 import com.movtery.zalithlauncher.ui.components.SimpleAlertDialog
@@ -191,7 +196,7 @@ fun RendererSettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScrollWithBar(state = rememberScrollState())
-                .padding(horizontal = 4.dp, vertical = 2.dp),
+                .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
             isVisible = isVisible
         ) { scope ->
             // 1. Renderer Backend 2x2 Grid (Mockup #7)
@@ -200,7 +205,7 @@ fun RendererSettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                 ) {
                     Text(
                         text = "Renderer Backend",
@@ -212,7 +217,7 @@ fun RendererSettingsScreen(
                     rendererStackOptions.chunked(2).forEach { rowOptions ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                         ) {
                             rowOptions.forEach { option ->
                                 val matchedRenderer = remember(option, allRenderers) {
@@ -246,21 +251,21 @@ fun RendererSettingsScreen(
                                 }
 
                                 val borderColor by animateColorAsState(
-                                    targetValue = if (isSelected) MiraiThemeManager.currentAccent() else Color(0xFF2E323C),
+                                    targetValue = if (isSelected) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised,
                                     animationSpec = tween(160),
                                     label = "rendererOptionBorder"
                                 )
                                 val cardBg by animateColorAsState(
-                                    targetValue = if (isSelected) Color(0xFF162A20) else Color(0xFF21242B),
+                                    targetValue = if (isSelected) AerixSurface.accentContainer else AerixSurface.panel,
                                     animationSpec = tween(160),
                                     label = "rendererOptionBg"
                                 )
 
                                 Surface(
                                     modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(12.dp),
+                                    shape = RoundedCornerShape(AerixRadii.control),
                                     color = cardBg,
-                                    border = BorderStroke(if (isSelected) 1.5.dp else 1.dp, borderColor),
+                                    border = BorderStroke(if (isSelected) 1.5.dp else AerixSpacing.hairline, borderColor),
                                     onClick = {
                                         if (option.keyMatch == "AUTO") {
                                             AllSettings.renderer.save("")
@@ -272,9 +277,9 @@ fun RendererSettingsScreen(
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(horizontal = 10.dp, vertical = 10.dp),
+                                            .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.smPlus),
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                                     ) {
                                         RadioButton(
                                             selected = isSelected,
@@ -287,7 +292,7 @@ fun RendererSettingsScreen(
                                             },
                                             colors = RadioButtonDefaults.colors(
                                                 selectedColor = MiraiThemeManager.currentAccent(),
-                                                unselectedColor = Color(0xFF9CA3AF)
+                                                unselectedColor = AerixSurface.textSecondary
                                             ),
                                             modifier = Modifier.size(20.dp)
                                         )
@@ -323,7 +328,7 @@ fun RendererSettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                 ) {
                     Text(
                         text = "Memory Allocation & Java Runtime",
@@ -334,15 +339,15 @@ fun RendererSettingsScreen(
 
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        color = Color(0xFF21242B),
-                        border = BorderStroke(1.dp, Color(0xFF2E333E))
+                        shape = RoundedCornerShape(AerixRadii.cardSmall),
+                        color = AerixSurface.panel,
+                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 10.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus),
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -374,61 +379,43 @@ fun RendererSettingsScreen(
                                 fineTuningControl = true
                             )
 
-                            Row(
+                            Column(
                                 modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                             ) {
                                 Text(
                                     text = "Default JRE:",
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFD1D5DB)
+                                    color = AerixSurface.textSecondary
                                 )
 
                                 val currentJre = AllSettings.javaRuntime.state
-                                Surface(
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = if (currentJre.isEmpty()) MiraiThemeManager.currentAccent() else Color(0xFF17191E),
-                                    border = BorderStroke(
-                                        1.dp,
-                                        if (currentJre.isEmpty()) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
-                                    ),
-                                    onClick = {
-                                        AllSettings.autoPickJavaRuntime.save(true)
-                                        AllSettings.javaRuntime.save("")
-                                    }
-                                ) {
-                                    Text(
-                                        text = "Auto",
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = if (currentJre.isEmpty()) Color(0xFF06210F) else Color(0xFFD1D5DB)
-                                    )
-                                }
-
-                                runtimes.forEach { runtime ->
-                                    val selected = currentJre == runtime.name
-                                    Surface(
-                                        shape = RoundedCornerShape(12.dp),
-                                        color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF17191E),
-                                        border = BorderStroke(
-                                            1.dp,
-                                            if (selected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
-                                        ),
+                                AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
+                                    AerixPillTab(
+                                        selected = currentJre.isEmpty(),
                                         onClick = {
-                                            AllSettings.autoPickJavaRuntime.save(false)
-                                            AllSettings.javaRuntime.save(runtime.name)
+                                            AllSettings.autoPickJavaRuntime.save(true)
+                                            AllSettings.javaRuntime.save("")
                                         }
                                     ) {
-                                        Text(
-                                            text = "JRE ${runtime.javaVersion}",
-                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.SemiBold,
-                                            color = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB)
-                                        )
+                                        Text("Auto", style = MaterialTheme.typography.labelSmall)
+                                    }
+
+                                    runtimes.forEach { runtime ->
+                                        val selected = currentJre == runtime.name
+                                        AerixPillTab(
+                                            selected = selected,
+                                            onClick = {
+                                                AllSettings.autoPickJavaRuntime.save(false)
+                                                AllSettings.javaRuntime.save(runtime.name)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = "JRE ${runtime.javaVersion}",
+                                                style = MaterialTheme.typography.labelSmall
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -443,34 +430,34 @@ fun RendererSettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF21242B),
-                    border = BorderStroke(1.dp, Color(0xFF2E333E))
+                    shape = RoundedCornerShape(AerixRadii.control),
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                            .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Mirai Launcher v${BuildConfig.VERSION_NAME} • Built by entitybrian",
+                            text = "Aerix Launcher v${BuildConfig.VERSION_NAME} • Built by entitybrian",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFFE5E7EB)
+                            color = AerixSurface.textPrimary
                         )
 
                         Button(
                             onClick = {
                                 eventViewModel.sendEvent(EventViewModel.Event.CheckUpdate)
                             },
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(AerixRadii.card),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MiraiThemeManager.currentAccent(),
-                                contentColor = Color(0xFF06210F)
+                                contentColor = AerixSurface.onAccent
                             ),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                            contentPadding = PaddingValues(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smCompact)
                         ) {
                             Text(
                                 text = "Check for Updates",
@@ -625,7 +612,7 @@ fun RendererSettingsScreen(
                             IntSliderSettingsCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 2.dp),
+                                    .padding(top = AerixSpacing.xxs),
                                 position = CardPosition.Middle,
                                 unit = AllSettings.resolutionRatio,
                                 title = stringResource(R.string.settings_renderer_resolution_scale_title),
@@ -646,7 +633,7 @@ fun RendererSettingsScreen(
                             CustomResolutionSettingsCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 2.dp),
+                                    .padding(top = AerixSpacing.xxs),
                                 position = CardPosition.Middle
                             )
                         }
@@ -741,7 +728,7 @@ fun RendererSettingsScreen(
 fun RendererSummaryLayout(renderer: RendererInterface) {
     FlowRow(
         modifier = Modifier.alpha(0.7f),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         with(renderer) {
             getRendererSummary()?.let { summary ->
@@ -754,7 +741,7 @@ fun RendererSummaryLayout(renderer: RendererInterface) {
             if (minVer != null || maxVer != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                 ) {
                     Text(text = stringResource(R.string.renderer_version_support), style = MaterialTheme.typography.labelSmall)
 
@@ -798,8 +785,8 @@ private fun CustomResolutionSettingsCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(all = AerixSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             TitleAndSummary(
                 title = stringResource(R.string.settings_renderer_resolution_scale_title),
@@ -807,7 +794,7 @@ private fun CustomResolutionSettingsCard(
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 IntInputField(
                     modifier = Modifier.weight(1f),

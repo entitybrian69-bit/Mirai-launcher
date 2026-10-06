@@ -54,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.movtery.layer_controller.observable.ObservableControlLayer
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.rememberDialogMaxHeight
@@ -85,7 +86,7 @@ fun SelectLayers(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -94,9 +95,9 @@ fun SelectLayers(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     Text(
                         text = title,
@@ -115,7 +116,7 @@ fun SelectLayers(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(0.5f),
@@ -177,15 +178,15 @@ private fun ChoseLayersLayout(
                         state = listState.scrollIndicatorState!!,
                         orientation = Orientation.Vertical,
                     )
-                    .padding(vertical = 4.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp),
+                    .padding(vertical = AerixSpacing.xs),
+                contentPadding = PaddingValues(horizontal = AerixSpacing.xs),
                 state = listState
             ) {
                 items(layers) { layer ->
                     SelectLayerListItem(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(all = 4.dp),
+                            .padding(all = AerixSpacing.xs),
                         layer = layer,
                         checked = selectedLayers.contains(layer),
                         onChose = {
@@ -221,7 +222,7 @@ private fun SelectLayerListItem(
                     }
                 }
             )
-            .padding(vertical = 8.dp),
+            .padding(vertical = AerixSpacing.sm),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(

@@ -23,14 +23,15 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 
 class LogHighlighter(
     val defaultColor: Color = Color.White,
-    val timeColor: Color = Color(0xFF6E7C83),
-    val stringColor: Color = Color(0xFF6AAB73),
-    val numberColor: Color = Color(0xFFC67CBA),
-    val packageColor: Color = Color(0xFFC67CBA),
-    val linkColor: Color = Color(0xFFC67CBA)
+    val timeColor: Color = AerixSurface.syntaxMuted,
+    val stringColor: Color = AerixSurface.syntaxString,
+    val numberColor: Color = AerixSurface.syntaxAccent,
+    val packageColor: Color = AerixSurface.syntaxAccent,
+    val linkColor: Color = AerixSurface.syntaxAccent
 ) {
     fun highlight(logText: String): AnnotatedString {
         return runCatching {

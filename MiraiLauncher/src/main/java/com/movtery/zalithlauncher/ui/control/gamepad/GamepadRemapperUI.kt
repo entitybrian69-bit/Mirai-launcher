@@ -61,6 +61,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.SimpleAlertDialog
@@ -265,16 +266,16 @@ fun GamepadRemapperDialog(
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
                             .fillMaxHeight(0.85f)
-                            .padding(all = 6.dp),
+                            .padding(all = AerixSpacing.smCompact),
                         shape = MaterialTheme.shapes.extraLarge,
                         color = cardColor(false),
                         contentColor = onCardColor(),
                         shadowElevation = 6.dp
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(AerixSpacing.lg),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                         ) {
                             Text(
                                 text = stringResource(R.string.settings_gamepad_remapping_tip_title),
@@ -285,7 +286,7 @@ fun GamepadRemapperDialog(
                                 Column(
                                     modifier = Modifier.weight(1f),
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                                 ) {
                                     Image(
                                         modifier = Modifier
@@ -311,7 +312,7 @@ fun GamepadRemapperDialog(
                             //当前进度显示
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 LinearWavyProgressIndicator(
@@ -327,7 +328,7 @@ fun GamepadRemapperDialog(
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg),
                             ) {
                                 FilledTonalButton(
                                     modifier = Modifier
@@ -381,7 +382,7 @@ fun GamepadRemapperDialog(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                     ) {
                         Text(text = text)
                         if (isSaving) {

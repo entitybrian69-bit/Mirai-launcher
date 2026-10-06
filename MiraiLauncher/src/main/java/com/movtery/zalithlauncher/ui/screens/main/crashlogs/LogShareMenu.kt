@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.cardColor
 import com.movtery.zalithlauncher.ui.theme.onCardColor
@@ -65,7 +66,7 @@ fun LogShareMenu(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(all = 6.dp),
+                        .padding(all = AerixSpacing.smCompact),
                     color = cardColor(false),
                     contentColor = onCardColor(),
                     shape = MaterialTheme.shapes.extraLarge,
@@ -74,8 +75,8 @@ fun LogShareMenu(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(all = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                            .padding(all = AerixSpacing.md),
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         //查看日志
                         Button(
@@ -89,7 +90,7 @@ fun LogShareMenu(
                                 painter = painterResource(R.drawable.ic_assignment_filled),
                                 contentDescription = null
                             )
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(AerixSpacing.sm))
                             Text(text = stringResource(R.string.generic_view))
                         }
                         //分享日志
@@ -104,7 +105,7 @@ fun LogShareMenu(
                                 painter = painterResource(R.drawable.ic_share_filled),
                                 contentDescription = null
                             )
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(AerixSpacing.sm))
                             Text(text = stringResource(R.string.crash_share_logs))
                         }
                         //分享链接
@@ -120,7 +121,7 @@ fun LogShareMenu(
                                 painter = painterResource(R.drawable.ic_link),
                                 contentDescription = null
                             )
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(AerixSpacing.sm))
                             Text(text = stringResource(R.string.crash_link_share_button))
                         }
                         //关闭
@@ -134,7 +135,7 @@ fun LogShareMenu(
                                 painter = painterResource(R.drawable.ic_close),
                                 contentDescription = null
                             )
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(AerixSpacing.sm))
                             Text(text = stringResource(R.string.generic_close))
                         }
                     }

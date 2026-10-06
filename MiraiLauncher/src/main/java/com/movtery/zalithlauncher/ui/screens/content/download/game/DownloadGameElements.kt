@@ -66,6 +66,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.addons.modloader.ModLoader
 import com.movtery.zalithlauncher.game.addons.modloader.cleanroom.CleanroomVersion
@@ -129,8 +130,8 @@ private fun AddonTextLayout(
     summary: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
-        modifier = modifier.padding(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        modifier = modifier.padding(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         Text(
             text = title,
@@ -241,14 +242,14 @@ fun <E> AddonListLayout(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(max = maxListHeight)
-                                .padding(vertical = 4.dp),
-                            contentPadding = PaddingValues(horizontal = 4.dp)
+                                .padding(vertical = AerixSpacing.xs),
+                            contentPadding = PaddingValues(horizontal = AerixSpacing.xs)
                         ) {
                             items(items) { item ->
                                 AddonListItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(all = 4.dp),
+                                        .padding(all = AerixSpacing.xs),
                                     selected = selectedItem == item,
                                     itemName = getItemText(item),
                                     summary = summary?.let {
@@ -291,16 +292,16 @@ private fun <E> AddonListHeader(
     Row(
         modifier = modifier
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(vertical = 4.dp),
+            .padding(vertical = AerixSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(AerixSpacing.lg))
         Image(
             modifier = Modifier.size(34.dp),
             painter = iconPainter,
             contentDescription = null
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(AerixSpacing.sm))
 
         when(state) {
             is AddonState.None -> {
@@ -333,7 +334,7 @@ private fun <E> AddonListHeader(
                         contentDescription = stringResource(if (expanded) R.string.generic_expand else R.string.generic_collapse)
                     )
                     if (selectedItem != null) {
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(AerixSpacing.sm))
                         IconButton(
                             modifier = Modifier
                                 .size(34.dp),
@@ -382,7 +383,7 @@ private fun <E> AddonListHeader(
             }
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(AerixSpacing.sm))
     }
 }
 
@@ -405,7 +406,7 @@ fun AddonListItem(
             onClick = onClick
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(
                 text = itemName,
@@ -436,7 +437,7 @@ fun AddonWarningItem(
         Row(
             modifier = Modifier
                 .backgroundGlass(blur, color)
-                .padding(horizontal = 16.dp, vertical = 4.dp),
+                .padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -446,7 +447,7 @@ fun AddonWarningItem(
                 Icon(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(all = 4.dp),
+                        .padding(all = AerixSpacing.xs),
                     painter = painterResource(R.drawable.ic_warning_filled),
                     contentDescription = null
                 )
@@ -475,11 +476,11 @@ fun OptiFineVersionSummary(
 
     Row(
         modifier = Modifier.alpha(alpha = 0.7f),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         //版本状态
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -492,7 +493,7 @@ fun OptiFineVersionSummary(
         //发布时间
         optifine.releaseDate.takeIf { it.isNotEmpty() }?.let { releaseDate ->
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -506,7 +507,7 @@ fun OptiFineVersionSummary(
 
         //兼容状态
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             when {
@@ -545,12 +546,12 @@ fun ForgeVersionSummary(
 ) {
     Row(
         modifier = Modifier.alpha(alpha = 0.7f),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         if (forgeVersion.isRecommended) {
             //Forge 官方推荐
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -566,7 +567,7 @@ fun ForgeVersionSummary(
         }
         //发布时间
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -593,11 +594,11 @@ fun NeoForgeSummary(
 
     Row(
         modifier = Modifier.alpha(alpha = 0.7f),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         //版本状态
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -624,11 +625,11 @@ fun FabricLikeSummary(
 
     Row(
         modifier = Modifier.alpha(alpha = 0.7f),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         //版本状态
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -650,7 +651,7 @@ fun CleanroomSummary(
     //更新时间
     Row(
         modifier = Modifier.alpha(alpha = 0.7f),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -678,11 +679,11 @@ fun ModSummary(
 
     Row(
         modifier = Modifier.alpha(alpha = 0.7f),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         //版本状态
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -697,7 +698,7 @@ fun ModSummary(
         }
         //更新时间
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

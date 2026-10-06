@@ -66,6 +66,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
 import com.movtery.zalithlauncher.ui.theme.cardColor
@@ -83,7 +85,7 @@ fun SimpleTextInputField(
     contentColor: Color = onCardColor(),
     shape: Shape = RoundedCornerShape(percent = 50),
     blur: Int = AllSettings.backgroundBlur.state,
-    contextPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+    contextPadding: PaddingValues = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm),
     textStyle: TextStyle = TextStyle(color = contentColor).copy(fontSize = 12.sp),
     cursorBrush: Brush = SolidColor(LocalTextSelectionColors.current.handleColor),
     singleLine: Boolean = false,
@@ -100,6 +102,7 @@ fun SimpleTextInputField(
         BasicTextField(
             modifier = Modifier
                 .wrapContentHeight()
+                .liquidGlass(shape = shape, tint = AerixSurface.glassTint, strength = 0.7f, elevation = AerixSpacing.zero)
                 .backgroundGlass(blur, color, influencedByBackground)
                 .padding(contextPadding),
             value = value,
@@ -226,7 +229,7 @@ fun SmallOutlinedEditField(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs)
                 ) {
                     if (label != null) {
                         Box(

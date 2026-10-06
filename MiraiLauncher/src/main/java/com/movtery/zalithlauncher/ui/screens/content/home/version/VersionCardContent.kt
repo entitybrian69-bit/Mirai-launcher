@@ -62,6 +62,7 @@ import com.movtery.cardgrid.model.CardInteraction
 import com.movtery.cardgrid.model.CardSize
 import com.movtery.cardgrid.model.CardSizeClass
 import com.movtery.cardgrid.model.CardState
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.ui.components.LittleTextLabel
@@ -108,7 +109,7 @@ fun CardState.VersionCardContent(cardId: String) {
                     currentVersion?.let(onOpenSettings)
                 }
             }
-            .padding(12.dp)
+            .padding(AerixSpacing.md)
     ) {
         when {
             sizeClass.width >= CardSizeClass.MEDIUM &&
@@ -207,7 +208,7 @@ private fun TallContent(
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
     ) {
         BoxWithConstraints(
             modifier = Modifier
@@ -231,7 +232,7 @@ private fun TallContent(
 
             Column(modifier = Modifier.fillMaxSize()) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     VersionIconImage(
                         modifier = Modifier.size(iconSize),
@@ -289,7 +290,7 @@ private fun InfoRow(version: Version) {
         modifier = Modifier
             .alpha(0.7f)
             .basicMarquee(iterations = Int.MAX_VALUE),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         Text(
             text = versionInfo?.minecraftVersion ?: "",
@@ -384,7 +385,7 @@ private fun CardTexts(
                 val versionInfo = status.version.getVersionInfo()
                 FlowRow(
                     modifier = Modifier.alpha(0.7f),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                     verticalArrangement = Arrangement.spacedBy(DetailItemGap)
                 ) {
                     Text(
@@ -426,7 +427,7 @@ private fun TextLaunchButton(version: Version, modifier: Modifier = Modifier) {
             contentDescription = null
         )
         Text(
-            modifier = Modifier.padding(start = 6.dp),
+            modifier = Modifier.padding(start = AerixSpacing.smCompact),
             text = stringResource(R.string.main_launch_game)
         )
     }
@@ -439,7 +440,7 @@ private fun CompactLaunchButton(version: Version, modifier: Modifier = Modifier)
     Button(
         onClick = { onLaunch(version) },
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+        contentPadding = PaddingValues(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xxs)
     ) {
         Icon(
             modifier = Modifier.size(14.dp),
@@ -447,7 +448,7 @@ private fun CompactLaunchButton(version: Version, modifier: Modifier = Modifier)
             contentDescription = null
         )
         Text(
-            modifier = Modifier.padding(start = 4.dp),
+            modifier = Modifier.padding(start = AerixSpacing.xs),
             text = stringResource(R.string.main_launch_game),
             style = MaterialTheme.typography.labelSmall
         )
@@ -462,7 +463,7 @@ private fun IconLaunchButton(version: Version, modifier: Modifier = Modifier) {
         onClick = { onLaunch(version) },
         modifier = modifier,
         shape = CircleShape,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+        contentPadding = PaddingValues(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xxs)
     ) {
         Icon(
             modifier = Modifier.size(14.dp),

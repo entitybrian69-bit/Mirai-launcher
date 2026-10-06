@@ -107,6 +107,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.optimization.ModDependencyResolver
 import com.movtery.zalithlauncher.game.optimization.ModDependencyResolverDialog
@@ -676,7 +679,7 @@ fun ModsManagerScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 12.dp)
+                .padding(all = AerixSpacing.md)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -855,9 +858,9 @@ private fun ModsActionsHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 6.dp),
+                .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.smCompact),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             SimpleTextInputField(
                 modifier = Modifier.weight(1f),
@@ -883,31 +886,31 @@ private fun ModsActionsHeader(
                     else -> allModsCount
                 }
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = if (selected) Color(0xFF143825) else Color(0xFF21242B),
+                    shape = RoundedCornerShape(AerixRadii.card),
+                    color = if (selected) AerixSurface.accentContainer else AerixSurface.panel,
                     border = androidx.compose.foundation.BorderStroke(
-                        1.dp,
-                        if (selected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                        AerixSpacing.hairline,
+                        if (selected) MiraiThemeManager.currentAccent() else AerixSurface.border
                     ),
                     onClick = { onStateFilterChange(filter) }
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xsPlus),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(
                             text = stringResource(filter.textRes),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFFE5E7EB)
+                            color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textPrimary
                         )
                         if (count != null) {
                             Text(
                                 text = count.toString(),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF9CA3AF)
+                                color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary
                             )
                         }
                     }
@@ -957,38 +960,38 @@ private fun ModsActionsHeader(
             // Smart Mod Dependency & Conflict Resolver Pill (Feature #2)
             val hasIssues = detectedIssuesCount > 0
             Surface(
-                shape = RoundedCornerShape(10.dp),
-                color = if (hasIssues) Color(0xFF3B1A1E) else Color(0xFF21242B),
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = if (hasIssues) AerixSurface.dangerContainer else AerixSurface.panel,
                 border = BorderStroke(
-                    1.dp,
-                    if (hasIssues) Color(0xFFEF4444) else Color(0xFF2E333E)
+                    AerixSpacing.hairline,
+                    if (hasIssues) AerixSurface.danger else AerixSurface.border
                 ),
                 onClick = onOpenModResolver
             ) {
                 Row(
                     modifier = Modifier
                         .height(34.dp)
-                        .padding(horizontal = 10.dp),
+                        .padding(horizontal = AerixSpacing.smPlus),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                 ) {
                     Text(
                         text = if (hasIssues) "🛡️ $detectedIssuesCount Issues" else "🛡️ Check Mods",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (hasIssues) Color(0xFFFCA5A5) else Color(0xFFE5E7EB)
+                        color = if (hasIssues) AerixSurface.danger else AerixSurface.textPrimary
                     )
                 }
             }
 
             Button(
                 onClick = swapToDownload,
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MiraiThemeManager.currentAccent(),
-                    contentColor = Color(0xFF06210F)
+                    contentColor = AerixSurface.onAccent
                 ),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
                 modifier = Modifier.height(34.dp)
             ) {
                 Icon(
@@ -996,7 +999,7 @@ private fun ModsActionsHeader(
                     contentDescription = null,
                     modifier = Modifier.size(15.dp)
                 )
-                Spacer(Modifier.width(4.dp))
+                Spacer(Modifier.width(AerixSpacing.xs))
                 Text(
                     text = "Add Content",
                     style = MaterialTheme.typography.labelMedium,
@@ -1045,8 +1048,8 @@ private fun ModsList(
                     state = scrollState.scrollIndicatorState!!,
                     orientation = Orientation.Vertical,
                 ),
-            contentPadding = PaddingValues(all = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(all = AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             state = scrollState,
         ) {
             if (!hasModLoader) {
@@ -1148,27 +1151,28 @@ private fun ModItemLayout(
             .border(
                 width = borderWidth,
                 color = borderColor,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(AerixRadii.control)
             ),
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        color = Color(0xFF21242B),
+        shape = RoundedCornerShape(AerixRadii.card),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, if (selected) borderColor else AerixSurface.border),
         contentColor = itemContentColor,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.mdTight),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ModIcon(
-                modifier = Modifier.clip(shape = RoundedCornerShape(9.dp)),
+                modifier = Modifier.clip(shape = RoundedCornerShape(AerixRadii.control)),
                 mod = mod,
-                iconSize = 40.dp
+                iconSize = 44.dp
             )
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
             ) {
                 val localMod = mod.localMod
                 val isUnknown = localMod.notMod && projectInfo == null
@@ -1183,7 +1187,7 @@ private fun ModItemLayout(
                     )
                 } else {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val displayTitle = if (projectInfo != null) {
@@ -1220,7 +1224,7 @@ private fun ModItemLayout(
                     Text(
                         text = localMod.file.name,
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF9CA3AF),
+                        color = AerixSurface.textSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -1228,7 +1232,7 @@ private fun ModItemLayout(
             }
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (mod.isLoading) {
@@ -1247,11 +1251,11 @@ private fun ModItemLayout(
                         else onDisable()
                     },
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color(0xFF06210F),
+                        checkedThumbColor = AerixSurface.onAccent,
                         checkedTrackColor = MiraiThemeManager.currentAccent(),
-                        uncheckedThumbColor = Color(0xFF9CA3AF),
-                        uncheckedTrackColor = Color(0xFF282C36),
-                        uncheckedBorderColor = Color(0xFF3E4452)
+                        uncheckedThumbColor = AerixSurface.textSecondary,
+                        uncheckedTrackColor = AerixSurface.panelRaised,
+                        uncheckedBorderColor = AerixSurface.panelRaised
                     )
                 )
 
@@ -1265,7 +1269,7 @@ private fun ModItemLayout(
                         Icon(
                             painter = painterResource(R.drawable.ic_info_outlined),
                             contentDescription = stringResource(R.string.mods_manage_info),
-                            tint = Color(0xFF9CA3AF),
+                            tint = AerixSurface.textSecondary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -1278,7 +1282,7 @@ private fun ModItemLayout(
                     Icon(
                         painter = painterResource(R.drawable.ic_delete_outlined),
                         contentDescription = stringResource(R.string.generic_delete),
-                        tint = Color(0xFF9CA3AF),
+                        tint = AerixSurface.textSecondary,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -1335,7 +1339,7 @@ private fun ModIcon(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 4.dp)
+                    .padding(all = AerixSpacing.xs)
                     .size(disableContainerSize),
                 color = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -1376,8 +1380,8 @@ private fun WarningItem(
         contentColor = itemContentColor,
     ) {
         Row(
-            modifier = Modifier.padding(all = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(all = AerixSpacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -1387,7 +1391,7 @@ private fun WarningItem(
                 Icon(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(all = 8.dp),
+                        .padding(all = AerixSpacing.sm),
                     painter = painterResource(R.drawable.ic_warning_filled),
                     contentDescription = stringResource(R.string.generic_warning),
                     tint = MaterialTheme.colorScheme.tertiary
@@ -1396,7 +1400,7 @@ private fun WarningItem(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                 content = content
             )
         }
@@ -1412,7 +1416,7 @@ private fun LocalModInfoTooltip(
         modifier = Modifier.size(38.dp),
         tooltip = {
             RichTooltip(
-                modifier = Modifier.padding(all = 3.dp),
+                modifier = Modifier.padding(all = AerixSpacing.tiny),
                 title = { Text(text = stringResource(R.string.mods_manage_info)) },
                 shadowElevation = 3.dp
             ) {
@@ -1428,7 +1432,7 @@ private fun LocalModInfoTooltip(
                         Text(text = stringResource(R.string.mods_manage_authors))
                         FlowRow(
                             modifier = Modifier.weight(1f, fill = false),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                         ) {
                             mod.authors.forEach { author ->
                                 Text(text = author)

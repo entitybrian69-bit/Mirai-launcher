@@ -64,6 +64,7 @@ import com.movtery.layer_controller.observable.ObservableButtonStyle
 import com.movtery.layer_controller.observable.ObservableControlLayer
 import com.movtery.layer_controller.observable.ObservableJoystickStyle
 import com.movtery.layer_controller.observable.ObservableWidget
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.isLauncherInDarkTheme
@@ -453,19 +454,19 @@ private fun ActionButton(
         onClick = onClick
     ) {
         Row(
-            modifier = Modifier.padding(all = 6.dp),
+            modifier = Modifier.padding(all = AerixSpacing.smCompact),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Icon(
                 modifier = Modifier
-                    .padding(start = 6.dp)
+                    .padding(start = AerixSpacing.smCompact)
                     .size(20.dp),
                 painter = painter,
                 contentDescription = text
             )
             Text(
-                modifier = Modifier.padding(end = 6.dp),
+                modifier = Modifier.padding(end = AerixSpacing.smCompact),
                 text = text,
                 style = MaterialTheme.typography.labelLarge
             )

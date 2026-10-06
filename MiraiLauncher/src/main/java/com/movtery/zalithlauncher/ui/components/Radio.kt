@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.theme.itemColor
 import com.movtery.zalithlauncher.ui.theme.onItemColor
 
@@ -95,7 +96,7 @@ fun RadioCard(
         enabled = enabled
     ) {
         Row(
-            modifier = Modifier.padding(end = 12.dp),
+            modifier = Modifier.padding(end = AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
@@ -148,8 +149,8 @@ private fun InternalSurface(
 private fun PreviewRadioCard() {
     MaterialExpressiveTheme {
         Column(
-            modifier = Modifier.padding(all = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(all = AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             RadioCard(
                 selected = true,

@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.multirt.RuntimesManager
 import com.movtery.zalithlauncher.game.plugin.natives.NativePlugin
@@ -82,7 +83,7 @@ fun GameSettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScrollWithBar(state = rememberScrollState())
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             isVisible = isVisible
         ) { scope ->
             AnimatedItem(scope) { yOffset ->
@@ -222,7 +223,7 @@ fun GameSettingsScreen(
                             MemoryPreview(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 2.dp),
+                                    .padding(start = AerixSpacing.xxs),
                                 preview = (AllSettings.ramAllocation.state ?: AllSettings.ramAllocation.min).toDouble(),
                                 usedText = { usedMemory, totalMemory ->
                                     stringResource(R.string.settings_game_java_memory_used_text, usedMemory.toInt(), totalMemory.toInt())
@@ -290,7 +291,7 @@ fun GameSettingsScreen(
 private fun NativePluginSummaryLayout(plugin: NativePlugin) {
     FlowRow(
         modifier = Modifier.alpha(0.7f),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         Text(
             text = stringResource(R.string.settings_renderer_from_plugins,plugin.appName),
@@ -303,7 +304,7 @@ private fun NativePluginSummaryLayout(plugin: NativePlugin) {
         if (minVer != null || maxVer != null) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 Text(text = stringResource(R.string.renderer_version_support), style = MaterialTheme.typography.labelSmall)
 

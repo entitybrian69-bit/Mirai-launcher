@@ -41,6 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.coroutine.TaskLogOutput
 import com.movtery.zalithlauncher.ui.AndroidStringText
 
@@ -77,7 +79,7 @@ fun TaskLogCard(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         AndroidStringText(
             text = logOutput.title,
@@ -88,10 +90,10 @@ fun TaskLogCard(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(AerixRadii.compact))
                 .background(color = MaterialTheme.colorScheme.surfaceContainer),
             state = listState,
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+            contentPadding = PaddingValues(horizontal = AerixSpacing.sm, vertical = AerixSpacing.smCompact)
         ) {
             items(lines) { line ->
                 Text(

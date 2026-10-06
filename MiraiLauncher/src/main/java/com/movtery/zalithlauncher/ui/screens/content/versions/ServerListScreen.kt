@@ -100,6 +100,8 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.context.COPY_LABEL_SERVER_IP
 import com.movtery.zalithlauncher.game.version.installed.Version
@@ -537,7 +539,7 @@ fun ServerListScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 12.dp)
+                .padding(all = AerixSpacing.md)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -610,14 +612,14 @@ private fun ServerListHeader(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .padding(top = 4.dp)
+                .padding(horizontal = AerixSpacing.sm)
+                .padding(top = AerixSpacing.xs)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 SimpleTextInputField(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 4.dp),
+                        .padding(start = AerixSpacing.xs),
                     value = searchName,
                     onValueChange = { onSearchNameChange(it) },
                     hint = {
@@ -646,7 +648,7 @@ private fun ServerListHeader(
                         .horizontalScroll(scrollState),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(AerixSpacing.smCompact))
 
                     //添加服务器
                     IconTextButton(
@@ -689,8 +691,8 @@ private fun ServerListBody(
                     state = scrollState.scrollIndicatorState!!,
                     orientation = Orientation.Vertical,
                 ),
-                contentPadding = PaddingValues(all = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(all = AerixSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                 state = scrollState,
             ) {
                 items(list) { server ->
@@ -766,15 +768,15 @@ private fun ServerItem(
 
         Row(
             modifier = Modifier
-                .padding(all = 8.dp)
+                .padding(all = AerixSpacing.sm)
                 .height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             //服务器的图标
             ServerIcon(
                 modifier = Modifier
-                    .clip(shape = RoundedCornerShape(10.dp)),
+                    .clip(shape = RoundedCornerShape(AerixRadii.controlSmall)),
                 server = item,
                 size = 64.dp,
             )
@@ -787,7 +789,7 @@ private fun ServerItem(
                     modifier = Modifier.weight(1f),
                 ) {
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
                         //服务器名称
                         MinecraftColorTextNormal(
@@ -811,7 +813,7 @@ private fun ServerItem(
                                 else 1
                             }
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 ServerSignalIcon(
@@ -859,7 +861,7 @@ private fun ServerItem(
                             //在线人数信息
                             Row(
                                 modifier = alphaModifier,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xxs),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -1022,7 +1024,7 @@ fun ServerSignalIcon(
     signalStrength: Int,
     mainColor: Color = MaterialTheme.colorScheme.primary,
     otherColor: Color = MaterialTheme.colorScheme.background,
-    contentPadding: PaddingValues = PaddingValues(vertical = 2.dp)
+    contentPadding: PaddingValues = PaddingValues(vertical = AerixSpacing.xxs)
 ) {
     require(signalStrength in 1..5) {
         "signalStrength must be between 1 and 5"
@@ -1169,7 +1171,7 @@ private fun ServerEditDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -1178,14 +1180,14 @@ private fun ServerEditDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     val scrollState = rememberScrollState()
                     Column(
@@ -1207,7 +1209,7 @@ private fun ServerEditDialog(
                             shape = MaterialTheme.shapes.large
                         )
 
-                        Spacer(modifier = Modifier.size(8.dp))
+                        Spacer(modifier = Modifier.size(AerixSpacing.sm))
 
                         SingleLineTextCheck(
                             text = ip,
@@ -1231,11 +1233,11 @@ private fun ServerEditDialog(
                             shape = MaterialTheme.shapes.large
                         )
                     }
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(1f),

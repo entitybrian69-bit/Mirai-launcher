@@ -85,6 +85,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.coroutine.TaskSystem
 import com.movtery.zalithlauncher.game.version.installed.Version
@@ -324,7 +326,7 @@ fun ResourcePackManageScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 12.dp)
+                .padding(all = AerixSpacing.md)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -444,8 +446,8 @@ private fun ResourcePackHeader(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .padding(top = 4.dp)
+                .padding(horizontal = AerixSpacing.sm)
+                .padding(top = AerixSpacing.xs)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box {
@@ -472,7 +474,7 @@ private fun ResourcePackHeader(
                 SimpleTextInputField(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 4.dp),
+                        .padding(start = AerixSpacing.xs),
                     value = packFilter.filterName,
                     onValueChange = { changePackFilter(packFilter.copy(filterName = it)) },
                     hint = {
@@ -520,16 +522,16 @@ private fun ResourcePackHeader(
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(AerixSpacing.smCompact))
 
                         VerticalDivider(
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .padding(vertical = 12.dp),
+                                .padding(vertical = AerixSpacing.md),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                         )
 
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(AerixSpacing.smCompact))
                     }
                 }
 
@@ -558,7 +560,7 @@ private fun ResourcePackHeader(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(AerixSpacing.md))
 
                     val taskBuilder = rememberMultipleUriImportTaskBuilder(
                         id = "ContentManager.ResourcePacks.Import",
@@ -613,14 +615,14 @@ private fun ResourcePackList(
                     state = scrollState.scrollIndicatorState!!,
                     orientation = Orientation.Vertical,
                 ),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
                 state = scrollState,
             ) {
                 items(list) { pack ->
                     ResourcePackItemLayout(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 6.dp),
+                            .padding(vertical = AerixSpacing.smCompact),
                         resourcePackInfo = pack,
                         selected = selectedPacks.contains(pack),
                         onClick = {
@@ -692,13 +694,13 @@ private fun ResourcePackItemLayout(
         contentColor = itemContentColor,
     ) {
         Row(
-            modifier = Modifier.padding(all = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(all = AerixSpacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             ByteArrayIcon(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(shape = RoundedCornerShape(10.dp)),
+                    .clip(shape = RoundedCornerShape(AerixRadii.controlSmall)),
                 triggerRefresh = resourcePackInfo,
                 icon = resourcePackInfo.icon
             )
@@ -724,7 +726,7 @@ private fun ResourcePackItemLayout(
 
             Row(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (resourcePackInfo.isValid) {
@@ -733,7 +735,7 @@ private fun ResourcePackItemLayout(
                         modifier = Modifier.size(38.dp),
                         tooltip = {
                             RichTooltip(
-                                modifier = Modifier.padding(all = 3.dp),
+                                modifier = Modifier.padding(all = AerixSpacing.tiny),
                                 title = { Text(text = stringResource(R.string.resource_pack_manage_info)) },
                                 shadowElevation = 3.dp
                             ) {
@@ -897,7 +899,7 @@ private fun ResourcePackOperation(
 private fun ResourcePackInfoTooltip(
     resourcePackInfo: ResourcePackInfo
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)) {
         //资源包类型
         Text(
             text = stringResource(

@@ -30,6 +30,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.components.InstallableItem
 import com.movtery.zalithlauncher.ui.base.BaseScreen
@@ -45,8 +48,8 @@ fun UnpackScreen(
 ) {
     BaseScreen(screenKey = NormalNavKey.UnpackDeps, currentKey = screenViewModel.splashScreen.currentKey) {
         Row(
-            modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxSize().padding(start = AerixSpacing.lg, end = AerixSpacing.lg, bottom = AerixSpacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
         ) {
             UnpackTaskList(items = items, modifier = Modifier.weight(7f).fillMaxHeight())
             ActionMenu(modifier = Modifier.weight(3f).fillMaxHeight(), onAgreeClick = onAgreeClick)
@@ -68,12 +71,12 @@ private fun ActionMenu(modifier: Modifier = Modifier, onAgreeClick: () -> Unit =
             enabled = !installing,
             onClick = { installing = true; onAgreeClick() },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(28.dp),
+            shape = RoundedCornerShape(AerixRadii.hero),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0x991BD96A),
-                contentColor = Color(0xFF06210F),
-                disabledContainerColor = Color(0x551BD96A),
-                disabledContentColor = Color(0xFF06210F)
+                containerColor = AerixSurface.accent.copy(alpha = 0.6f),
+                contentColor = AerixSurface.onAccent,
+                disabledContainerColor = AerixSurface.accent.copy(alpha = 0.33f),
+                disabledContentColor = AerixSurface.onAccent
             )
         ) {
             Text(stringResource(R.string.splash_screen_agree))
@@ -86,10 +89,10 @@ private fun UnpackTaskList(items: List<InstallableItem>, modifier: Modifier = Mo
     BackgroundCard(modifier = modifier, influencedByBackground = false, shape = MaterialTheme.shapes.extraLarge) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+            contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact)
         ) {
             items(items, key = { it.name }) { item ->
-                TaskItem(item = item, modifier = Modifier.padding(vertical = 6.dp))
+                TaskItem(item = item, modifier = Modifier.padding(vertical = AerixSpacing.smCompact))
             }
         }
     }
@@ -98,15 +101,15 @@ private fun UnpackTaskList(items: List<InstallableItem>, modifier: Modifier = Mo
 @Composable
 private fun TaskItem(item: InstallableItem, modifier: Modifier = Modifier) {
     val state by item.state.collectAsStateWithLifecycle()
-    Row(modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = modifier.fillMaxWidth().padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs), verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = item.name, style = MaterialTheme.typography.labelMedium, color = Color.White)
-            item.summary?.let { Text(text = it, style = MaterialTheme.typography.labelSmall, color = Color(0xFFD7CFC8)) }
+            item.summary?.let { Text(text = it, style = MaterialTheme.typography.labelSmall, color = AerixSurface.textSecondary) }
         }
-        val iconModifier = Modifier.padding(horizontal = 12.dp).size(18.dp)
+        val iconModifier = Modifier.padding(horizontal = AerixSpacing.md).size(18.dp)
         when (state) {
-            InstallableItem.State.RUNNING -> CircularProgressIndicator(modifier = iconModifier, strokeWidth = 2.dp, color = Color(0xFF1BD96A))
-            InstallableItem.State.FINISHED -> Icon(painterResource(R.drawable.ic_check), contentDescription = null, modifier = iconModifier, tint = Color(0xFF1BD96A))
+            InstallableItem.State.RUNNING -> CircularProgressIndicator(modifier = iconModifier, strokeWidth = 2.dp, color = AerixSurface.success)
+            InstallableItem.State.FINISHED -> Icon(painterResource(R.drawable.ic_check), contentDescription = null, modifier = iconModifier, tint = AerixSurface.success)
             InstallableItem.State.PENDING -> Icon(painterResource(R.drawable.ic_update), contentDescription = null, modifier = iconModifier, tint = Color.White)
             else -> Icon(painterResource(R.drawable.ic_folder_zip_outlined), contentDescription = null, modifier = iconModifier, tint = Color.White)
         }

@@ -57,6 +57,7 @@ import com.movtery.colorpicker.ColorPickerController
 import com.movtery.colorpicker.components.AlphaBarPicker
 import com.movtery.colorpicker.components.ColorSquarePicker
 import com.movtery.colorpicker.components.HueBarPicker
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.cardColor
 import com.movtery.zalithlauncher.ui.theme.onCardColor
@@ -107,7 +108,7 @@ fun ColorPickerDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 16.dp)
+                    .padding(all = AerixSpacing.lg)
                     .heightIn(max = (maxHeight - 32.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shadowElevation = 3.dp,
@@ -116,9 +117,9 @@ fun ColorPickerDialog(
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Column(
-                    modifier = Modifier.padding(all = 16.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     Text(
                         text = stringResource(R.string.theme_color_picker_title),
@@ -134,7 +135,7 @@ fun ColorPickerDialog(
                             modifier = Modifier
                                 .wrapContentHeight()
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             ColorSquarePicker(
@@ -149,11 +150,11 @@ fun ColorPickerDialog(
                                 modifier = Modifier
                                     .weight(1f)
                                     .verticalScrollWithBar(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                             ) {
                                 if (showAlpha || showHue) {
                                     Column(
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                                     ) {
                                         if (showAlpha) {
                                             AlphaBarPicker(
@@ -205,7 +206,7 @@ fun ColorPickerDialog(
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                                     ) {
                                         Box(
                                             modifier = Modifier
@@ -231,7 +232,7 @@ fun ColorPickerDialog(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(1f),

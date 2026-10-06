@@ -19,6 +19,7 @@
 package com.movtery.zalithlauncher.ui.screens.game.elements.log_parser
 
 import androidx.compose.ui.graphics.Color
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 
 /**
  * 日志等级识别规则
@@ -35,23 +36,23 @@ data class LogLevelRule(
 val INFO = LogLevelRule(
     identifiers = listOf("INFO", "Info"),
     textColor = Color.White,
-    backgroundColor = Color(0xFF447152)
+    backgroundColor = AerixSurface.logInfoSurface
 )
 
 val ERROR = LogLevelRule(
     identifiers = listOf("ERROR", "Error"),
-    textColor = Color(0xFF6AAB73),
+    textColor = AerixSurface.danger,
     backgroundColor = null
 )
 
 val DEBUG = LogLevelRule(
     identifiers = listOf("DEBUG", "Debug"),
     textColor = Color.White,
-    backgroundColor = Color(0xFF43698D)
+    backgroundColor = AerixSurface.logDebugSurface
 )
 
 val WARN = LogLevelRule(
     identifiers = listOf("WARN", "Warn"),
     textColor = Color.White,
-    backgroundColor = Color(0xFF656E76)
+    backgroundColor = AerixSurface.logWarningSurface
 )

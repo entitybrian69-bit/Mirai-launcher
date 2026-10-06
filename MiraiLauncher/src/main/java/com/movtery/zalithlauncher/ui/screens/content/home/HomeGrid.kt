@@ -50,6 +50,7 @@ import com.movtery.cardgrid.state.CardSeed
 import com.movtery.cardgrid.state.GridCard
 import com.movtery.cardgrid.ui.CardGrid
 import com.movtery.cardgrid.ui.CardGridAutoScroll
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
@@ -132,20 +133,20 @@ fun HomeGrid(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(6.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+                .padding(AerixSpacing.smCompact),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
         ) {
             val systemCards = HomeCards.systemCards()
             if (!systemCards.isEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 6.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                        .padding(top = AerixSpacing.smCompact),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     systemCards.forEach { systemCard ->
                         key(systemCard.id) {
-                            Box(modifier = Modifier.padding(horizontal = 6.dp)) {
+                            Box(modifier = Modifier.padding(horizontal = AerixSpacing.smCompact)) {
                                 systemCard.content()
                             }
                         }
@@ -197,8 +198,8 @@ private fun CardToolbar(
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(all = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                .padding(all = AerixSpacing.smCompact),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xxs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
