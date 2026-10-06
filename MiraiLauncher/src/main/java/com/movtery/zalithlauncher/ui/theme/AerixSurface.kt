@@ -124,11 +124,10 @@ object AerixMetrics {
     val exportTreeLabelStartInset: Dp = 46.dp
     val expandedKeyboardEndInset: Dp = 58.dp
     val assetSearchBottomInset: Dp = 58.dp
-    val glassRimInset: Dp = 14.dp
-    val glassSurfaceElevation: Dp = 3.dp
-    val glassFloatingElevation: Dp = 8.dp
-    val glassRailElevation: Dp = 8.dp
-    val glassDialogElevation: Dp = 8.dp
-    val glassSelectedElevation: Dp = 1.dp
+    val glassSurfaceElevation: Dp = 1.dp
+    val glassFloatingElevation: Dp = 3.dp
+    val glassRailElevation: Dp = 2.dp
+    val glassDialogElevation: Dp = 3.dp
+    val glassSelectedElevation: Dp = 0.dp
     val glassSubtleElevation: Dp = 0.dp
 }

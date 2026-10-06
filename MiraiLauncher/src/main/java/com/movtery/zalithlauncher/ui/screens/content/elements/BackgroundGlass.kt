@@ -27,7 +27,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.BlurEffect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.GraphicsContext
 import androidx.compose.ui.graphics.TileMode
@@ -195,51 +194,26 @@ private class GlassNode(
             }
         }
 
-        // With blur=0, preserve the wallpaper's sharp pixels and build the material
-        // from a translucent wash plus reflected light, not an opaque replacement.
+        // Keep the wallpaper visible with one translucent wash and a restrained
+        // two-edge reflection instead of layering several full-surface blend passes.
         drawRect(
-            color = color.copy(alpha = if (drewCapturedBackdrop) 0.18f else AerixSurface.sharpGlassTintAlpha),
-            blendMode = BlendMode.SrcOver
+            color = color.copy(
+                alpha = if (drewCapturedBackdrop) 0.18f else AerixSurface.sharpGlassTintAlpha
+            )
         )
-        drawRect(
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    Color.White.copy(alpha = 0.24f),
-                    AerixSurface.glassBlue.copy(alpha = 0.08f),
-                    Color.Transparent,
-                    Color.Transparent
-                )
-            ),
-            blendMode = BlendMode.Softlight
-        )
-        drawRect(
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    Color.White.copy(alpha = 0.09f),
-                    Color.Transparent,
-                    AerixSurface.glassViolet.copy(alpha = 0.055f),
-                    Color.Transparent
-                ),
-                start = Offset.Zero,
-                end = Offset(size.width, size.height)
-            ),
-            blendMode = BlendMode.Screen
-        )
-        drawRect(
-            color = Color.White.copy(alpha = whiteOverlayAlpha(blur)),
-            blendMode = BlendMode.Softlight
+        val hairline = AerixSpacing.hairline.toPx()
+        val horizontalInset = AerixSpacing.md.toPx()
+        drawLine(
+            color = Color.White.copy(alpha = 0.36f),
+            start = Offset(horizontalInset, hairline * 0.5f),
+            end = Offset((size.width - horizontalInset).coerceAtLeast(horizontalInset), hairline * 0.5f),
+            strokeWidth = hairline
         )
         drawLine(
-            color = Color.White.copy(alpha = 0.55f),
-            start = Offset(AerixSpacing.md.toPx(), 0.7f),
-            end = Offset((size.width - AerixSpacing.md.toPx()).coerceAtLeast(0f), 0.7f),
-            strokeWidth = AerixSpacing.hairline.toPx()
-        )
-        drawLine(
-            color = AerixSurface.glassBlue.copy(alpha = 0.18f),
-            start = Offset(AerixSpacing.lg.toPx(), size.height - 0.8f),
-            end = Offset((size.width - AerixSpacing.lg.toPx()).coerceAtLeast(0f), size.height - 0.8f),
-            strokeWidth = AerixSpacing.hairline.toPx()
+            color = AerixSurface.glassBlue.copy(alpha = 0.12f),
+            start = Offset(horizontalInset, size.height - hairline * 0.5f),
+            end = Offset((size.width - horizontalInset).coerceAtLeast(horizontalInset), size.height - hairline * 0.5f),
+            strokeWidth = hairline
         )
     }
 }

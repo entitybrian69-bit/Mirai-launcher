@@ -44,6 +44,17 @@ import com.movtery.zalithlauncher.ui.theme.cardTitleColor
 import com.movtery.zalithlauncher.ui.theme.onCardColor
 
 /**
+ * Skip per-card backdrop drawing when blur is off; the translucent card container
+ * and cached Liquid Glass sheen already provide the default material.
+ */
+@Composable
+private fun Modifier.backgroundGlassIfBlurred(
+    blur: Int,
+    color: Color,
+    enabled: Boolean
+): Modifier = if (blur > 0) backgroundGlass(blur, color, enabled) else this
+
+/**
  * 背景卡片组件，
  * 使用方式与原本的[Card]无异，但[BackgroundCard]配置了更舒适的背景颜色
  */
@@ -70,8 +81,14 @@ fun BackgroundCard(
     ) {
         Column(
             modifier = Modifier
-                .liquidGlass(shape = shape, tint = AerixSurface.glassTint, strength = 0.9f, elevation = AerixSpacing.zero)
-                .backgroundGlass(blur, colors.containerColor, influencedByBackground),
+                .liquidGlass(
+                    shape = shape,
+                    tint = AerixSurface.glassTint,
+                    strength = 0.9f,
+                    elevation = AerixSpacing.zero,
+                    clipContent = false // The parent Card already clips to this exact shape.
+                )
+                .backgroundGlassIfBlurred(blur, colors.containerColor, influencedByBackground),
             content = content
         )
     }
@@ -109,8 +126,14 @@ fun BackgroundCard(
     ) {
         Column(
             modifier = Modifier
-                .liquidGlass(shape = shape, tint = AerixSurface.glassTint, strength = 0.9f, elevation = AerixSpacing.zero)
-                .backgroundGlass(blur, colors.containerColor, influencedByBackground),
+                .liquidGlass(
+                    shape = shape,
+                    tint = AerixSurface.glassTint,
+                    strength = 0.9f,
+                    elevation = AerixSpacing.zero,
+                    clipContent = false // The parent Card already clips to this exact shape.
+                )
+                .backgroundGlassIfBlurred(blur, colors.containerColor, influencedByBackground),
             content = content
         )
     }
@@ -149,7 +172,7 @@ fun CardTitleLayout(
                         strength = 0.75f,
                         elevation = AerixSpacing.zero
                     )
-                    .backgroundGlass(blur, color, influencedByBackground),
+                    .backgroundGlassIfBlurred(blur, color, influencedByBackground),
                 content = content
             )
         }

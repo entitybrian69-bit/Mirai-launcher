@@ -181,39 +181,18 @@ fun MainScreen(
                 .drawWithCache {
                     val width = size.width.coerceAtLeast(1f)
                     val height = size.height.coerceAtLeast(1f)
+                    // One cached aurora pass avoids repainting two additional full-screen
+                    // radial gradients beneath every route and scroll surface.
                     val aurora = Brush.linearGradient(
                         colors = listOf(
-                            AerixSurface.auroraCyan.copy(alpha = 0.10f),
+                            AerixSurface.auroraCyan.copy(alpha = 0.065f),
                             Color.Transparent,
-                            AerixSurface.auroraViolet.copy(alpha = 0.08f),
-                            Color.Transparent
+                            AerixSurface.auroraViolet.copy(alpha = 0.055f)
                         ),
-                        start = Offset.Zero,
-                        end = Offset(width, height)
+                        start = Offset(0f, height * 0.08f),
+                        end = Offset(width, height * 0.92f)
                     )
-                    val cyanLens = Brush.radialGradient(
-                        colors = listOf(
-                            AerixSurface.auroraCyan.copy(alpha = 0.15f),
-                            AerixSurface.auroraCyan.copy(alpha = 0.06f),
-                            Color.Transparent
-                        ),
-                        center = Offset(width * 0.04f, height * 0.06f),
-                        radius = maxOf(width, height) * 0.74f
-                    )
-                    val violetLens = Brush.radialGradient(
-                        colors = listOf(
-                            AerixSurface.auroraViolet.copy(alpha = 0.12f),
-                            AerixSurface.auroraViolet.copy(alpha = 0.04f),
-                            Color.Transparent
-                        ),
-                        center = Offset(width * 0.96f, height * 0.92f),
-                        radius = maxOf(width, height) * 0.7f
-                    )
-                    onDrawBehind {
-                        drawRect(brush = aurora)
-                        drawRect(brush = cyanLens)
-                        drawRect(brush = violetLens)
-                    }
+                    onDrawBehind { drawRect(brush = aurora) }
                 }
         ) {
         Row(modifier = Modifier.fillMaxSize()) {
