@@ -22,20 +22,23 @@
 
 ## 📸 Screenshots
 
-**Home dashboard** — quick actions (Boost FPS, JRE & GC, Crash Doctor), account status and PLAY at a glance.
-![Home dashboard](assets/screenshots/shot-home.jpg)
+**Home** — no top bar: the page starts at the top of the screen, with Create a World, Open Library and PLAY one touch away.
+![Home](assets/screenshots/shot-home.jpg)
 
-**Instances** — search, filter (All / Modpacks / Vanilla / Pinned) and create new instances.
-![Instances](assets/screenshots/shot-instances.jpg)
+**Create New Instance** — the Minecraft version list owns the left column, the selected version is outlined with a check mark, and the modloader grid sits beside it.
+![Create New Instance](assets/screenshots/shot-instances.jpg)
 
-**Discover** — browse and install mods, modpacks, shaders and more.
+**Discover** — browse and install mods, modpacks, shaders and resource packs, with filters for platform, category, game version and loader.
 ![Discover](assets/screenshots/shot-discover.jpg)
 
-**Wallpapers** — 25 built-in HD Minecraft wallpapers with dim control and custom imports.
+**Wallpapers** — 25 built-in HD Minecraft wallpapers, each with its own accent theme, plus dim control and custom imports.
 ![Wallpapers](assets/screenshots/shot-wallpapers.jpg)
 
-**Renderer settings** — renderer, Vulkan driver and graphics API per version.
-![Renderer settings](assets/screenshots/shot-renderer.jpg)
+**Renderers** — renderer, Vulkan driver and graphics API, chosen per version with a recommended default.
+![Renderers](assets/screenshots/shot-renderer.jpg)
+
+**Accounts & skins** — add Microsoft, offline or auth-server accounts, then browse a searchable three-column skin library and install a skin in one tap.
+![Accounts and skins](assets/screenshots/shot-accounts.jpg)
 
 ---
 
