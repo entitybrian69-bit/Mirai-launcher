@@ -210,6 +210,46 @@ object MiraiThemeManager {
             assetPath = "wallpapers/wp_20_sakura_sunbeams.jpg",
             themeName = "Orchid Sunbeam",
             accentColor = Color(0xFFE879F9)
+        ),
+        MiraiWallpaperPreset(
+            id = "wp_21_crimson_forest",
+            title = "Crimson Forest Embers",
+            biome = "Nether Crimson Forest • Nether Shaders",
+            assetPath = "wallpapers/wp_21_crimson_forest.jpg",
+            themeName = "Crimson Red",
+            accentColor = Color(0xFFE11D48)
+        ),
+        MiraiWallpaperPreset(
+            id = "wp_22_amethyst_geode",
+            title = "Amethyst Geode Lake",
+            biome = "Amethyst Geode • Crystal Shaders",
+            assetPath = "wallpapers/wp_22_amethyst_geode.jpg",
+            themeName = "Amethyst Bloom",
+            accentColor = Color(0xFFA855F7)
+        ),
+        MiraiWallpaperPreset(
+            id = "wp_23_bamboo_dawn",
+            title = "Bamboo Sunrise",
+            biome = "Bamboo Jungle • Sunrise Shaders",
+            assetPath = "wallpapers/wp_23_bamboo_dawn.jpg",
+            themeName = "Bamboo Dawn",
+            accentColor = Color(0xFF84CC16)
+        ),
+        MiraiWallpaperPreset(
+            id = "wp_24_badlands_canyon",
+            title = "Badlands Canyon River",
+            biome = "Badlands Mesa • Canyon Shaders",
+            assetPath = "wallpapers/wp_24_badlands_canyon.jpg",
+            themeName = "Terracotta Sunset",
+            accentColor = Color(0xFFF97316)
+        ),
+        MiraiWallpaperPreset(
+            id = "wp_25_deep_dark",
+            title = "Deep Dark Sculk City",
+            biome = "Deep Dark • Sculk Shaders",
+            assetPath = "wallpapers/wp_25_deep_dark.jpg",
+            themeName = "Sculk Abyss",
+            accentColor = Color(0xFF06B6D4)
         )
     )
 

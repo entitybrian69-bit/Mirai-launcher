@@ -165,7 +165,7 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                         horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                     ) {
                         Text(
-                            text = "20 Minecraft HD Wallpapers & Dynamic Theme",
+                            text = "25 Minecraft HD Wallpapers & Dynamic Theme",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.ExtraBold,
                             color = Color.White,

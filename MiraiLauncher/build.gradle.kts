@@ -87,7 +87,7 @@ android {
         debug {
             isMinifyEnabled = false
             applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
+            //版本号不再显示 -debug 后缀，调试包与正式包版本号保持一致
             signingConfig = signingConfigs.getByName("debugBuild")
         }
     }

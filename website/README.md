@@ -14,7 +14,7 @@ stylesheet and one small script. It is published to GitHub Pages by
 | `renderers.html` | The renderer lineup, the two-LTW split, how selection works |
 | `guide.html` | Install and first-launch walkthrough, tuning, troubleshooting |
 | `faq.html` | 14 common questions |
-| `changelog.html` | Release notes, currently 1.0.0 |
+| `changelog.html` | Release notes, currently 1.2 |
 
 ## Theming
 

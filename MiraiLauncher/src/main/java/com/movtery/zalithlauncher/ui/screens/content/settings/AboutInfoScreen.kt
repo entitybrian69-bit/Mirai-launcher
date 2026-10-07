@@ -145,19 +145,6 @@ fun AboutInfoScreen(
                             }
                         )
 
-                        ButtonIconItem(
-                            icon = painterResource(R.drawable.img_avatar_fireplayz),
-                            title = "fire playz",
-                            text = stringResource(R.string.about_launcher_owner_text),
-                            button = {
-                                Button(
-                                    onClick = { openLink(URL_PROJECT) }
-                                ) {
-                                    Text(text = stringResource(R.string.about_launcher_project_link))
-                                }
-                            }
-                        )
-
                     }
                 }
             }
