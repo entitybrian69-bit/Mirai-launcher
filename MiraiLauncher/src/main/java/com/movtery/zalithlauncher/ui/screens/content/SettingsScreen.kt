@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,21 +19,15 @@
 
 package com.movtery.zalithlauncher.ui.screens.content
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -47,11 +41,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,9 +54,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
+import com.movtery.zalithlauncher.ui.components.liquidGlass
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.base.BaseScreen
-import com.movtery.zalithlauncher.ui.components.fadeEdge
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
+import com.movtery.zalithlauncher.ui.components.AerixSectionHeader
 import com.movtery.zalithlauncher.ui.screens.NestedNavKey
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
 import com.movtery.zalithlauncher.ui.screens.TitledNavKey
@@ -80,7 +79,6 @@ import com.movtery.zalithlauncher.ui.screens.main.WallpaperPage
 import com.movtery.zalithlauncher.ui.screens.navigateOnce
 import com.movtery.zalithlauncher.ui.screens.onBack
 import com.movtery.zalithlauncher.ui.screens.rememberTransitionSpec
-import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.utils.animation.swapAnimateDpAsState
 import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
@@ -106,34 +104,73 @@ fun SettingsScreen(
         screenKey = key,
         currentKey = backStackViewModel.mainScreen.currentKey
     ) { isVisible ->
-        Row(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm)
         ) {
-            TabMenu(
-                modifier = Modifier.fillMaxHeight(),
-                isVisible = isVisible,
-                settingsScreenKey = backStackViewModel.settingsScreen.currentKey,
-                navigateTo = { settingKey ->
-                    key.backStack.navigateOnce(settingKey)
+            val useLandscapeNavigation = maxWidth >= 720.dp && maxWidth > maxHeight
+            if (useLandscapeNavigation) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .width(224.dp)
+                            .fillMaxHeight()
+                            .liquidGlass(
+                                shape = RoundedCornerShape(AerixRadii.panel),
+                                tint = AerixSurface.glassTint,
+                                strength = 0.98f,
+                                elevation = AerixMetrics.glassFloatingElevation
+                            ),
+                        shape = RoundedCornerShape(AerixRadii.panel),
+                        color = Color.Transparent,
+                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+                    ) {
+                        TabMenu(
+                            modifier = Modifier.fillMaxSize(),
+                            isVisible = isVisible,
+                            settingsScreenKey = backStackViewModel.settingsScreen.currentKey,
+                            vertical = true,
+                            navigateTo = { settingKey -> key.backStack.navigateOnce(settingKey) }
+                        )
+                    }
+                    NavigationUI(
+                        key = key,
+                        mainScreenKey = backStackViewModel.mainScreen.currentKey,
+                        settingsScreenKey = backStackViewModel.settingsScreen.currentKey,
+                        onCurrentKeyChange = { backStackViewModel.settingsScreen.currentKey = it },
+                        openLicenseScreen = openLicenseScreen,
+                        eventViewModel = eventViewModel,
+                        submitError = submitError,
+                        modifier = Modifier.weight(1f).fillMaxHeight()
+                    )
                 }
-            )
-            NavigationUI(
-                key = key,
-                mainScreenKey = backStackViewModel.mainScreen.currentKey,
-                settingsScreenKey = backStackViewModel.settingsScreen.currentKey,
-                onCurrentKeyChange = { newKey ->
-                    backStackViewModel.settingsScreen.currentKey = newKey
-                },
-                openLicenseScreen = openLicenseScreen,
-                eventViewModel = eventViewModel,
-                submitError = submitError,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-            )
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
+                ) {
+                    TabMenu(
+                        modifier = Modifier.fillMaxWidth(),
+                        isVisible = isVisible,
+                        settingsScreenKey = backStackViewModel.settingsScreen.currentKey,
+                        navigateTo = { settingKey -> key.backStack.navigateOnce(settingKey) }
+                    )
+                    NavigationUI(
+                        key = key,
+                        mainScreenKey = backStackViewModel.mainScreen.currentKey,
+                        settingsScreenKey = backStackViewModel.settingsScreen.currentKey,
+                        onCurrentKeyChange = { backStackViewModel.settingsScreen.currentKey = it },
+                        openLicenseScreen = openLicenseScreen,
+                        eventViewModel = eventViewModel,
+                        submitError = submitError,
+                        modifier = Modifier.fillMaxWidth().weight(1f)
+                    )
+                }
+            }
         }
     }
 }
@@ -155,79 +192,65 @@ private fun TabMenu(
     isVisible: Boolean,
     settingsScreenKey: TitledNavKey?,
     navigateTo: (TitledNavKey) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    vertical: Boolean = false
 ) {
-    val activeAccent = MiraiThemeManager.currentAccent()
     val xOffset by swapAnimateDpAsState(
         targetValue = (-40).dp,
         swapIn = isVisible,
         isHorizontal = true
     )
 
-    val scrollState = rememberScrollState()
-    Surface(
-        modifier = modifier
-            .width(156.dp)
-            .offset { IntOffset(x = xOffset.roundToPx(), y = 0) },
-        shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF1A1D24).copy(alpha = 0.92f),
-        border = BorderStroke(1.dp, Color(0xFF2B2F3A))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fadeEdge(scrollState)
-                .verticalScroll(scrollState)
-                .padding(horizontal = 8.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            settingItems.forEach { item ->
-                if (item.division) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 3.dp),
-                        color = Color(0xFF282C36)
-                    )
-                }
-
-                val selected = settingsScreenKey === item.key
-                val bgColor by animateColorAsState(
-                    targetValue = if (selected) activeAccent else Color.Transparent,
-                    animationSpec = tween(140),
-                    label = "settingsTabBg"
+    val tabs: @Composable () -> Unit = {
+        settingItems.forEach { item ->
+            if (vertical && item.division) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = AerixSpacing.sm),
+                    color = AerixSurface.borderSoft
                 )
-                val fgColor by animateColorAsState(
-                    targetValue = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB),
-                    animationSpec = tween(140),
-                    label = "settingsTabFg"
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(34.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(bgColor)
-                        .clickable { navigateTo(item.key) }
-                        .padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(item.iconRes),
-                        contentDescription = null,
-                        tint = fgColor,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = item.customLabel ?: stringResource(item.textRes),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                        color = fgColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
             }
+            val selected = settingsScreenKey === item.key
+            AerixPillTab(
+                modifier = if (vertical) Modifier.fillMaxWidth() else Modifier,
+                selected = selected,
+                onClick = { navigateTo(item.key) }
+            ) {
+                Icon(
+                    painter = painterResource(item.iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = item.customLabel ?: stringResource(item.textRes),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+
+    if (vertical) {
+        Column(
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+                .padding(AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
+        ) {
+            AerixSectionHeader(
+                title = "Preferences",
+                subtitle = "Launcher and game",
+                modifier = Modifier.padding(horizontal = AerixSpacing.sm)
+            )
+            HorizontalDivider(color = AerixSurface.borderSoft)
+            tabs()
+        }
+    } else {
+        AerixPillTabRow(
+            modifier = modifier.offset { IntOffset(x = xOffset.roundToPx(), y = 0) }
+        ) {
+            tabs()
         }
     }
 }

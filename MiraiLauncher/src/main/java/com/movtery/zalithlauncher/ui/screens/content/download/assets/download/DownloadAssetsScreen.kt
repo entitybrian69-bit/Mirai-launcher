@@ -30,6 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.utils.formatNumberByLocale
 import androidx.compose.foundation.layout.Arrangement
@@ -476,8 +479,8 @@ private fun MiraiDownloadColumn(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         state = scrollState,
-        contentPadding = PaddingValues(bottom = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        contentPadding = PaddingValues(bottom = AerixSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         item(key = "mirai_hero") {
             DownloadHeroCard(
@@ -523,7 +526,7 @@ private fun MiraiDownloadColumn(
                     AssetsVersionItemLayout(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                            .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
                         infoMap = info,
                         installedChecker = installedChecker,
                         onItemClicked = onVersionClicked
@@ -535,7 +538,7 @@ private fun MiraiDownloadColumn(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(all = 24.dp),
+                            .padding(all = AerixSpacing.xxl),
                         contentAlignment = Alignment.Center
                     ) {
                         ScalingLabel(
@@ -588,7 +591,7 @@ private fun DownloadHeroCard(
     BackgroundCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
         shape = MaterialTheme.shapes.extraLarge
     ) {
         when (projectResult) {
@@ -609,19 +612,19 @@ private fun DownloadHeroCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(all = 14.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        .padding(all = AerixSpacing.mdPlus),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AssetsIcon(
-                        modifier = Modifier.clip(shape = RoundedCornerShape(16.dp)),
+                        modifier = Modifier.clip(shape = RoundedCornerShape(AerixRadii.card)),
                         size = 84.dp,
                         iconUrl = iconUrl
                     )
 
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         ClassesIdentifier(
                             classes = classes,
@@ -670,7 +673,7 @@ private fun DownloadHeroCard(
 
                     Column(
                         horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                     ) {
                         val isFavorite = FavoriteProjectsRepository.isFavorite(platform, projectId)
                         FavoriteIdentifier(
@@ -690,17 +693,17 @@ private fun DownloadHeroCard(
                             enabled = latestVersion != null,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = accent,
-                                contentColor = Color(0xFF06210F)
+                                contentColor = AerixSurface.onAccent
                             ),
-                            shape = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)
+                            shape = RoundedCornerShape(AerixRadii.control),
+                            contentPadding = PaddingValues(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus)
                         ) {
                             Icon(
                                 modifier = Modifier.size(16.dp),
                                 painter = painterResource(R.drawable.ic_download_2_outlined),
                                 contentDescription = null
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(AerixSpacing.smCompact))
                             Text(
                                 text = "Download Latest",
                                 fontWeight = FontWeight.ExtraBold
@@ -713,7 +716,7 @@ private fun DownloadHeroCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(all = 24.dp),
+                        .padding(all = AerixSpacing.xxl),
                     contentAlignment = Alignment.Center
                 ) {
                     ScalingLabel(
@@ -738,36 +741,36 @@ private fun HeroShimmer() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(all = 14.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(all = AerixSpacing.mdPlus),
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ShimmerBox(
             modifier = Modifier
-                .clip(shape = RoundedCornerShape(16.dp))
+                .clip(shape = RoundedCornerShape(AerixRadii.card))
                 .size(84.dp)
         )
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
                     .height(22.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(AerixRadii.tiny))
             )
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .height(16.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(AerixRadii.tiny))
             )
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .height(14.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(AerixRadii.tiny))
             )
         }
     }
@@ -788,9 +791,9 @@ private fun FilterRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             CheckChip(
                 selected = showOnlyMCRelease,
@@ -817,7 +820,7 @@ private fun FilterRow(
 
         HorizontalDivider(
             modifier = Modifier
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = AerixSpacing.md)
                 .fillMaxWidth(),
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
         )
@@ -832,9 +835,9 @@ private fun VersionsLoadingItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(all = 24.dp),
+            .padding(all = AerixSpacing.xxl),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         Column(
             modifier = Modifier.animateContentSize()
@@ -881,8 +884,8 @@ private fun LinksRail(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+            .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.xs),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
     ) {
         Text(
             text = stringResource(R.string.download_assets_links),
@@ -893,7 +896,7 @@ private fun LinksRail(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ProjectUrlsContent(
@@ -917,14 +920,14 @@ private fun ScreenshotsRail(
 ) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.xs),
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         items(screenshots) { screenshot ->
             ScreenshotItemLayout(
                 modifier = Modifier.width(260.dp),
                 screenshot = screenshot,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(AerixRadii.control)
             )
         }
     }

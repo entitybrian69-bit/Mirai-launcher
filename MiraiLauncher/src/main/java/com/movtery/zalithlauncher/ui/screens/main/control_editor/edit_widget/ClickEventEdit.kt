@@ -28,8 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,8 +41,11 @@ import com.movtery.layer_controller.event.ClickEvent
 import com.movtery.layer_controller.observable.ObservableClickEventsProvider
 import com.movtery.layer_controller.observable.ObservableNormalData
 import com.movtery.layer_controller.observable.clickEventsProvider
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.base.BaseScreen
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.verticalScrollWithBar
 import com.movtery.zalithlauncher.ui.screens.TitledNavKey
@@ -68,7 +69,7 @@ fun EditWidgetClickEvent(
     ) {
         Column(
             modifier = Modifier
-                .padding(start = 4.dp, end = 8.dp)
+                .padding(start = AerixSpacing.xs, end = AerixSpacing.sm)
                 .fillMaxSize()
         ) {
             val tabs = remember {
@@ -87,20 +88,14 @@ fun EditWidgetClickEvent(
             }
 
             //顶贴标签栏
-            SecondaryTabRow(
-                selectedTabIndex = selectedTabIndex,
-                containerColor = cardColor(false)
-            ) {
+            AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
                 tabs.forEachIndexed { index, item ->
-                    Tab(
+                    AerixPillTab(
                         selected = index == selectedTabIndex,
-                        onClick = {
-                            selectedTabIndex = index
-                        },
-                        text = {
-                            MarqueeText(text = stringResource(item.title))
-                        }
-                    )
+                        onClick = { selectedTabIndex = index }
+                    ) {
+                        MarqueeText(text = stringResource(item.title))
+                    }
                 }
             }
 
@@ -128,14 +123,14 @@ fun EditWidgetClickEvent(
                             },
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 2.dp, vertical = 12.dp)
+                                .padding(horizontal = AerixSpacing.xxs, vertical = AerixSpacing.md)
                         )
                     }
                     2 -> {
                         KeyEventEdit(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 2.dp),
+                                .padding(horizontal = AerixSpacing.xxs),
                             provider = clickEventsProvider(data)
                         )
                     }
@@ -153,9 +148,9 @@ private fun EditBasicEvent(
 ) {
     Column(
         modifier = modifier
-            .padding(horizontal = 2.dp)
+            .padding(horizontal = AerixSpacing.xxs)
             .verticalScrollWithBar(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         Spacer(Modifier)
 
@@ -189,7 +184,7 @@ private fun EditBasicEvent(
             }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.sm))
 
         //切换控制层可见性
         InfoLayoutTextItem(

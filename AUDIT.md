@@ -1,16 +1,16 @@
-# AUDIT.md - Mirai Launcher Code Audit
+# AUDIT.md - Aerix Launcher Code Audit
 
-**Date**: 2026-10-01  
-**Repository**: entitybrian69-bit/Mirai-launcher  
-**Variant**: Mirai Launcher (fork of Zalith Launcher 2)  
-**Target Version**: 2.6.1  
+**Date**: 2026-10-01
+**Repository**: entitybrian69-bit/Mirai-launcher
+**Variant**: Aerix Launcher (fork of Zalith Launcher 2)
+**Target Version**: 2.6.1
 
 ---
 
 ## 1. REPOSITORY STRUCTURE
 
 ### Module Organization
-- **MiraiLauncher**: Main application module (65.6% Kotlin, 22% Java, 12.3% C/C++)
+- **Aerix Launcher (`MiraiLauncher` module)**: Main application module (65.6% Kotlin, 22% Java, 12.3% C/C++)
   - **ui/**: Compose-based UI implementation
   - **game/**: Minecraft game management (versions, launch, download)
   - **setting/**: Settings and preferences

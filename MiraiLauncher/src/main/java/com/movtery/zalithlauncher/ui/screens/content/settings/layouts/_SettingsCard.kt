@@ -36,6 +36,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 import com.movtery.zalithlauncher.ui.components.TitleAndSummary
 
@@ -154,8 +156,8 @@ enum class CardPosition {
 @Composable
 fun rememberSettingsCardShape(
     position: CardPosition,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny
 ): Shape {
     return remember(position, outerShape, innerShape) {
         when (position) {
@@ -205,8 +207,8 @@ fun rememberSettingsCardShape(
 fun SettingsCard(
     modifier: Modifier = Modifier,
     position: CardPosition,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = rememberSettingsCardShape(position, outerShape, innerShape)
@@ -222,8 +224,8 @@ fun SettingsCard(
 fun SettingsCard(
     modifier: Modifier = Modifier,
     position: CardPosition,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     onClick: () -> Unit,
     enabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
@@ -247,9 +249,9 @@ fun SettingsCard(
     summary: String? = null,
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
     summaryStyle: TextStyle = MaterialTheme.typography.labelSmall,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
-    innerPadding: PaddingValues = PaddingValues(all = 16.dp),
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
+    innerPadding: PaddingValues = PaddingValues(all = AerixSpacing.lg),
     onClick: () -> Unit,
     trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true
@@ -266,7 +268,7 @@ fun SettingsCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             TitleAndSummary(
                 modifier = Modifier.weight(1f),
@@ -292,7 +294,7 @@ fun SettingsCardColumn(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs),
         content = content
     )
 }

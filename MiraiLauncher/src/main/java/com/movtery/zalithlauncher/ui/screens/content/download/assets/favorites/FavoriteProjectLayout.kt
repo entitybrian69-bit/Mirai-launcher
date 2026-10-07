@@ -49,6 +49,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.favorites.FavoriteEntry
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformFilterCode
@@ -107,14 +109,14 @@ fun FavoriteProjectLayout(
         Row(
             modifier = Modifier
                 .backgroundGlass(blur, color, influencedByBackground)
-                .padding(all = 8.dp)
+                .padding(all = AerixSpacing.sm)
                 .height(IntrinsicSize.Min)
                 .alpha(if (invalid) 0.5f else 1f),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             AssetsIcon(
                 modifier = Modifier
-                    .clip(shape = RoundedCornerShape(10.dp))
+                    .clip(shape = RoundedCornerShape(AerixRadii.controlSmall))
                     .align(Alignment.CenterVertically),
                 size = 72.dp,
                 iconUrl = iconUrl
@@ -122,7 +124,7 @@ fun FavoriteProjectLayout(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 ProjectTitleHead(
                     platform = entry.platform,
@@ -134,7 +136,7 @@ fun FavoriteProjectLayout(
 
                 Row(
                     modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                 ) {
                     //描述，固定两行占位
                     Text(
@@ -149,7 +151,7 @@ fun FavoriteProjectLayout(
                     //下载量
                     Row(
                         modifier = Modifier.alpha(0.7f),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -166,7 +168,7 @@ fun FavoriteProjectLayout(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     //标签栏
@@ -175,7 +177,7 @@ fun FavoriteProjectLayout(
                             .weight(1f)
                             .basicMarquee(Int.MAX_VALUE)
                             .alpha(0.7f),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                     ) {
                         modloaders?.forEach { modloader ->
                             Text(
@@ -223,9 +225,9 @@ private fun UnavailableIdentifier(
         shape = MaterialTheme.shapes.large
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+            modifier = Modifier.padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Icon(
                 modifier = Modifier.size(12.dp),

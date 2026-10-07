@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - Mirai-launcher
+      - arena/01a10ce6-mirai-launcher
     paths:
       - "website/**"
       - ".github/workflows/deploy_pages.yml"

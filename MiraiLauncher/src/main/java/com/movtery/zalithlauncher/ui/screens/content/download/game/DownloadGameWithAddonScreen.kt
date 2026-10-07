@@ -62,6 +62,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.game.addons.modloader.ModLoader
@@ -269,7 +272,7 @@ fun DownloadGameWithAddonScreen(
             ScreenHeader(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = AerixSpacing.md),
                 itemContainerColor = cardColor(),
                 itemContentColor = onCardColor(),
                 gameVersion = key.gameVersion,
@@ -307,7 +310,7 @@ fun DownloadGameWithAddonScreen(
 
             AnimatedColumn(
                 modifier = Modifier
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = AerixSpacing.md)
                     .verticalScrollWithBar(state = rememberScrollState()),
                 isVisible = isVisible
             ) { scope ->
@@ -380,7 +383,7 @@ fun DownloadGameWithAddonScreen(
                                 visible = isFabricAPIWarning
                             ) {
                                 AddonWarningItem(
-                                    modifier = Modifier.padding(bottom = 12.dp),
+                                    modifier = Modifier.padding(bottom = AerixSpacing.md),
                                     text = stringResource(
                                         R.string.download_game_addon_warning_api,
                                         ModLoader.FABRIC_API.displayName
@@ -438,7 +441,7 @@ fun DownloadGameWithAddonScreen(
                                 visible = isFabricAPIWarning
                             ) {
                                 AddonWarningItem(
-                                    modifier = Modifier.padding(bottom = 12.dp),
+                                    modifier = Modifier.padding(bottom = AerixSpacing.md),
                                     text = stringResource(
                                         R.string.download_game_addon_warning_api,
                                         ModLoader.LEGACY_FABRIC_API.displayName
@@ -496,7 +499,7 @@ fun DownloadGameWithAddonScreen(
                                 visible = isQuiltAPIWarning
                             ) {
                                 AddonWarningItem(
-                                    modifier = Modifier.padding(bottom = 12.dp),
+                                    modifier = Modifier.padding(bottom = AerixSpacing.md),
                                     text = stringResource(
                                         R.string.download_game_addon_warning_api,
                                         ModLoader.QUILT_API.displayName
@@ -556,7 +559,7 @@ private fun ScreenHeader(
 ) {
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(AerixSpacing.sm))
 
             VersionIconPreview(
                 modifier = Modifier.size(28.dp),
@@ -592,18 +595,18 @@ private fun ScreenHeader(
                 nameValue.isEmpty() || filenameInvalidMessage != null
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(AerixSpacing.md))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = AerixSpacing.sm)
                     .animateContentSize(animationSpec = getAnimateTween())
             ) {
                 SimpleTextInputField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(all = 4.dp),
+                        .padding(all = AerixSpacing.xs),
                     value = nameValue,
                     onValueChange = {
                         nameValue = it
@@ -633,7 +636,7 @@ private fun ScreenHeader(
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
+                            .padding(horizontal = AerixSpacing.sm),
                         text = message,
                         color = if (isError) {
                             MaterialTheme.colorScheme.error
@@ -674,7 +677,7 @@ private fun ScreenHeader(
                     ) {
                         //一个提醒用的Text
                         Text(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.sm),
                             text = stringResource(R.string.download_game_version_overwrite_select_subtitle),
                             style = MaterialTheme.typography.labelLarge
                         )
@@ -706,12 +709,12 @@ private fun ScreenHeader(
                     }
                 },
                 enabled = !isError,
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(AerixRadii.cardLarge),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MiraiThemeManager.currentAccent(),
-                    contentColor = Color(0xFF06210F)
+                    contentColor = AerixSurface.onAccent
                 ),
-                modifier = Modifier.padding(start = 6.dp)
+                modifier = Modifier.padding(start = AerixSpacing.smCompact)
             ) {
                 Text(
                     text = "Create & Install Instance",

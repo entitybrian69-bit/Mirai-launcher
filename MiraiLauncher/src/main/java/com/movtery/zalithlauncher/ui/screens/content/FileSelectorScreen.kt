@@ -52,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
@@ -174,7 +175,7 @@ fun FileSelectorScreen(
     ) { isVisible ->
         Row(
             modifier = Modifier
-                .padding(all = 12.dp)
+                .padding(all = AerixSpacing.md)
                 .fillMaxSize()
         ) {
             LeftActionMenu(
@@ -207,7 +208,7 @@ fun FileSelectorScreen(
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(7.5f)
-                    .padding(start = 12.dp)
+                    .padding(start = AerixSpacing.md)
             )
         }
     }
@@ -231,7 +232,7 @@ private fun LeftActionMenu(
     Column(
         modifier = modifier
             .offset { IntOffset(x = surfaceXOffset.roundToPx(), y = 0) },
-        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Bottom),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs, Alignment.Bottom),
     ) {
         ScalingActionButton(
             enabled = backEnabled,
@@ -264,7 +265,7 @@ private fun TopPathHeader(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp, end = 12.dp, top = 16.dp, bottom = 12.dp)
+                .padding(start = AerixSpacing.md, end = AerixSpacing.md, top = AerixSpacing.lg, bottom = AerixSpacing.md)
         ) {
             Text(
                 text = stringResource(R.string.files_current_path, path),
@@ -309,14 +310,14 @@ private fun FilesLayout(
                             state = scrollState.scrollIndicatorState!!,
                             orientation = Orientation.Vertical,
                         ),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
                     state = scrollState,
                 ) {
                     items(files, key = { it.absolutePath }) { file ->
                         FileItem(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 6.dp),
+                                .padding(vertical = AerixSpacing.smCompact),
                             file = file,
                             onClick = {
                                 if (!selectFile && file.isDirectory) {
@@ -361,7 +362,7 @@ private fun FileItem(
     ) {
         BaseFileItem(
             file = file,
-            modifier = Modifier.padding(all = 12.dp)
+            modifier = Modifier.padding(all = AerixSpacing.md)
         )
     }
 }

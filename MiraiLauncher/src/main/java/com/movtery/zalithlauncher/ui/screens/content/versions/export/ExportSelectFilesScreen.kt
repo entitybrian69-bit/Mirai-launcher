@@ -58,6 +58,8 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.version.export.data.FileSelectionData
 import com.movtery.zalithlauncher.game.version.export.data.Selected
@@ -123,12 +125,12 @@ fun ExportSelectFilesScreen(
             )
 
             Button(
-                modifier = Modifier.padding(all = 12.dp),
+                modifier = Modifier.padding(all = AerixSpacing.md),
                 onClick = onFinish,
                 enabled = !isSelectingFolder && selectedFiles
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val text = stringResource(R.string.versions_export_pack_select_output)
@@ -162,12 +164,12 @@ private fun FileSelectorList(
         LazyColumn(
             modifier = modifier
                 .horizontalScroll(rememberScrollState()),
-            contentPadding = PaddingValues(all = 12.dp),
+            contentPadding = PaddingValues(all = AerixSpacing.md),
         ) {
             item {
                 Row(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(bottom = AerixSpacing.lg),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -222,8 +224,8 @@ private fun FileNodeItem(
                 is VisibleNode.EmptyNode -> {
                     Text(
                         modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .padding(start = 46.dp)
+                            .padding(vertical = AerixSpacing.sm)
+                            .padding(start = AerixMetrics.exportTreeLabelStartInset)
                             .alpha(0.7f),
                         text = stringResource(R.string.versions_export_pack_dir_empty),
                         style = MaterialTheme.typography.labelMedium
@@ -273,7 +275,7 @@ private fun FileNodeItem(
                     )
 
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         //文件别名

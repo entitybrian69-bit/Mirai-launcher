@@ -38,9 +38,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,8 +58,11 @@ import com.movtery.layer_controller.data.SIZE_PERCENT_RANGE
 import com.movtery.layer_controller.layout.JoystickStyleWidget
 import com.movtery.layer_controller.observable.ObservableJoystickStyle
 import com.movtery.layer_controller.observable.ObservableJoystickStyleConfig
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.unit.toFloatRange
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.SingleLineTextCheck
 import com.movtery.zalithlauncher.ui.screens.main.control_editor.InfoLayoutColorItem
@@ -130,7 +131,7 @@ fun EditJoystickStyleDialog(
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .fillMaxHeight()
-                        .padding(all = 16.dp),
+                        .padding(all = AerixSpacing.lg),
                     shadowElevation = 3.dp,
                     color = cardColor(false),
                     contentColor = onCardColor(),
@@ -142,9 +143,9 @@ fun EditJoystickStyleDialog(
                         Column(
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .padding(all = 12.dp)
+                                .padding(all = AerixSpacing.md)
                                 .weight(0.4f),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                         ) {
                             RenderBox(
                                 modifier = Modifier.weight(1f),
@@ -176,20 +177,14 @@ fun EditJoystickStyleDialog(
                                     config = style.lightStyle
                                 )
                             } else {
-                                SecondaryTabRow(
-                                    selectedTabIndex = selectedTabIndex,
-                                    containerColor = cardColor(false)
-                                ) {
+                                AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
                                     tabs.forEachIndexed { index, item ->
-                                        Tab(
+                                        AerixPillTab(
                                             selected = index == selectedTabIndex,
-                                            onClick = {
-                                                selectedTabIndex = index
-                                            },
-                                            text = {
-                                                MarqueeText(text = stringResource(item.titleRes))
-                                            }
-                                        )
+                                            onClick = { selectedTabIndex = index }
+                                        ) {
+                                            MarqueeText(text = stringResource(item.titleRes))
+                                        }
                                     }
                                 }
 
@@ -231,12 +226,12 @@ private fun StyleConfigEditor(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(vertical = AerixSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         val itemModifier = Modifier
             .fillMaxWidth()
-            .padding(end = 12.dp)
+            .padding(end = AerixSpacing.md)
 
         //整体不透明度
         item(key = "opacity") {
@@ -419,7 +414,7 @@ private fun RenderBox(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 16.dp),
+                .padding(all = AerixSpacing.lg),
             contentAlignment = Alignment.Center
         ) {
             JoystickStyleWidget(

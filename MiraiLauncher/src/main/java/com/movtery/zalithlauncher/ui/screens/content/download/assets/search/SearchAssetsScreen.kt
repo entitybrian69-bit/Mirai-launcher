@@ -69,6 +69,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
@@ -357,30 +360,30 @@ fun SearchAssetsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             // Compact Horizontal Search & Filter Bar (Mockup #4 + Category Dropdown)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
             ) {
                 // Search Box ("Search Modrinth & CurseForge...")
                 Row(
                     modifier = Modifier
                         .weight(1f)
                         .height(36.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF21242B))
-                        .border(1.dp, Color(0xFF2E333E), RoundedCornerShape(10.dp))
-                        .padding(horizontal = 10.dp),
+                        .clip(RoundedCornerShape(AerixRadii.controlSmall))
+                        .background(AerixSurface.panelRaised)
+                        .border(AerixSpacing.hairline, AerixSurface.borderSoft, RoundedCornerShape(AerixRadii.controlSmall))
+                        .padding(horizontal = AerixSpacing.smPlus),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_search),
                         contentDescription = null,
-                        tint = Color(0xFF9CA3AF),
+                        tint = AerixSurface.textSecondary,
                         modifier = Modifier
                             .size(16.dp)
                             .clickable { viewModel.resetSearch() }
@@ -393,7 +396,7 @@ fun SearchAssetsScreen(
                             Text(
                                 text = "Search...",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF8A909E),
+                                color = AerixSurface.textMuted,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -417,7 +420,7 @@ fun SearchAssetsScreen(
                         Icon(
                             painter = painterResource(R.drawable.ic_close),
                             contentDescription = stringResource(R.string.generic_clear),
-                            tint = Color(0xFF9CA3AF),
+                            tint = AerixSurface.textSecondary,
                             modifier = Modifier
                                 .size(15.dp)
                                 .clickable {
@@ -653,7 +656,7 @@ fun SearchAssetsScreen(
                 )
             } }
 
-            // Full-Width 2-Column Mobile Project Grid (Mockup #4)
+            // Adaptive project grid: 2 columns on compact screens, 3–4 in landscape.
             ResultListLayout(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -678,27 +681,27 @@ private fun DiscoverFilterDropdownPill(
 ) {
     Surface(
         modifier = Modifier.height(36.dp),
-        shape = RoundedCornerShape(10.dp),
-        color = Color(0xFF21242B),
-        border = BorderStroke(1.dp, Color(0xFF2E333E)),
+        shape = RoundedCornerShape(AerixRadii.controlSmall),
+        color = AerixSurface.panelRaised,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
         onClick = onClick
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp),
+            modifier = Modifier.padding(horizontal = AerixSpacing.smPlus),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(
                 text = label,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFFE5E7EB),
+                color = AerixSurface.textPrimary,
                 maxLines = 1
             )
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_drop_down_rounded),
                 contentDescription = null,
-                tint = Color(0xFF9CA3AF),
+                tint = AerixSurface.textSecondary,
                 modifier = Modifier.size(16.dp)
             )
         }

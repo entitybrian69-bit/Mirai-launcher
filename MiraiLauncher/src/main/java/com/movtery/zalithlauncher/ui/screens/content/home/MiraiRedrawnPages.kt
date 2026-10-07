@@ -25,12 +25,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.setting.AllSettings
 
-private val PageBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val PageBg = AerixSurface.canvas
+private val CardBg = AerixSurface.canvas
+private val Muted = AerixSurface.textMuted
+private val Green = AerixSurface.accent
 
 @Composable
 fun MiraiSearchInstallPage(title: String, onInstall: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -63,7 +66,7 @@ fun MiraiHostPage(onHost: () -> Unit, onBack: () -> Unit, modifier: Modifier = M
     val enabled = AllSettings.enableTerracotta.state
     var invite by remember { mutableStateOf("") }
     Page("Servers", onBack, modifier) {
-        Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).padding(AerixSpacing.lg), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) { Text("Multiplayer", color = Color.White, fontWeight = FontWeight.SemiBold); Text(if (enabled) "On" else "Off", color = Muted) }
             Switch(checked = enabled, onCheckedChange = { AllSettings.enableTerracotta.save(it) })
         }
@@ -99,7 +102,7 @@ fun MiraiPackPage(instanceName: String?, onPack: () -> Unit, onBack: () -> Unit,
 
 @Composable
 private fun Page(title: String, onBack: () -> Unit, modifier: Modifier, content: @Composable () -> Unit) {
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
         Text("Back", color = Green, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onBack))
         Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
         content()
@@ -108,12 +111,12 @@ private fun Page(title: String, onBack: () -> Unit, modifier: Modifier, content:
 
 @Composable
 private fun Field(value: String, onChange: (String) -> Unit, hint: String) {
-    BasicTextField(value = value, onValueChange = onChange, singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White), cursorBrush = SolidColor(Green), modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(CardBg).padding(14.dp), decorationBox = { inner -> if (value.isEmpty()) Text(hint, color = Muted); inner() })
+    BasicTextField(value = value, onValueChange = onChange, singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White), cursorBrush = SolidColor(Green), modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.control)).background(CardBg).padding(AerixSpacing.mdPlus), decorationBox = { inner -> if (value.isEmpty()) Text(hint, color = Muted); inner() })
 }
 
 @Composable
 private fun Read(label: String, value: String) {
-    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(CardBg).padding(14.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.cardSmall)).background(CardBg).padding(AerixSpacing.mdPlus)) {
         Text(label, color = Muted, style = MaterialTheme.typography.bodySmall)
         Text(value, color = Color.White, fontWeight = FontWeight.Medium)
     }
@@ -121,5 +124,5 @@ private fun Read(label: String, value: String) {
 
 @Composable
 private fun GreenButton(label: String, onClick: () -> Unit) {
-    Text(label, color = Color(0xFF0E0E10), fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(14.dp)).background(Green).clickable(onClick = onClick).padding(14.dp))
+    Text(label, color = AerixSurface.canvas, fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(AerixRadii.cardSmall)).background(Green).clickable(onClick = onClick).padding(AerixSpacing.mdPlus))
 }

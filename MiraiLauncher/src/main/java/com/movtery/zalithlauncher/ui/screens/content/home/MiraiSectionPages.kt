@@ -36,15 +36,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
 
-private val PageBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val PageBg = AerixSurface.canvas
+private val CardBg = AerixSurface.canvas
+private val Muted = AerixSurface.textMuted
+private val Green = AerixSurface.accent
 
 data class SectionAction(val title: String, val subtitle: String, val onClick: () -> Unit)
 
@@ -61,16 +64,16 @@ fun MiraiDiscoverPage(onMods: () -> Unit, onModpacks: () -> Unit, onResourcePack
         SectionAction("Favorites", "Saved projects", onFavorites),
         SectionAction("Search by ID", "Open a project id", onSearchId)
     ).filter { query.isBlank() || it.title.contains(query, true) || it.subtitle.contains(query, true) }
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl)) {
         Text("Discover", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(12.dp))
-        BasicTextField(value = query, onValueChange = { query = it }, singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White), cursorBrush = SolidColor(Green), modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(CardBg).padding(14.dp), decorationBox = { inner -> if (query.isEmpty()) Text("Search mods, packs, shaders", color = Muted); inner() })
-        Spacer(Modifier.height(16.dp))
-        if (actions.isEmpty()) Text("No matching category.", color = Muted) else LazyVerticalGrid(columns = GridCells.Adaptive(220.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Spacer(Modifier.height(AerixSpacing.md))
+        BasicTextField(value = query, onValueChange = { query = it }, singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White), cursorBrush = SolidColor(Green), modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.control)).background(CardBg).padding(AerixSpacing.mdPlus), decorationBox = { inner -> if (query.isEmpty()) Text("Search mods, packs, shaders", color = Muted); inner() })
+        Spacer(Modifier.height(AerixSpacing.lg))
+        if (actions.isEmpty()) Text("No matching category.", color = Muted) else LazyVerticalGrid(columns = GridCells.Adaptive(220.dp), horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
             items(actions) { action ->
-                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).clickable(onClick = action.onClick).padding(16.dp)) {
+                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).clickable(onClick = action.onClick).padding(AerixSpacing.lg)) {
                     Text(action.title, color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(AerixSpacing.xs))
                     Text(action.subtitle, color = Muted, style = MaterialTheme.typography.bodySmall)
                 }
             }
@@ -81,14 +84,14 @@ fun MiraiDiscoverPage(onMods: () -> Unit, onModpacks: () -> Unit, onResourcePack
 @Composable
 fun MiraiLibraryPage(onOpenInstance: (Version) -> Unit, onFiles: () -> Unit, modifier: Modifier = Modifier) {
     val versions by VersionsManager.versions.collectAsStateWithLifecycle()
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl)) {
         Text("Library", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(AerixSpacing.smCompact))
         Text("Installed instances. Open one for its content and settings.", color = Muted)
-        Spacer(Modifier.height(16.dp))
-        if (versions.isEmpty()) Text("No instances yet. Create one from Play.", color = Muted) else LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(bottom = 24.dp)) {
+        Spacer(Modifier.height(AerixSpacing.lg))
+        if (versions.isEmpty()) Text("No instances yet. Create one from Play.", color = Muted) else LazyColumn(verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm), contentPadding = PaddingValues(bottom = AerixSpacing.xxl)) {
             items(versions, key = { it.getVersionName() }) { version ->
-                Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(CardBg).clickable { onOpenInstance(version) }.padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.cardSmall)).background(CardBg).clickable { onOpenInstance(version) }.padding(AerixSpacing.md), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
                     VersionIconImage(version = version, modifier = Modifier.size(36.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(version.getVersionName(), color = Color.White, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -98,7 +101,7 @@ fun MiraiLibraryPage(onOpenInstance: (Version) -> Unit, onFiles: () -> Unit, mod
                 }
             }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(AerixSpacing.sm))
         Text("Files", color = Green, modifier = Modifier.clickable(onClick = onFiles), fontWeight = FontWeight.SemiBold)
     }
 }
@@ -106,25 +109,25 @@ fun MiraiLibraryPage(onOpenInstance: (Version) -> Unit, onFiles: () -> Unit, mod
 @Composable
 fun MiraiServersPage(onMultiplayer: () -> Unit, modifier: Modifier = Modifier) {
     val enabled = AllSettings.enableTerracotta.state
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
         Text("Servers", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
         Text("Join a server or host one from this launcher.", color = Muted)
-        Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).padding(AerixSpacing.lg), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text("Multiplayer", color = Color.White, fontWeight = FontWeight.SemiBold)
                 Text(if (enabled) "Terracotta is on" else "Terracotta is off", color = Muted, style = MaterialTheme.typography.bodySmall)
             }
             Switch(checked = enabled, onCheckedChange = { AllSettings.enableTerracotta.save(it) })
         }
-        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).clickable(onClick = onMultiplayer).padding(16.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).clickable(onClick = onMultiplayer).padding(AerixSpacing.lg)) {
             Text("Join", color = Color.White, fontWeight = FontWeight.SemiBold)
             Text("Open the server list and invite flow.", color = Muted, style = MaterialTheme.typography.bodySmall)
         }
-        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).clickable(onClick = onMultiplayer).padding(16.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).clickable(onClick = onMultiplayer).padding(AerixSpacing.lg)) {
             Text("Host", color = Color.White, fontWeight = FontWeight.SemiBold)
             Text("Share a world and copy an invite.", color = Muted, style = MaterialTheme.typography.bodySmall)
         }
-        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).clickable(onClick = onMultiplayer).padding(16.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).clickable(onClick = onMultiplayer).padding(AerixSpacing.lg)) {
             Text("Nodes and logs", color = Color.White, fontWeight = FontWeight.SemiBold)
             Text("Custom nodes and Terracotta logs.", color = Muted, style = MaterialTheme.typography.bodySmall)
         }
@@ -155,18 +158,18 @@ fun MiraiSettingsPage(onRenderer: () -> Unit, onGame: () -> Unit, onControls: ()
 
 @Composable
 private fun SectionPage(title: String, subtitle: String, actions: List<SectionAction>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl)) {
         Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(AerixSpacing.smCompact))
         Text(subtitle, color = Muted, style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(18.dp))
-        LazyVerticalGrid(columns = GridCells.Adaptive(220.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp), contentPadding = PaddingValues(bottom = 24.dp)) {
+        Spacer(Modifier.height(AerixSpacing.lgPlus))
+        LazyVerticalGrid(columns = GridCells.Adaptive(220.dp), horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md), contentPadding = PaddingValues(bottom = AerixSpacing.xxl)) {
             items(actions) { action ->
-                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).clickable(onClick = action.onClick).padding(16.dp)) {
+                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).clickable(onClick = action.onClick).padding(AerixSpacing.lg)) {
                     Text(action.title, color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(AerixSpacing.xs))
                     Text(action.subtitle, color = Muted, style = MaterialTheme.typography.bodySmall)
-                    Spacer(Modifier.height(10.dp))
+                    Spacer(Modifier.height(AerixSpacing.smPlus))
                     Text("Open", color = Green, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
                 }
             }

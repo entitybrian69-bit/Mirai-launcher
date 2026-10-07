@@ -40,6 +40,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.game.account.Account
 import com.movtery.zalithlauncher.game.account.AccountsManager
 import com.movtery.zalithlauncher.game.account.isLocalAccount
@@ -89,8 +91,8 @@ fun McSkinScreen() {
             .collect { last -> if (last >= visible - 1 && visible < results.size) visible += 4 }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm), verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -118,8 +120,8 @@ fun McSkinScreen() {
         if (message.isNotEmpty()) Text(message, style = MaterialTheme.typography.bodySmall)
         LazyColumn(
             state = listState,
-            contentPadding = PaddingValues(bottom = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(bottom = AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             modifier = Modifier.weight(1f)
         ) {
             items(shown, key = { it.name }) { skin ->
@@ -170,12 +172,12 @@ private fun SkinOption(skin: McSkin, selected: Boolean, modifier: Modifier = Mod
     }
     Surface(
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(AerixRadii.card),
         color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
-        Row(modifier = Modifier.padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.padding(horizontal = AerixSpacing.smPlus), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
             if (bitmap != null) {
-                Image(bitmap!!.asImageBitmap(), contentDescription = skin.name, modifier = Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)), contentScale = ContentScale.Fit)
+                Image(bitmap!!.asImageBitmap(), contentDescription = skin.name, modifier = Modifier.size(48.dp).clip(RoundedCornerShape(AerixRadii.compact)), contentScale = ContentScale.Fit)
             } else {
                 CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp)
             }

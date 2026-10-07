@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.setting.unit.BooleanSettingUnit
 import com.movtery.zalithlauncher.ui.components.DefaultSwitch
 import com.movtery.zalithlauncher.ui.components.TitleAndSummary
@@ -42,8 +44,8 @@ fun SwitchSettingsCard(
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     enabled: Boolean = true,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
@@ -63,7 +65,7 @@ fun SwitchSettingsCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 16.dp),
+                .padding(all = AerixSpacing.lg),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -72,7 +74,7 @@ fun SwitchSettingsCard(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = 16.dp)
+                        .padding(end = AerixSpacing.lg)
                 ) {
                     TitleAndSummary(
                         title = title,
@@ -107,8 +109,8 @@ fun SwitchSettingsCard(
     onCheckedChange: (Boolean) -> Unit = {},
     title: String,
     position: CardPosition,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     enabled: Boolean = true,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,

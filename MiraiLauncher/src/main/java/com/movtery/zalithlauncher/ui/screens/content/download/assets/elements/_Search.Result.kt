@@ -31,6 +31,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -83,6 +84,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.game.download.assets.favorites.FavoriteProjectsRepository
@@ -137,7 +142,7 @@ fun ResultListLayout(
     when (searchState) {
         is SearchAssetsState.Searching -> {
             Box(
-                modifier.padding(all = 12.dp),
+                modifier.padding(all = AerixSpacing.md),
                 contentAlignment = Alignment.Center
             ) {
                 LinearWavyProgressIndicator(
@@ -165,50 +170,58 @@ fun ResultListLayout(
                 }
             }
 
-            Box(modifier = modifier) {
-                ResultList(
-                    modifier = Modifier.fillMaxSize(),
-                    state = listState,
-                    contentPadding = PaddingValues(top = 4.dp, bottom = 58.dp),
-                    classes = classes,
-                    data = page.data,
-                    swapToDownload = swapToDownload,
-                    installedInfo = installedInfo
-                )
-
-                //Apply the collapse fraction directly: it is already continuous with
-                //scroll, so spring-chasing it only added lag and extra recompositions.
-                val targetScale = 1f - (1f - controllerMinScale) * fraction
-                val targetAlpha = 1f - (1f - controllerMinAlpha) * fraction
-
-                Row(
-                    modifier = Modifier
-                        .height(controllerHeight)
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = 8.dp, end = 6.dp)
-                        .alpha(targetAlpha)
-                        .graphicsLayer {
-                            scaleX = targetScale
-                            scaleY = targetScale
-                            transformOrigin = TransformOrigin(1f, 1f)
-                        }
-                ) {
-                    PageController(
-                        modifier = Modifier.padding(end = 6.dp),
-                        page = page,
-                        onPreviousPage = {
-                            onPreviousPage(page.pageNumber)
-                        },
-                        onNextPage = {
-                            onNextPage(page.pageNumber, page.isLastPage)
-                        },
-                        onNavigatePage = onNavigatePage,
+            BoxWithConstraints(modifier = modifier) {
+                val columns = when {
+                    maxWidth > maxHeight && maxWidth >= 1040.dp -> 4
+                    maxWidth > maxHeight && maxWidth >= 700.dp -> 3
+                    else -> 2
+                }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ResultList(
+                        modifier = Modifier.fillMaxSize(),
+                        state = listState,
+                        contentPadding = PaddingValues(top = AerixSpacing.xs, bottom = AerixMetrics.assetSearchBottomInset),
+                        classes = classes,
+                        data = page.data,
+                        columns = columns,
+                        swapToDownload = swapToDownload,
+                        installedInfo = installedInfo
                     )
+
+                    //Apply the collapse fraction directly: it is already continuous with
+                    //scroll, so spring-chasing it only added lag and extra recompositions.
+                    val targetScale = 1f - (1f - controllerMinScale) * fraction
+                    val targetAlpha = 1f - (1f - controllerMinAlpha) * fraction
+
+                    Row(
+                        modifier = Modifier
+                            .height(controllerHeight)
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = AerixSpacing.sm, end = AerixSpacing.smCompact)
+                            .alpha(targetAlpha)
+                            .graphicsLayer {
+                                scaleX = targetScale
+                                scaleY = targetScale
+                                transformOrigin = TransformOrigin(1f, 1f)
+                            }
+                    ) {
+                        PageController(
+                            modifier = Modifier.padding(end = AerixSpacing.smCompact),
+                            page = page,
+                            onPreviousPage = {
+                                onPreviousPage(page.pageNumber)
+                            },
+                            onNextPage = {
+                                onNextPage(page.pageNumber, page.isLastPage)
+                            },
+                            onNavigatePage = onNavigatePage,
+                        )
+                    }
                 }
             }
         }
         is SearchAssetsState.Error -> {
-            Box(modifier.padding(all = 12.dp)) {
+            Box(modifier.padding(all = AerixSpacing.md)) {
                 ScalingLabel(
                     modifier = Modifier.align(Alignment.Center),
                     text = {
@@ -260,8 +273,8 @@ private fun PageController(
                 SmallOutlinedEditField(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(vertical = 2.dp)
-                        .padding(start = 2.dp, end = 8.dp)
+                        .padding(vertical = AerixSpacing.xxs)
+                        .padding(start = AerixSpacing.xxs, end = AerixSpacing.sm)
                         .width(72.dp),
                     value = numberText,
                     onValueChange = onValueChange@ { value ->
@@ -297,7 +310,7 @@ private fun PageController(
                 exit = shrinkHorizontally() + fadeOut(),
             ) {
                 Text(
-                    modifier = Modifier.padding(start = 16.dp),
+                    modifier = Modifier.padding(start = AerixSpacing.lg),
                     text = "${page.pageNumber} ",
                     style = MaterialTheme.typography.labelLarge
                 )
@@ -314,7 +327,7 @@ private fun PageController(
         Row(
             modifier = Modifier
                 .backgroundGlass(blur, color, influencedByBackground)
-                .padding(all = 4.dp),
+                .padding(all = AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
@@ -329,7 +342,7 @@ private fun PageController(
                 )
 
                 Text(
-                    modifier = Modifier.padding(end = 16.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.lg),
                     text = "/ ${page.totalPage}",
                     style = MaterialTheme.typography.labelLarge
                 )
@@ -371,17 +384,18 @@ private fun ResultList(
     contentPadding: PaddingValues = PaddingValues(),
     classes: PlatformClasses,
     data: List<Pair<PlatformSearchData, ModTranslations.McMod?>>,
+    columns: Int,
     swapToDownload: (Platform, projectId: String, iconUrl: String?) -> Unit = { _, _, _ -> },
     installedInfo: ((Platform, projectId: String) -> InstalledMod?)? = null
 ) {
     val context = LocalContext.current
-    val rows = remember(data) { data.chunked(2) }
+    val rows = remember(data, columns) { data.chunked(columns) }
 
     LazyColumn(
         modifier = modifier,
         state = state,
         contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
     ) {
         items(
             count = rows.size,
@@ -390,7 +404,7 @@ private fun ResultList(
             val rowItems = rows[idx]
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
             ) {
                 rowItems.forEach { (item, mcmod) ->
                     val platform = remember(item) { item.platform() }
@@ -426,7 +440,7 @@ private fun ResultList(
                         }
                     )
                 }
-                if (rowItems.size == 1) {
+                repeat(columns - rowItems.size) {
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
@@ -449,9 +463,9 @@ fun ResultProjectLayout(
     isInstalled: Boolean = false,
     isFavorite: Boolean = false,
     onFavoriteClick: (() -> Unit)? = null,
-    shape: Shape = RoundedCornerShape(14.dp),
+    shape: Shape = RoundedCornerShape(AerixRadii.cardSmall),
     influencedByBackground: Boolean = true,
-    color: Color = Color(0xFF21242B),
+    color: Color = AerixSurface.panelRaised,
     contentColor: Color = Color.White,
     blur: Int = AllSettings.backgroundBlur.state,
     onClick: () -> Unit = {}
@@ -468,26 +482,26 @@ fun ResultProjectLayout(
 
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF21242B),
+        shape = RoundedCornerShape(AerixRadii.cardSmall),
+        color = AerixSurface.panelRaised,
         contentColor = Color.White,
-        border = BorderStroke(1.dp, Color(0xFF2E333E)),
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
         onClick = onClick
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             // Top Row: 40dp Icon + Bold Title + Download Count Pill (Mockup #4)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
             ) {
                 AssetsIcon(
-                    modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+                    modifier = Modifier.clip(RoundedCornerShape(AerixRadii.controlSmall)),
                     size = 40.dp,
                     iconUrl = iconUrl
                 )
@@ -505,25 +519,25 @@ fun ResultProjectLayout(
                 // Download Count Pill ("↓ 48.2M")
                 val downloadsText = remember(downloads) { formatNumberByLocale(context, downloads) }
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF2C303C)
+                    shape = RoundedCornerShape(AerixRadii.control),
+                    color = AerixSurface.panelRaised
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                        modifier = Modifier.padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.tiny),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.tiny)
                     ) {
                         Icon(
                             modifier = Modifier.size(12.dp),
                             painter = painterResource(R.drawable.ic_download_2_outlined),
                             contentDescription = null,
-                            tint = Color(0xFFD1D5DB)
+                            tint = AerixSurface.textSecondary
                         )
                         Text(
                             text = downloadsText,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE5E7EB)
+                            color = AerixSurface.textPrimary
                         )
                     }
                 }
@@ -534,57 +548,61 @@ fun ResultProjectLayout(
                 modifier = Modifier.fillMaxWidth(),
                 text = description,
                 fontSize = 12.sp,
-                color = Color(0xFF9CA3AF),
+                color = AerixSurface.textSecondary,
                 maxLines = 2,
                 minLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
 
-            // Bottom Row: Loader/Platform Pill on left + Emerald 'Install' Button on right (Mockup #4)
+            // Keep loader and favorite controls together, then give Install a full-width target below.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF2C303C)
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(AerixRadii.control),
+                    color = AerixSurface.panelRaised
                 ) {
                     Text(
                         text = primaryBadgeText,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFFE5E7EB),
+                        color = AerixSurface.textPrimary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    onFavoriteClick?.let { onFavorite ->
-                        FavoriteToggleLabel(
-                            isFavorite = isFavorite,
-                            onClick = onFavorite
-                        )
-                    }
+                onFavoriteClick?.let { onFavorite ->
+                    FavoriteToggleLabel(
+                        isFavorite = isFavorite,
+                        onClick = onFavorite,
+                        modifier = Modifier.height(36.dp)
+                    )
+                }
+            }
 
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = if (isInstalled) Color(0xFF143825) else MiraiThemeManager.currentAccent(),
-                        contentColor = if (isInstalled) MiraiThemeManager.currentAccent() else Color(0xFF06210F),
-                        onClick = onClick
-                    ) {
-                        Text(
-                            text = if (isInstalled) "Installed" else "Install",
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = if (isInstalled) AerixSurface.accentContainer else MiraiThemeManager.currentAccent(),
+                contentColor = if (isInstalled) MiraiThemeManager.currentAccent() else AerixSurface.onAccent,
+                onClick = onClick
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (isInstalled) "Installed" else "Install",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
                 }
             }
         }
@@ -604,13 +622,13 @@ fun ProjectTitleHead(
     Row(
         modifier = modifier.height(IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         //标题栏、作者栏
         Row(
             modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             Text(
                 modifier = Modifier
@@ -624,7 +642,7 @@ fun ProjectTitleHead(
                 VerticalDivider(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(vertical = 4.dp),
+                        .padding(vertical = AerixSpacing.xs),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                 )
                 MarqueeText(

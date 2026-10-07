@@ -45,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.version.export.ExportInfo
@@ -131,8 +132,8 @@ fun ExportInfoScreen(
 
         AnimatedLazyColumn(
             isVisible = isVisible,
-            contentPadding = PaddingValues(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            contentPadding = PaddingValues(all = AerixSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
         ) { scope ->
             //整合包名称/版本编辑
             animatedItem(scope) { yOffset ->
@@ -141,7 +142,7 @@ fun ExportInfoScreen(
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
                         .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
                 ) {
                     TextInputSettingsCard(
                         modifier = Modifier
@@ -397,7 +398,7 @@ fun ExportInfoScreen(
                         .fillMaxWidth()
                         .offset { IntOffset(x = 0, y = yOffset.roundToPx()) }
                 ) {
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(AerixSpacing.sm))
 
                     val packRemote = remember(info) {
                         when (info.packType) {
@@ -446,7 +447,7 @@ fun ExportInfoScreen(
                                 }
                             )
 
-                            Spacer(Modifier.height(12.dp))
+                            Spacer(Modifier.height(AerixSpacing.md))
                         }
                     }
 
@@ -459,7 +460,7 @@ fun ExportInfoScreen(
                             enabled = !isNameEmpty && !isVersionEmpty && (!info.packType.options.requireAuthor || !isAuthorEmpty)
                         ) {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 val text = stringResource(R.string.versions_export_pack_select_files)

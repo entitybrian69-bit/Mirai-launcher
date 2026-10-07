@@ -20,15 +20,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.io.File
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 
-private val PageBg = Color(0xFF0E0E10)
-private val CardBg = Color(0xFF161618)
-private val Muted = Color(0xFF9A9AA3)
-private val Green = Color(0xFF1BD96A)
+private val PageBg = AerixSurface.canvas
+private val CardBg = AerixSurface.canvas
+private val Muted = AerixSurface.textMuted
+private val Green = AerixSurface.accent
 
 @Composable
 fun MiraiAccountsPage(onOffline: () -> Unit, onMicrosoft: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
         Text("Back", color = Green, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onBack))
         Text("Accounts", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
         Text("Add an offline account or sign in with Microsoft. The login step uses the existing account flow.", color = Muted)
@@ -39,7 +42,7 @@ fun MiraiAccountsPage(onOffline: () -> Unit, onMicrosoft: () -> Unit, onBack: ()
 
 @Composable
 fun MiraiExportPage(instanceName: String?, onExport: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl), verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
         Text("Back", color = Green, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onBack))
         Text("Export", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
         Text(instanceName ?: "Select an instance on Play first.", color = Muted)
@@ -53,16 +56,16 @@ fun MiraiLogPage(path: String?, onBack: () -> Unit, modifier: Modifier = Modifie
         if (path.isNullOrBlank()) "Select an instance on Play first."
         else runCatching { File(path).takeIf { it.exists() }?.readText() }.getOrNull()?.takeIf { it.isNotBlank() } ?: "No log yet."
     }
-    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(20.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(PageBg).padding(AerixSpacing.xl)) {
         Text("Back", color = Green, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onBack))
-        Text("Latest log", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(vertical = 12.dp))
+        Text("Latest log", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(vertical = AerixSpacing.md))
         Text(text, color = Color.White, style = MaterialTheme.typography.bodySmall, modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()))
     }
 }
 
 @Composable
 private fun ActionCard(title: String, body: String, onClick: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CardBg).clickable(onClick = onClick).padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.card)).background(CardBg).clickable(onClick = onClick).padding(AerixSpacing.lg)) {
         Text(title, color = Color.White, fontWeight = FontWeight.SemiBold)
         Text(body, color = Muted, style = MaterialTheme.typography.bodySmall)
     }

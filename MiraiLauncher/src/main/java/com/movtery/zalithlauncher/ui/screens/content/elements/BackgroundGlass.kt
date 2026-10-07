@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.lerp
 import androidx.core.graphics.withSave
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.BackgroundBlur
 import com.movtery.zalithlauncher.viewmodel.BackgroundViewModel
@@ -77,17 +79,27 @@ fun Modifier.backgroundGlass(
     blur: Int,
     color: Color,
     enabled: Boolean = true,
-): Modifier = this
+): Modifier {
+    val store = LocalBackgroundViewModel.current ?: return this
+    // Blur level zero is the default; skip the per-surface draw node entirely.
+    if (!enabled || blur <= 0 || AllSettings.launcherBackgroundOpacity.state >= 100 || !store.isValid) return this
+    return this.then(GlassElement(blur, color, store))
+}
 
-/**
- * 启动器背景捕获：在移动端直接透传，避免全屏 GraphicsLayer 每帧重绘造成卡顿
- */
+/** Capture the wallpaper once per frame; blur itself stays cached between captures. */
 internal fun Modifier.backgroundCapture(
     store: BackgroundViewModel,
     recordContent: Boolean,
     blurRadiusPx: Float,
     whiteOverlayAlpha: Float,
-): Modifier = this
+): Modifier = this.then(
+    BackgroundCaptureElement(
+        store = store,
+        recordContent = recordContent,
+        blurRadiusPx = blurRadiusPx.coerceAtLeast(0f),
+        whiteOverlayAlpha = whiteOverlayAlpha.coerceIn(0f, 1f)
+    )
+)
 
 internal fun whiteOverlayAlpha(blur: Int): Float {
     val t = (blur / 80f).coerceIn(0f, 1f)
@@ -148,43 +160,61 @@ private class GlassNode(
     }
 
     private fun DrawScope.drawGlass() {
-        if (blur <= 0 || AllSettings.launcherBackgroundOpacity.state >= 100) return
+        if (AllSettings.launcherBackgroundOpacity.state >= 100) return
+
+        var drewCapturedBackdrop = false
         val bounds = store.backgroundBounds
-        if (bounds.isEmpty || !hasOrigin) return
+        if (blur > 0 && !bounds.isEmpty && hasOrigin) {
+            val nativeCanvas = drawContext.canvas.nativeCanvas
+            nativeCanvas.withSave {
+                val current = Matrix()
+                getMatrix(current)
+                val inverted = Matrix()
+                if (current.invert(inverted)) {
+                    val values = FloatArray(9).also(current::getValues)
+                    val left = bounds.left - screenOrigin.x + values[Matrix.MTRANS_X]
+                    val top = bounds.top - screenOrigin.y + values[Matrix.MTRANS_Y]
 
-        val nativeCanvas = drawContext.canvas.nativeCanvas
-        nativeCanvas.withSave {
-            val current = Matrix()
-            getMatrix(current)
-            val inverted = Matrix()
-            if (current.invert(inverted)) {
-                val values = FloatArray(9).also(current::getValues)
-                val left = bounds.left - screenOrigin.x + values[Matrix.MTRANS_X]
-                val top = bounds.top - screenOrigin.y + values[Matrix.MTRANS_Y]
-
-                concat(inverted)
-                if (Build.VERSION.SDK_INT >= 31) {
-                    store.glassLayer?.let { layer ->
-                        this@drawGlass.translate(left, top) {
-                            drawLayer(layer)
+                    concat(inverted)
+                    if (Build.VERSION.SDK_INT >= 31) {
+                        store.glassLayer?.let { layer ->
+                            this@drawGlass.translate(left, top) { drawLayer(layer) }
+                            drewCapturedBackdrop = true
                         }
-                    }
-                } else {
-                    store.blurredBackground?.let { bitmap ->
-                        this@drawGlass.drawImage(
-                            image = bitmap,
-                            dstOffset = IntOffset(left.roundToInt(), top.roundToInt()),
-                            dstSize = IntSize(bounds.width.roundToInt(), bounds.height.roundToInt())
-                        )
+                    } else {
+                        store.blurredBackground?.let { bitmap ->
+                            this@drawGlass.drawImage(
+                                image = bitmap,
+                                dstOffset = IntOffset(left.roundToInt(), top.roundToInt()),
+                                dstSize = IntSize(bounds.width.roundToInt(), bounds.height.roundToInt())
+                            )
+                            drewCapturedBackdrop = true
+                        }
                     }
                 }
             }
         }
 
-        drawRect(color = color, blendMode = BlendMode.SrcOver)
+        // Keep the wallpaper visible with one translucent wash and a restrained
+        // two-edge reflection instead of layering several full-surface blend passes.
         drawRect(
-            color = Color.White.copy(alpha = whiteOverlayAlpha(blur)),
-            blendMode = BlendMode.Softlight
+            color = color.copy(
+                alpha = if (drewCapturedBackdrop) 0.18f else AerixSurface.sharpGlassTintAlpha
+            )
+        )
+        val hairline = AerixSpacing.hairline.toPx()
+        val horizontalInset = AerixSpacing.md.toPx()
+        drawLine(
+            color = Color.White.copy(alpha = 0.36f),
+            start = Offset(horizontalInset, hairline * 0.5f),
+            end = Offset((size.width - horizontalInset).coerceAtLeast(horizontalInset), hairline * 0.5f),
+            strokeWidth = hairline
+        )
+        drawLine(
+            color = AerixSurface.glassBlue.copy(alpha = 0.12f),
+            start = Offset(horizontalInset, size.height - hairline * 0.5f),
+            end = Offset((size.width - horizontalInset).coerceAtLeast(horizontalInset), size.height - hairline * 0.5f),
+            strokeWidth = hairline
         )
     }
 }

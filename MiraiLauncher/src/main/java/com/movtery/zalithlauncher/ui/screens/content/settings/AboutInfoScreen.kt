@@ -56,6 +56,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.BuildConfig
 import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
@@ -96,24 +99,24 @@ fun AboutInfoScreen(
         AnimatedLazyColumn(
             modifier = Modifier.fillMaxSize(),
             isVisible = isVisible,
-            contentPadding = PaddingValues(all = 12.dp)
+            contentPadding = PaddingValues(all = AerixSpacing.md)
         ) { scope ->
             animatedItem(scope) { yOffset ->
                 ChunkLayout(
                     modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
                     title = stringResource(R.string.about_launcher_title)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
                         ButtonIconItem(
-                            icon = painterResource(R.drawable.img_launcher),
+                            icon = painterResource(R.drawable.ic_aerix_mark),
                             title = BuildKeys.LAUNCHER_NAME,
                             text = stringResource(R.string.about_launcher_version, BuildConfig.VERSION_NAME),
                             button = {
                                 Button(
                                     onClick = checkUpdate,
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF1BD96A),
-                                        contentColor = Color(0xFF06210F)
+                                        containerColor = AerixSurface.accent,
+                                        contentColor = AerixSurface.onAccent
                                     )
                                 ) {
                                     Text(
@@ -130,7 +133,7 @@ fun AboutInfoScreen(
                         )
 
                         ButtonIconItem(
-                            icon = painterResource(R.drawable.ic_github),
+                            icon = painterResource(R.drawable.img_avatar_entitybrian),
                             title = "entitybrian",
                             text = stringResource(R.string.about_launcher_owner_text),
                             button = {
@@ -138,6 +141,19 @@ fun AboutInfoScreen(
                                     onClick = { openLink(URL_OWNER) }
                                 ) {
                                     Text(text = stringResource(R.string.about_launcher_owner_link))
+                                }
+                            }
+                        )
+
+                        ButtonIconItem(
+                            icon = painterResource(R.drawable.img_avatar_fireplayz),
+                            title = "fire playz",
+                            text = stringResource(R.string.about_launcher_owner_text),
+                            button = {
+                                Button(
+                                    onClick = { openLink(URL_PROJECT) }
+                                ) {
+                                    Text(text = stringResource(R.string.about_launcher_project_link))
                                 }
                             }
                         )
@@ -151,7 +167,7 @@ fun AboutInfoScreen(
                     modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
                     title = stringResource(R.string.about_acknowledgements_title)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
                         ButtonIconItem(
                             icon = painterResource(R.drawable.img_avatar_bangbang93),
                             title = "bangbang93",
@@ -232,7 +248,7 @@ fun AboutInfoScreen(
                     modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
                     title = stringResource(R.string.about_library_title)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
                         libraryData.forEach { info ->
                             LibraryInfoItem(info = info, openLicense = openLicense, openLink = openLink)
                         }
@@ -247,7 +263,7 @@ fun AboutInfoScreen(
                         modifier = Modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
                         title = stringResource(R.string.about_plugin_title)
                     ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)) {
                             allPlugins.forEach { apkPlugin ->
                                 PluginInfoItem(apkPlugin = apkPlugin)
                             }
@@ -272,7 +288,7 @@ private fun ChunkLayout(
         Column(modifier = Modifier.fillMaxWidth()) {
             CardTitleLayout {
                 Text(
-                    modifier = Modifier.padding(all = 16.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.lg),
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface
@@ -281,7 +297,7 @@ private fun ChunkLayout(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 12.dp)
+                    .padding(all = AerixSpacing.md)
             ) {
                 content()
             }
@@ -310,14 +326,14 @@ private fun LinkIconItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 14.dp, vertical = 8.dp)
+                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val iconModifier = Modifier
                 .size(34.dp)
-                .clip(shape = RoundedCornerShape(6.dp))
+                .clip(shape = RoundedCornerShape(AerixRadii.micro))
             if (useImage) {
                 Image(
                     modifier = iconModifier,
@@ -393,15 +409,15 @@ private fun ButtonIconItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 14.dp, vertical = 8.dp)
+                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 modifier = Modifier
                     .size(34.dp)
-                    .clip(shape = RoundedCornerShape(6.dp)),
+                    .clip(shape = RoundedCornerShape(AerixRadii.micro)),
                 painter = icon,
                 contentDescription = null,
                 contentScale = ContentScale.Fit
@@ -443,9 +459,9 @@ private fun PluginInfoItem(
         val context = LocalContext.current
         Row(
             modifier = Modifier
-                .padding(all = 12.dp)
+                .padding(all = AerixSpacing.md)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             val iconFile = appCacheIcon(apkPlugin.packageName)
             if (iconFile.exists()) {
@@ -457,7 +473,7 @@ private fun PluginInfoItem(
                 AsyncImage(
                     modifier = Modifier
                         .size(34.dp)
-                        .clip(shape = RoundedCornerShape(8.dp)),
+                        .clip(shape = RoundedCornerShape(AerixRadii.compact)),
                     model = model,
                     contentDescription = null,
                     contentScale = ContentScale.Fit
@@ -480,7 +496,7 @@ private fun PluginInfoItem(
                 )
                 Row(
                     modifier = Modifier.alpha(0.7f),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     Text(
                         text = apkPlugin.packageName,
@@ -517,7 +533,7 @@ private fun LibraryInfoItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 8.dp)
+                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm)
         ) {
             Column(
                 modifier = Modifier.weight(1f),

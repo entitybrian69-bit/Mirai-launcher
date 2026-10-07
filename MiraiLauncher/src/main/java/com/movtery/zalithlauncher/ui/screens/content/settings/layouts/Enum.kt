@@ -36,21 +36,22 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.setting.unit.EnumSettingUnit
 import com.movtery.zalithlauncher.ui.components.TitleAndSummary
 import com.movtery.zalithlauncher.ui.screens.content.elements.DisabledAlpha
 import com.movtery.zalithlauncher.utils.animation.getAnimateTween
-import kotlin.enums.EnumEntries
 
 @Composable
 fun <E: Enum<E>> EnumSettingsCard(
     value: E,
-    entries: EnumEntries<E>,
+    entries: List<E>,
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     getRadioText: @Composable (E) -> String,
     getRadioEnable: (E) -> Boolean,
@@ -68,8 +69,8 @@ fun <E: Enum<E>> EnumSettingsCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(all = AerixSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             TitleAndSummary(
                 title = title,
@@ -112,12 +113,12 @@ fun <E: Enum<E>> EnumSettingsCard(
 @Composable
 fun <E: Enum<E>> EnumSettingsCard(
     unit: EnumSettingUnit<E>,
-    entries: EnumEntries<E>,
+    entries: List<E>,
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     getRadioText: @Composable (E) -> String,
     getRadioEnable: (E) -> Boolean,

@@ -65,6 +65,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.cardColor
 import com.movtery.zalithlauncher.ui.theme.onCardColor
@@ -252,18 +255,24 @@ fun SimpleEditDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .liquidGlass(
+                        shape = MaterialTheme.shapes.extraLarge,
+                        tint = AerixSurface.glassTint,
+                        strength = 0.88f,
+                        elevation = AerixMetrics.glassDialogElevation
+                    ),
                 shape = MaterialTheme.shapes.extraLarge,
                 color = cardColor(false),
                 contentColor = onCardColor(),
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     simpleEditDialogBody(
                         title = title,
@@ -281,7 +290,7 @@ fun SimpleEditDialog(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg),
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(1f),
@@ -329,18 +338,24 @@ fun SimpleEditDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .liquidGlass(
+                        shape = MaterialTheme.shapes.extraLarge,
+                        tint = AerixSurface.glassTint,
+                        strength = 0.88f,
+                        elevation = AerixMetrics.glassDialogElevation
+                    ),
                 shape = MaterialTheme.shapes.extraLarge,
                 color = cardColor(false),
                 contentColor = onCardColor(),
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     simpleEditDialogBody(
                         title = title,
@@ -399,7 +414,7 @@ private fun simpleEditDialogBody(
     ) {
         extraBody?.let {
             it.invoke()
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(AerixSpacing.sm))
         }
 
         val focusManager = LocalFocusManager.current
@@ -523,9 +538,15 @@ fun <T> SimpleListDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 3.dp)
+                    .padding(all = AerixSpacing.tiny)
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .liquidGlass(
+                        shape = MaterialTheme.shapes.extraLarge,
+                        tint = AerixSurface.glassTint,
+                        strength = 0.88f,
+                        elevation = AerixMetrics.glassDialogElevation
+                    ),
                 shape = MaterialTheme.shapes.extraLarge,
                 color = cardColor(false),
                 contentColor = onCardColor(),
@@ -533,7 +554,7 @@ fun <T> SimpleListDialog(
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(AerixSpacing.lg)
                         .wrapContentHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -541,7 +562,7 @@ fun <T> SimpleListDialog(
                         text = title,
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     val state = rememberLazyListState()
                     LazyColumn(
@@ -561,7 +582,7 @@ fun <T> SimpleListDialog(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.size(4.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.xs))
 
                     if (showConfirm) {
                         Button(
@@ -624,6 +645,12 @@ fun ProgressDialog(
 ) {
     Dialog(onDismissRequest = {}) {
         Surface(
+            modifier = Modifier.liquidGlass(
+                shape = MaterialTheme.shapes.extraLarge,
+                tint = AerixSurface.glassTint,
+                strength = 0.88f,
+                elevation = AerixMetrics.glassDialogElevation
+            ),
             shape = MaterialTheme.shapes.extraLarge,
             color = cardColor(false),
             contentColor = onCardColor(),
@@ -631,7 +658,7 @@ fun ProgressDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(AerixSpacing.lg)
                     .wrapContentHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -639,9 +666,9 @@ fun ProgressDialog(
                 text?.let {
                     Text(text = it, style = MaterialTheme.typography.labelSmall)
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(AerixSpacing.lg))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(AerixSpacing.sm))
             }
         }
     }

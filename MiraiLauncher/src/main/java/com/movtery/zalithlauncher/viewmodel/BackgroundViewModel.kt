@@ -175,7 +175,7 @@ class BackgroundViewModel: ViewModel() {
     }
 
     /**
-     * Seed the Mirai shader wallpaper once, without overwriting a user's existing
+     * Seed the Aerix shader wallpaper once, without overwriting a user's existing
      * background or restoring it after they intentionally clear it.
      */
     suspend fun seedDefaultBackground(context: Context) = withContext(Dispatchers.IO) {

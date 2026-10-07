@@ -60,6 +60,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.movtery.layer_controller.observable.ObservableLocalizedString
 import com.movtery.layer_controller.observable.ObservableTranslatableString
 import com.movtery.layer_controller.utils.toSimpleLangTag
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.ImePanContainer
 import com.movtery.zalithlauncher.ui.components.MarqueeText
@@ -117,14 +119,14 @@ fun EditTranslatableTextDialog(
             contentAlignment = Alignment.Center
         ) {
             Surface(
-                modifier = Modifier.padding(all = 3.dp),
+                modifier = Modifier.padding(all = AerixSpacing.tiny),
             shadowElevation = 3.dp,
             color = cardColor(false),
             contentColor = onCardColor(),
             shape = MaterialTheme.shapes.extraLarge
         ) {
             Column(
-                modifier = Modifier.padding(all = 16.dp),
+                modifier = Modifier.padding(all = AerixSpacing.lg),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 MarqueeText(
@@ -132,7 +134,7 @@ fun EditTranslatableTextDialog(
                     style = MaterialTheme.typography.titleMedium
                 )
 
-                Spacer(modifier = Modifier.size(4.dp))
+                Spacer(modifier = Modifier.size(AerixSpacing.xs))
                 val locale = LocalConfiguration.current.locales[0]
                 Text(
                     modifier = Modifier.fillMaxWidth(),
@@ -148,7 +150,7 @@ fun EditTranslatableTextDialog(
                         .weight(1f, fill = false)
                         .fillMaxWidth(),
                     state = scrollState,
-                    contentPadding = PaddingValues(vertical = 12.dp)
+                    contentPadding = PaddingValues(vertical = AerixSpacing.md)
                 ) {
                     item {
                         if (singleLine) {
@@ -193,7 +195,7 @@ fun EditTranslatableTextDialog(
                             allowEmpty = allowEmpty,
                             take = take
                         )
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(AerixSpacing.lg))
                     }
                 }
 
@@ -211,7 +213,7 @@ fun EditTranslatableTextDialog(
                     }
                     Row(
                         modifier = Modifier.weight(1f, fill = false),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         Button(
                             onClick = onClose
@@ -239,7 +241,7 @@ private fun LocalizedStringItem(
     take: Int? = null,
     color: Color = itemColor(false),
     contentColor: Color = onItemColor(),
-    shape: Shape = RoundedCornerShape(28.dp)
+    shape: Shape = RoundedCornerShape(AerixRadii.hero)
 ) {
     Surface(
         modifier = modifier,
@@ -249,12 +251,12 @@ private fun LocalizedStringItem(
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.xs)
                 .fillMaxWidth(),
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 SimpleEditBox(
                     modifier = Modifier.fillMaxWidth(),
@@ -279,13 +281,13 @@ private fun LocalizedStringItem(
             }
             Row(
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = AerixSpacing.sm)
                     .fillMaxWidth()
                     .clip(shape = MaterialTheme.shapes.large)
                     .clickable(onClick = onDelete)
-                    .padding(all = 12.dp),
+                    .padding(all = AerixSpacing.md),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_delete_outlined),

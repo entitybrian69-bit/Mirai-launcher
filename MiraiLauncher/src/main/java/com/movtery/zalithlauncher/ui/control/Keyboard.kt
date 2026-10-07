@@ -41,9 +41,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.nonInteractiveScrollbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,7 +63,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.movtery.inputmap.keycodes.ControlEventKeycode
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.AutoSizeText
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.control.gamepad.SPECIAL_KEY_MOUSE_SCROLL_DOWN
@@ -264,7 +265,7 @@ fun Keyboard(
         when (page) {
             0 -> {
                 MainKeyboardArea(
-                    modifier = Modifier.padding(all = 12.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.md),
                     isTapMode = isTapMode,
                     onTap = onTap,
                     onSwitch = onSwitch
@@ -272,7 +273,7 @@ fun Keyboard(
             }
             1 -> {
                 EditingKeyboardArea(
-                    modifier = Modifier.padding(all = 12.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.md),
                     isTapMode = isTapMode,
                     onTap = onTap,
                     onSwitch = onSwitch
@@ -322,7 +323,7 @@ fun GamepadBindingKeyboard(
         when (page) {
             0 -> {
                 MainKeyboardArea(
-                    modifier = Modifier.padding(all = 12.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.md),
                     isTapMode = true,
                     onTap = { key ->
                         onKeyTap(key)
@@ -336,7 +337,7 @@ fun GamepadBindingKeyboard(
             }
             1 -> {
                 EditingKeyboardArea(
-                    modifier = Modifier.padding(all = 12.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.md),
                     isTapMode = true,
                     onTap = { key ->
                         onKeyTap(key)
@@ -377,9 +378,9 @@ fun GamepadSpecialArea(
                 state = scrollState.scrollIndicatorState!!,
                 orientation = Orientation.Vertical,
             )
-            .padding(horizontal = 2.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(all = 12.dp),
+            .padding(horizontal = AerixSpacing.xxs),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+        contentPadding = PaddingValues(all = AerixSpacing.md),
         state = scrollState
     ) {
         //鼠标左键
@@ -482,21 +483,14 @@ private fun KeyboardNavDialog(
             contentColor = onCardColor(),
         ) {
             Column {
-                //顶贴标签栏
-                SecondaryTabRow(
-                    selectedTabIndex = selectedTabIndex,
-                    containerColor = cardTitleColor()
-                ) {
+                AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
                     tabs.forEachIndexed { index, item ->
-                        Tab(
+                        AerixPillTab(
                             selected = index == selectedTabIndex,
-                            onClick = {
-                                selectedTabIndex = index
-                            },
-                            text = {
-                                MarqueeText(text = item.title)
-                            }
-                        )
+                            onClick = { selectedTabIndex = index }
+                        ) {
+                            MarqueeText(text = item.title)
+                        }
                     }
                 }
 
@@ -523,7 +517,7 @@ private fun MainKeyboardArea(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         MAIN_LAYOUT.forEach { row ->
             KeyboardRow(
@@ -549,7 +543,7 @@ private fun EditingKeyboardArea(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         EDIT_LAYOUT.forEach { row ->
             KeyboardRow(
@@ -575,7 +569,7 @@ private fun KeyboardRow(
 ) {
     Row(
         modifier = Modifier.height(IntrinsicSize.Min),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         row.forEach { key ->
             if (key.isSpacer || key.label.isEmpty()) {

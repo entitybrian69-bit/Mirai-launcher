@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,8 +56,8 @@ object MiraiThemeManager {
             title = "Lush Glowberry Cave",
             biome = "Lush Caves • Complementary Shaders",
             assetPath = "wallpapers/wp_01_lush_caves.jpg",
-            themeName = "Lush Emerald",
-            accentColor = Color(0xFF1BD96A)
+            themeName = "Lush Teal",
+            accentColor = AerixSurface.accent
         ),
         MiraiWallpaperPreset(
             id = "wp_02_cherry_blossom",
@@ -220,14 +221,11 @@ object MiraiThemeManager {
         selectedWallpaperId = prefs.getString(KEY_SELECTED_WALLPAPER, "wp_01_lush_caves") ?: "wp_01_lush_caves"
     }
 
-    fun currentAccent(): Color {
-        val themeType = AllSettings.launcherColorTheme.state
-        val customColorInt = AllSettings.launcherCustomColor.state
-        return if (themeType == ColorThemeType.CUSTOM) {
-            Color(customColorInt)
-        } else {
-            Color(0xFF1BD96A)
-        }
+    @Composable
+    fun currentAccent(): Color = if (AllSettings.launcherColorTheme.state == ColorThemeType.CUSTOM) {
+        Color(AllSettings.launcherCustomColor.state)
+    } else {
+        MaterialTheme.colorScheme.primary
     }
 
     @Composable
@@ -235,9 +233,9 @@ object MiraiThemeManager {
         val isBgValid = LocalBackgroundViewModel.current?.isValid == true
         val opacity = AllSettings.launcherBackgroundOpacity.state
         return if (isBgValid && opacity < 100) {
-            Color(0xFF121418).copy(alpha = (opacity.coerceIn(30, 92)) / 100f)
+            AerixSurface.canvas.copy(alpha = (opacity.coerceIn(30, 92)) / 100f)
         } else {
-            Color(0xFF16181C)
+            AerixSurface.canvas
         }
     }
 
@@ -273,8 +271,8 @@ object MiraiThemeManager {
                 .edit()
                 .putString(KEY_SELECTED_WALLPAPER, "none")
                 .apply()
-            AllSettings.launcherCustomColor.save(Color(0xFF1BD96A).toArgb())
-            AllSettings.launcherColorTheme.save(ColorThemeType.MIRAI)
+            AllSettings.launcherCustomColor.save(AerixSurface.accent.toArgb())
+            AllSettings.launcherColorTheme.save(ColorThemeType.AERIX)
         }
     }
 
@@ -295,9 +293,9 @@ object MiraiThemeManager {
                     bmp.recycle()
                     c
                 } else {
-                    Color(0xFF1BD96A)
+                    AerixSurface.accent
                 }
-            }.getOrDefault(Color(0xFF1BD96A))
+            }.getOrDefault(AerixSurface.accent)
         }
         withContext(Dispatchers.Main) {
             selectedWallpaperId = "custom"
@@ -316,7 +314,7 @@ object MiraiThemeManager {
     private fun extractVibrantAccent(bitmap: Bitmap): Color {
         val width = bitmap.width
         val height = bitmap.height
-        if (width <= 0 || height <= 0) return Color(0xFF1BD96A)
+        if (width <= 0 || height <= 0) return AerixSurface.accent
 
         val buckets = FloatArray(12)
         val hueSums = FloatArray(12)
@@ -357,7 +355,7 @@ object MiraiThemeManager {
         }
 
         if (bestBucket == -1 || bestScore <= 0.01f) {
-            return Color(0xFF1BD96A)
+            return AerixSurface.accent
         }
 
         val avgHue = (hueSums[bestBucket] / bestScore).coerceIn(0f, 360f)

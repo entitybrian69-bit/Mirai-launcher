@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.GamepadInputMode
@@ -176,7 +177,7 @@ BaseScreen(
 
         AnimatedLazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(12.dp),
+            contentPadding = PaddingValues(AerixSpacing.md),
             isVisible = isVisible
         ) { scope ->
             animatedItem(scope) { yOffset ->
@@ -333,7 +334,7 @@ BaseScreen(
                             modifier = Modifier.fillMaxWidth(),
                             position = CardPosition.Middle,
                             title = stringResource(R.string.settings_gamepad_config_delete),
-                            innerPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+                            innerPadding = PaddingValues(horizontal = AerixSpacing.lg, vertical = AerixSpacing.xxl),
                             enabled = remapEnabled,
                             onClick = {
                                 createConfigOperation = CreateNewConfigOperation.Delete
@@ -345,7 +346,7 @@ BaseScreen(
                         modifier = Modifier.fillMaxWidth(),
                         position = if (isCreateOnly) CardPosition.Single else CardPosition.Bottom,
                         title = stringResource(R.string.settings_gamepad_config_create),
-                        innerPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+                        innerPadding = PaddingValues(horizontal = AerixSpacing.lg, vertical = AerixSpacing.xxl),
                         enabled = remapEnabled,
                         onClick = {
                             createConfigOperation = CreateNewConfigOperation.Create
@@ -359,9 +360,9 @@ BaseScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
+                            .padding(horizontal = AerixSpacing.sm)
                             .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                     ) {
                         //游戏内
                         CheckChip(
@@ -406,14 +407,14 @@ BaseScreen(
                     ) {
                         Row(
                             modifier = Modifier
-                                .padding(all = 16.dp)
+                                .padding(all = AerixSpacing.lg)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                         ) {
                             Image(
                                 modifier = Modifier
-                                    .padding(all = 6.dp)
+                                    .padding(all = AerixSpacing.smCompact)
                                     .size(32.dp),
                                 painter = painterResource(item.getIconRes()),
                                 contentDescription = null,
@@ -422,7 +423,7 @@ BaseScreen(
 
                             Row(
                                 modifier = Modifier.weight(1f),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 val codes = remember(item, editKeyInGame, refreshed) {
@@ -442,7 +443,7 @@ BaseScreen(
                                     modifier = Modifier
                                         .weight(1f)
                                         .basicMarquee(Int.MAX_VALUE),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                                 ) {
                                     codes.forEach { code ->
                                         LittleTextLabel(

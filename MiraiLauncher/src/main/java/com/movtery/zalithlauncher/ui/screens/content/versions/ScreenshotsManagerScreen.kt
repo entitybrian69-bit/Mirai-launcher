@@ -92,6 +92,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil3.compose.AsyncImage
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.version.installed.Version
@@ -479,7 +480,7 @@ fun ScreenshotsManagerScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 12.dp)
+                .padding(all = AerixSpacing.md)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -524,7 +525,7 @@ fun ScreenshotsManagerScreen(
                                 },
                                 modifier = Modifier
                                     .align(Alignment.BottomEnd)
-                                    .padding(16.dp),
+                                    .padding(AerixSpacing.lg),
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
@@ -607,8 +608,8 @@ private fun ScreenshotHeader(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .padding(top = 4.dp)
+                .padding(horizontal = AerixSpacing.sm)
+                .padding(top = AerixSpacing.xs)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box {
@@ -633,7 +634,7 @@ private fun ScreenshotHeader(
                 SimpleTextInputField(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 4.dp),
+                        .padding(start = AerixSpacing.xs),
                     value = filter.filterName,
                     onValueChange = { changeFilter(ScreenshotFilter(it)) },
                     hint = {
@@ -678,14 +679,14 @@ private fun ScreenshotHeader(
                         IconButton(onClick = { if (isFilesSelected) onClearFilesSelected() }) {
                             Icon(painterResource(R.drawable.ic_deselect), contentDescription = null)
                         }
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(AerixSpacing.smCompact))
                         VerticalDivider(
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .padding(vertical = 12.dp),
+                                .padding(vertical = AerixSpacing.md),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(AerixSpacing.smCompact))
                     }
                 }
 
@@ -716,9 +717,9 @@ private fun ScreenshotGrid(
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 160.dp),
                 modifier = modifier,
-                contentPadding = PaddingValues(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(AerixSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 items(items) { info ->
                     ScreenshotItemLayout(
@@ -829,7 +830,7 @@ private fun ScreenshotItemLayout(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .background(Color.Black.copy(alpha = 0.6f))
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                    .padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.smCompact)
             ) {
                 MinecraftColorTextNormal(
                     modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE),

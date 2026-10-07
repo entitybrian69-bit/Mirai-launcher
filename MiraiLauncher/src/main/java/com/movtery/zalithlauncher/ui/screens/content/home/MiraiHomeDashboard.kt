@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,31 +10,32 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  */
 
 package com.movtery.zalithlauncher.ui.screens.content.home
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -56,8 +57,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -75,15 +79,15 @@ import com.movtery.zalithlauncher.game.renderer.RendererPicker
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.setting.AllSettings
+import com.movtery.zalithlauncher.ui.components.liquidGlass
 import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 
-private val ModrinthCardColor = Color(0xFF21242B)
-private val ModrinthCardBorder = Color(0xFF2E333E)
-private val ModrinthEmerald = Color(0xFF1BD96A)
-private val ModrinthOnEmerald = Color(0xFF06210F)
-private val ModrinthAmberBg = Color(0xFF9A6712)
-private val ModrinthAmberFg = Color(0xFFFEF3C7)
+private val ModrinthEmerald = AerixSurface.modrinthBrand
 
 private val DefaultAvailableRenderers = setOf(
     RendererPicker.LTW,
@@ -127,6 +131,7 @@ fun resolveRendererBadgeDetail(version: Version?): String {
     }
 }
 
+/** A glass-first launcher landing page with responsive, feature-complete navigation. */
 @Composable
 fun MiraiHomeDashboard(
     onLaunchVersion: (Version) -> Unit,
@@ -141,345 +146,377 @@ fun MiraiHomeDashboard(
     val currentVersion by VersionsManager.currentVersion.collectAsStateWithLifecycle()
     val tasks by TaskSystem.tasksFlow.collectAsStateWithLifecycle()
     val activeAccent = MiraiThemeManager.currentAccent()
+    val selectedVersion = currentVersion ?: versions.firstOrNull()
+    val recentVersions = remember(versions, selectedVersion) {
+        versions.filterNot { it == selectedVersion }.take(8).ifEmpty { versions.take(8) }
+    }
 
     var showFpsBooster by remember { mutableStateOf(false) }
     var showJreGcTuner by remember { mutableStateOf(false) }
     var showCrashDoctor by remember { mutableStateOf(false) }
 
     if (showFpsBooster) {
-        MobileFpsBoosterDialog(
-            version = currentVersion ?: versions.firstOrNull(),
-            onDismiss = { showFpsBooster = false }
-        )
+        MobileFpsBoosterDialog(version = selectedVersion, onDismiss = { showFpsBooster = false })
     }
-
     if (showJreGcTuner) {
-        JvmGcAutoTunerDialog(
-            version = currentVersion ?: versions.firstOrNull(),
-            onDismiss = { showJreGcTuner = false }
-        )
+        JvmGcAutoTunerDialog(version = selectedVersion, onDismiss = { showJreGcTuner = false })
     }
-
     if (showCrashDoctor) {
-        SmartCrashDoctorDialog(
-            version = currentVersion ?: versions.firstOrNull(),
-            onDismiss = { showCrashDoctor = false }
-        )
+        SmartCrashDoctorDialog(version = selectedVersion, onDismiss = { showCrashDoctor = false })
     }
 
-    val jumpBackInVersions = remember(versions, currentVersion) {
-        buildList {
-            currentVersion?.let { add(it) }
-            versions.filter { it != currentVersion }.take(3).forEach { add(it) }
-        }.take(2)
+    val openTasks = {
+        AllSettings.launcherTaskMenuExpanded.save(!AllSettings.launcherTaskMenuExpanded.state)
+    }
+    val launchSelected: () -> Unit = {
+        selectedVersion?.let { version ->
+            VersionsManager.saveVersion(version)
+            onLaunchVersion(version)
+        } ?: onCreateInstance()
     }
 
-    val recentListVersions = remember(versions, jumpBackInVersions) {
-        val rest = versions.filter { it !in jumpBackInVersions }
-        rest.ifEmpty { versions }.take(8)
-    }
-
-    LazyColumn(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
-            .padding(start = 14.dp, end = 6.dp, top = 10.dp),
-        contentPadding = PaddingValues(bottom = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(
+                start = AerixSpacing.mdPlus,
+                end = AerixSpacing.smCompact,
+                top = AerixSpacing.smPlus
+            )
     ) {
-        // 1. Header at the very top: quick-action pills toolbar first (scrollable
-        // so narrow screens never clip a pill), dashboard title directly below it.
-        item {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = Color(0xFF14161B).copy(alpha = 0.94f)
+        if (maxWidth >= 720.dp && maxWidth > maxHeight) {
+            WideHomeDashboard(
+                selectedVersion = selectedVersion,
+                recentVersions = recentVersions,
+                versionCount = versions.size,
+                activeAccent = activeAccent,
+                taskCount = tasks.size,
+                onLaunchSelected = launchSelected,
+                onLaunchVersion = onLaunchVersion,
+                onCreateInstance = onCreateInstance,
+                onExploreContent = onExploreContent,
+                onManageVersions = onManageVersions,
+                onOpenVersionSettings = onOpenVersionSettings,
+                onOpenFileManager = onOpenFileManager,
+                onOpenTasks = openTasks,
+                onBoostFps = { showFpsBooster = true },
+                onTuneGc = { showJreGcTuner = true },
+                onCrashDoctor = { showCrashDoctor = true }
+            )
+        } else {
+            CompactHomeDashboard(
+                selectedVersion = selectedVersion,
+                recentVersions = recentVersions,
+                versionCount = versions.size,
+                activeAccent = activeAccent,
+                taskCount = tasks.size,
+                onLaunchSelected = launchSelected,
+                onLaunchVersion = onLaunchVersion,
+                onCreateInstance = onCreateInstance,
+                onExploreContent = onExploreContent,
+                onManageVersions = onManageVersions,
+                onOpenVersionSettings = onOpenVersionSettings,
+                onOpenFileManager = onOpenFileManager,
+                onOpenTasks = openTasks,
+                onBoostFps = { showFpsBooster = true },
+                onTuneGc = { showJreGcTuner = true },
+                onCrashDoctor = { showCrashDoctor = true }
+            )
+        }
+    }
+}
+
+@Composable
+private fun WideHomeDashboard(
+    selectedVersion: Version?,
+    recentVersions: List<Version>,
+    versionCount: Int,
+    activeAccent: Color,
+    taskCount: Int,
+    onLaunchSelected: () -> Unit,
+    onLaunchVersion: (Version) -> Unit,
+    onCreateInstance: () -> Unit,
+    onExploreContent: () -> Unit,
+    onManageVersions: () -> Unit,
+    onOpenVersionSettings: (Version) -> Unit,
+    onOpenFileManager: () -> Unit,
+    onOpenTasks: () -> Unit,
+    onBoostFps: () -> Unit,
+    onTuneGc: () -> Unit,
+    onCrashDoctor: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.57f),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+        ) {
+            LiquidHomeHero(
+                selectedVersion = selectedVersion,
+                versionCount = versionCount,
+                activeAccent = activeAccent,
+                onLaunch = onLaunchSelected,
+                onCreateInstance = onCreateInstance,
+                onManageVersions = onManageVersions,
+                modifier = Modifier
+                    .weight(1.55f)
+                    .fillMaxHeight()
+            )
+            Column(
+                modifier = Modifier
+                    .weight(0.85f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
             ) {
-                Column(
+                ActiveWorldPanel(
+                    version = selectedVersion,
+                    activeAccent = activeAccent,
+                    onLaunch = onLaunchSelected,
+                    onSettings = {
+                        selectedVersion?.let { version ->
+                            VersionsManager.saveVersion(version)
+                            onOpenVersionSettings(version)
+                        }
+                    },
+                    onCreateInstance = onCreateInstance,
+                    modifier = Modifier.weight(1f)
+                )
+                TaskSummaryPanel(
+                    taskCount = taskCount,
+                    activeAccent = activeAccent,
+                    onClick = onOpenTasks,
+                    modifier = Modifier.height(74.dp)
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(78.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+        ) {
+            QuickActionTile(
+                iconRes = R.drawable.ic_add,
+                title = "Create instance",
+                subtitle = "A fresh game profile",
+                accent = activeAccent,
+                onClick = onCreateInstance,
+                modifier = Modifier.weight(1f)
+            )
+            QuickActionTile(
+                iconRes = R.drawable.ic_search,
+                title = "Explore content",
+                subtitle = "Modpacks, mods & more",
+                accent = AerixSurface.glassBlue,
+                onClick = onExploreContent,
+                modifier = Modifier.weight(1f)
+            )
+            QuickActionTile(
+                iconRes = R.drawable.ic_dashboard_filled,
+                title = "Your library",
+                subtitle = "$versionCount installed profiles",
+                accent = AerixSurface.glassViolet,
+                onClick = onManageVersions,
+                modifier = Modifier.weight(1f)
+            )
+            QuickActionTile(
+                iconRes = R.drawable.ic_folder_outlined,
+                title = "File space",
+                subtitle = "Worlds, logs & exports",
+                accent = AerixSurface.glassRose,
+                onClick = onOpenFileManager,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.43f),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+        ) {
+            RecentWorldsPanel(
+                versions = recentVersions,
+                selectedVersion = selectedVersion,
+                activeAccent = activeAccent,
+                onSelect = { version -> VersionsManager.saveVersion(version) },
+                onSettings = { version ->
+                    VersionsManager.saveVersion(version)
+                    onOpenVersionSettings(version)
+                },
+                onLaunchVersion = onLaunchVersion,
+                onViewAll = onManageVersions,
+                modifier = Modifier
+                    .weight(1.7f)
+                    .fillMaxHeight()
+            )
+            QuickToolsPanel(
+                activeAccent = activeAccent,
+                onBoostFps = onBoostFps,
+                onTuneGc = onTuneGc,
+                onCrashDoctor = onCrashDoctor,
+                onOpenFiles = onOpenFileManager,
+                modifier = Modifier
+                    .weight(0.72f)
+                    .fillMaxHeight()
+            )
+        }
+    }
+}
+
+@Composable
+private fun CompactHomeDashboard(
+    selectedVersion: Version?,
+    recentVersions: List<Version>,
+    versionCount: Int,
+    activeAccent: Color,
+    taskCount: Int,
+    onLaunchSelected: () -> Unit,
+    onLaunchVersion: (Version) -> Unit,
+    onCreateInstance: () -> Unit,
+    onExploreContent: () -> Unit,
+    onManageVersions: () -> Unit,
+    onOpenVersionSettings: (Version) -> Unit,
+    onOpenFileManager: () -> Unit,
+    onOpenTasks: () -> Unit,
+    onBoostFps: () -> Unit,
+    onTuneGc: () -> Unit,
+    onCrashDoctor: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = AerixSpacing.xxl),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
+    ) {
+        item {
+            LiquidHomeHero(
+                selectedVersion = selectedVersion,
+                versionCount = versionCount,
+                activeAccent = activeAccent,
+                onLaunch = onLaunchSelected,
+                onCreateInstance = onCreateInstance,
+                onManageVersions = onManageVersions,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(312.dp)
+            )
+        }
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
+                HomeSectionLabel(title = "YOUR SPACE", subtitle = "Everything you need, close at hand")
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                    // 1-Tap Mobile FPS Booster Pill (Always visible on dashboard)
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(18.dp))
-                            .clickable { showFpsBooster = true },
-                        shape = RoundedCornerShape(18.dp),
-                        color = activeAccent.copy(alpha = 0.18f),
-                        border = BorderStroke(1.dp, activeAccent.copy(alpha = 0.75f))
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_rocket_launch_filled),
-                                contentDescription = "Boost FPS",
-                                tint = activeAccent,
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Text(
-                                text = "Boost FPS",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = activeAccent
-                            )
-                        }
-                    }
-
-                    // JRE & GC Auto-Tuner Pill (Feature #17)
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(18.dp))
-                            .clickable { showJreGcTuner = true },
-                        shape = RoundedCornerShape(18.dp),
-                        color = ModrinthCardColor,
-                        border = BorderStroke(1.dp, ModrinthCardBorder)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "☕ JRE & GC",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFE5E7EB)
-                            )
-                        }
-                    }
-
-                    // Smart Crash Doctor Pill
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(18.dp))
-                            .clickable { showCrashDoctor = true },
-                        shape = RoundedCornerShape(18.dp),
-                        color = ModrinthCardColor,
-                        border = BorderStroke(1.dp, ModrinthCardBorder)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "🩺 Crash Doctor",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFE5E7EB)
-                            )
-                        }
-                    }
-
-                    // Files pill button
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(18.dp))
-                            .clickable(onClick = onOpenFileManager),
-                        shape = RoundedCornerShape(18.dp),
-                        color = ModrinthCardColor,
-                        border = BorderStroke(1.dp, ModrinthCardBorder)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_folder_outlined),
-                                contentDescription = "Files",
-                                tint = Color(0xFFD1D5DB),
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Text(
-                                text = "Files",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFE5E7EB)
-                            )
-                        }
-                    }
-
-                    // Tasks pill button
-                    val hasActiveTasks = tasks.isNotEmpty()
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(18.dp))
-                            .clickable {
-                                AllSettings.launcherTaskMenuExpanded.save(
-                                    !AllSettings.launcherTaskMenuExpanded.state
-                                )
-                            },
-                        shape = RoundedCornerShape(18.dp),
-                        color = if (hasActiveTasks) activeAccent.copy(alpha = 0.18f) else ModrinthCardColor,
-                        border = BorderStroke(
-                            1.dp,
-                            if (hasActiveTasks) activeAccent else ModrinthCardBorder
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ) {
-                            if (hasActiveTasks) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(7.dp)
-                                        .clip(CircleShape)
-                                        .background(activeAccent)
-                                )
-                            }
-                            Text(
-                                text = "${tasks.size} Tasks",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = if (hasActiveTasks) activeAccent else Color(0xFFE5E7EB)
-                            )
-                        }
-                    }
-                    }
-
-                    Text(
-                        text = "Mirai Launcher",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White
+                    QuickActionTile(
+                        iconRes = R.drawable.ic_add,
+                        title = "Create instance",
+                        subtitle = "New profile",
+                        accent = activeAccent,
+                        onClick = onCreateInstance,
+                        modifier = Modifier.width(198.dp).height(78.dp)
+                    )
+                    QuickActionTile(
+                        iconRes = R.drawable.ic_search,
+                        title = "Explore content",
+                        subtitle = "Mods & modpacks",
+                        accent = AerixSurface.glassBlue,
+                        onClick = onExploreContent,
+                        modifier = Modifier.width(198.dp).height(78.dp)
+                    )
+                    QuickActionTile(
+                        iconRes = R.drawable.ic_dashboard_filled,
+                        title = "Your library",
+                        subtitle = "$versionCount profiles",
+                        accent = AerixSurface.glassViolet,
+                        onClick = onManageVersions,
+                        modifier = Modifier.width(198.dp).height(78.dp)
+                    )
+                    QuickActionTile(
+                        iconRes = R.drawable.ic_folder_outlined,
+                        title = "File space",
+                        subtitle = "Worlds & exports",
+                        accent = AerixSurface.glassRose,
+                        onClick = onOpenFileManager,
+                        modifier = Modifier.width(198.dp).height(78.dp)
                     )
                 }
             }
         }
-
-        if (versions.isEmpty()) {
-            // Empty state when no instances are installed yet
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    color = ModrinthCardColor,
-                    border = BorderStroke(1.dp, ModrinthCardBorder)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.versions_manage_no_versions),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Button(
-                                onClick = onCreateInstance,
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = activeAccent,
-                                    contentColor = ModrinthOnEmerald
-                                )
-                            ) {
-                                Text(
-                                    text = "+ New Instance",
-                                    fontWeight = FontWeight.ExtraBold
-                                )
-                            }
-                            Button(
-                                onClick = onExploreContent,
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF2B2F3A),
-                                    contentColor = Color.White
-                                )
-                            ) {
-                                Text(
-                                    text = "Browse Modpacks",
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
-                        }
+        item {
+            ActiveWorldPanel(
+                version = selectedVersion,
+                activeAccent = activeAccent,
+                onLaunch = onLaunchSelected,
+                onSettings = {
+                    selectedVersion?.let { version ->
+                        VersionsManager.saveVersion(version)
+                        onOpenVersionSettings(version)
                     }
-                }
+                },
+                onCreateInstance = onCreateInstance,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        item {
+            TaskSummaryPanel(
+                taskCount = taskCount,
+                activeAccent = activeAccent,
+                onClick = onOpenTasks,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                HomeSectionLabel(
+                    title = "RECENT WORLDS",
+                    subtitle = "A quick return to your last sessions",
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "VIEW ALL",
+                    color = activeAccent,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable(onClick = onManageVersions)
+                        .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.sm)
+                )
+            }
+        }
+        if (recentVersions.isEmpty()) {
+            item {
+                QuietEmptyState(
+                    title = "Your next world starts here",
+                    subtitle = "Create a profile or explore a ready-made pack.",
+                    accent = activeAccent,
+                    onCreateInstance = onCreateInstance,
+                    onExploreContent = onExploreContent
+                )
             }
         } else {
-            // 2. 'Jump Back In' — 2 Wide Cards Side-by-Side (Mockup #1)
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Jump Back In",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        jumpBackInVersions.forEach { version ->
-                            JumpBackInMobileCard(
-                                version = version,
-                                isSelected = version == currentVersion,
-                                onSelect = { VersionsManager.saveVersion(version) },
-                                onPlay = {
-                                    VersionsManager.saveVersion(version)
-                                    onLaunchVersion(version)
-                                },
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                        if (jumpBackInVersions.size == 1) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    }
-                }
-            }
-
-            // 3. 'Recent Instances' — Clean Horizontal Rows (Mockup #1)
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 2.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Recent Instances",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "View All",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = activeAccent,
-                        modifier = Modifier.clickable(onClick = onManageVersions)
-                    )
-                }
-            }
-
-            items(
-                items = recentListVersions,
-                key = { it.getVersionName() }
-            ) { version ->
-                RecentInstanceMobileRow(
+            items(recentVersions, key = { it.getVersionName() }) { version ->
+                RecentWorldRow(
                     version = version,
-                    isSelected = version == currentVersion,
+                    isSelected = version == selectedVersion,
+                    accent = activeAccent,
                     onSelect = { VersionsManager.saveVersion(version) },
+                    onLaunch = {
+                        VersionsManager.saveVersion(version)
+                        onLaunchVersion(version)
+                    },
                     onSettings = {
                         VersionsManager.saveVersion(version)
                         onOpenVersionSettings(version)
@@ -487,91 +524,196 @@ fun MiraiHomeDashboard(
                 )
             }
         }
+        item {
+            QuickToolsPanel(
+                activeAccent = activeAccent,
+                onBoostFps = onBoostFps,
+                onTuneGc = onTuneGc,
+                onCrashDoctor = onCrashDoctor,
+                onOpenFiles = onOpenFileManager,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
 @Composable
-private fun JumpBackInMobileCard(
-    version: Version,
-    isSelected: Boolean,
-    onSelect: () -> Unit,
-    onPlay: () -> Unit,
+private fun LiquidHomeHero(
+    selectedVersion: Version?,
+    versionCount: Int,
+    activeAccent: Color,
+    onLaunch: () -> Unit,
+    onCreateInstance: () -> Unit,
+    onManageVersions: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val activeAccent = MiraiThemeManager.currentAccent()
-    val info = version.getVersionInfo()
-    val mcVer = info?.minecraftVersion ?: "Unknown"
-    val loaderName = info?.loaderInfo?.loader?.displayName ?: "Vanilla"
-
-    Surface(
+    val shape = RoundedCornerShape(AerixRadii.hero)
+    Box(
         modifier = modifier
-            .clip(RoundedCornerShape(14.dp))
-            .clickable(onClick = onSelect),
-        shape = RoundedCornerShape(14.dp),
-        color = ModrinthCardColor.copy(alpha = 0.92f),
-        border = BorderStroke(
-            width = if (isSelected) 1.5.dp else 1.dp,
-            color = if (isSelected) activeAccent.copy(alpha = 0.7f) else ModrinthCardBorder
-        )
+            .clip(shape)
+            .border(BorderStroke(AerixSpacing.hairline, AerixSurface.borderHighlight.copy(alpha = 0.62f)), shape)
     ) {
-        Row(
+        Image(
+            painter = painterResource(R.drawable.mirai_hero_bg),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                .fillMaxSize()
+                .drawWithCache {
+                    val width = size.width.coerceAtLeast(1f)
+                    val height = size.height.coerceAtLeast(1f)
+                    val longEdge = maxOf(width, height)
+                    val center = androidx.compose.ui.geometry.Offset(width * 0.92f, height * 0.1f)
+                    val inset = 30.dp.toPx()
+                    val rimWidth = 1.dp.toPx()
+                    val wash = Brush.horizontalGradient(
+                        colors = listOf(
+                            AerixSurface.canvas.copy(alpha = 0.90f),
+                            AerixSurface.canvas.copy(alpha = 0.82f),
+                            AerixSurface.canvas.copy(alpha = 0.30f),
+                            AerixSurface.canvas.copy(alpha = 0.07f)
+                        ),
+                        startX = 0f,
+                        endX = width
+                    )
+                    val lens = Brush.radialGradient(
+                        colors = listOf(
+                            AerixSurface.glassBlue.copy(alpha = 0.36f),
+                            AerixSurface.glassViolet.copy(alpha = 0.12f),
+                            Color.Transparent
+                        ),
+                        center = center,
+                        radius = longEdge * 0.72f
+                    )
+                    onDrawBehind {
+                        drawRect(brush = wash)
+                        drawCircle(brush = lens, radius = longEdge * 0.72f, center = center)
+                        drawLine(
+                            color = Color.White.copy(alpha = 0.5f),
+                            start = androidx.compose.ui.geometry.Offset(inset, rimWidth * 0.5f),
+                            end = androidx.compose.ui.geometry.Offset(width - inset, rimWidth * 0.5f),
+                            strokeWidth = rimWidth
+                        )
+                    }
+                }
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = AerixSpacing.xxl, vertical = AerixSpacing.xl),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF2B2F3A))
-                    .padding(4.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
-                VersionIconImage(
-                    version = version,
-                    modifier = Modifier.fillMaxSize()
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(AerixSurface.success)
+                )
+                Text(
+                    text = if (selectedVersion != null) "READY WHEN YOU ARE" else "YOUR NEXT WORLD STARTS HERE",
+                    color = AerixSurface.textPrimary.copy(alpha = 0.88f),
+                    fontSize = 10.sp,
+                    letterSpacing = 1.5.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier.fillMaxWidth(0.76f),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 Text(
-                    text = version.getVersionName(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                    text = if (selectedVersion != null) "A world of\nyour own." else "Make room\nfor wonder.",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Black,
                     color = Color.White,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    lineHeight = 42.sp,
+                    maxLines = 2
                 )
-
                 Text(
-                    text = "$loaderName $mcVer",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF9CA3AF),
-                    maxLines = 1,
+                    text = if (selectedVersion != null) {
+                        "Your next chapter is only one touch away."
+                    } else {
+                        "Build a world, choose your style, and make it yours."
+                    },
+                    fontSize = 13.sp,
+                    lineHeight = 19.sp,
+                    color = AerixSurface.textPrimary.copy(alpha = 0.78f),
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+                Row(
+                    modifier = Modifier.padding(top = AerixSpacing.xs),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    HeroMetaPill(
+                        text = selectedVersion?.getVersionName() ?: "$versionCount profiles",
+                        iconRes = R.drawable.ic_dashboard_filled
+                    )
+                    selectedVersion?.let { version ->
+                        HeroMetaPill(
+                            text = version.getVersionInfo()?.loaderInfo?.loader?.displayName ?: "Vanilla",
+                            iconRes = R.drawable.ic_videogame_asset_outlined
+                        )
+                    }
+                }
             }
 
-            // Circular Dynamic Accent Play Button
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(activeAccent)
-                    .clickable(onClick = onPlay),
-                contentAlignment = Alignment.Center
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_play_arrow_filled),
-                    contentDescription = stringResource(R.string.main_launch_game),
-                    tint = ModrinthOnEmerald,
-                    modifier = Modifier.size(20.dp)
+                Surface(
+                    modifier = Modifier
+                        .height(46.dp)
+                        .liquidGlass(
+                            shape = CircleShape,
+                            tint = activeAccent,
+                            strength = 0.92f,
+                            elevation = AerixMetrics.glassSelectedElevation
+                        ),
+                    shape = CircleShape,
+                    color = activeAccent,
+                    contentColor = AerixSurface.onAccent,
+                    shadowElevation = 0.dp,
+                    onClick = if (selectedVersion != null) onLaunch else onCreateInstance
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = AerixSpacing.lg),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                    ) {
+                        Icon(
+                            painter = painterResource(if (selectedVersion != null) R.drawable.ic_play_arrow_filled else R.drawable.ic_add),
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = if (selectedVersion != null) "PLAY NOW" else "CREATE A WORLD",
+                            fontSize = 11.sp,
+                            letterSpacing = 0.8.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+                }
+                Text(
+                    text = "OPEN LIBRARY  ↗",
+                    color = Color.White.copy(alpha = 0.88f),
+                    fontSize = 10.sp,
+                    letterSpacing = 0.8.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable(onClick = onManageVersions)
+                        .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.smPlus)
                 )
             }
         }
@@ -579,63 +721,600 @@ private fun JumpBackInMobileCard(
 }
 
 @Composable
-private fun RecentInstanceMobileRow(
+private fun HeroMetaPill(text: String, iconRes: Int) {
+    Surface(
+        shape = CircleShape,
+        color = AerixSurface.panelRaised.copy(alpha = 0.54f),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.25f)),
+        contentColor = Color.White
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+        ) {
+            Icon(painter = painterResource(iconRes), contentDescription = null, modifier = Modifier.size(13.dp))
+            Text(text = text, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun ActiveWorldPanel(
+    version: Version?,
+    activeAccent: Color,
+    onLaunch: () -> Unit,
+    onSettings: () -> Unit,
+    onCreateInstance: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(AerixRadii.panel)
+    Surface(
+        modifier = modifier.liquidGlass(
+            shape = shape,
+            tint = activeAccent,
+            strength = 0.82f,
+            elevation = AerixMetrics.glassSubtleElevation
+        ),
+        shape = shape,
+        color = Color.Transparent,
+        contentColor = AerixSurface.textPrimary,
+        border = BorderStroke(1.dp, AerixSurface.borderSoft)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(AerixSpacing.mdPlus),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            HomeSectionLabel(title = "ACTIVE PROFILE", subtitle = "Your selected game instance")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(58.dp)
+                        .clip(RoundedCornerShape(AerixRadii.card))
+                        .background(AerixSurface.panelRaised)
+                        .padding(AerixSpacing.xs),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (version != null) {
+                        VersionIconImage(version = version, modifier = Modifier.fillMaxSize())
+                    } else {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_videogame_asset_outlined),
+                            contentDescription = null,
+                            tint = activeAccent,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                ) {
+                    Text(
+                        text = version?.getVersionName() ?: "No world selected",
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = version?.let {
+                            val gameVersion = it.getVersionInfo()?.minecraftVersion ?: "Unknown"
+                            val loader = it.getVersionInfo()?.loaderInfo?.loader?.displayName ?: "Vanilla"
+                            "$loader  ·  Minecraft $gameVersion"
+                        } ?: "Create your first profile to begin",
+                        color = AerixSurface.textSecondary,
+                        fontSize = 11.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp)
+                        .liquidGlass(
+                            shape = CircleShape,
+                            tint = activeAccent,
+                            strength = 0.9f,
+                            elevation = AerixMetrics.glassSubtleElevation
+                        ),
+                    shape = CircleShape,
+                    color = activeAccent,
+                    contentColor = AerixSurface.onAccent,
+                    onClick = if (version != null) onLaunch else onCreateInstance
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = AerixSpacing.md),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(if (version != null) R.drawable.ic_play_arrow_filled else R.drawable.ic_add),
+                            contentDescription = null,
+                            modifier = Modifier.size(17.dp)
+                        )
+                        Spacer(Modifier.width(AerixSpacing.xs))
+                        Text(text = if (version != null) "Play" else "Create", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+                }
+                IconButton(
+                    onClick = onSettings,
+                    enabled = version != null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(AerixSurface.panelTrack)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_settings_filled),
+                        contentDescription = "Profile settings",
+                        tint = if (version != null) AerixSurface.textPrimary else AerixSurface.textMuted
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TaskSummaryPanel(
+    taskCount: Int,
+    activeAccent: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(AerixRadii.panelSmall)
+    Surface(
+        modifier = modifier.liquidGlass(
+            shape = shape,
+            tint = if (taskCount > 0) activeAccent else AerixSurface.glassBlue,
+            strength = 0.5f,
+            elevation = AerixMetrics.glassSubtleElevation
+        ),
+        shape = shape,
+        color = Color.Transparent,
+        contentColor = AerixSurface.textPrimary,
+        border = BorderStroke(1.dp, AerixSurface.borderSoft),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = AerixSpacing.mdPlus),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(CircleShape)
+                    .background(if (taskCount > 0) activeAccent.copy(alpha = 0.22f) else AerixSurface.panelTrack),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_download_2_filled),
+                    contentDescription = null,
+                    tint = if (taskCount > 0) activeAccent else AerixSurface.textSecondary,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = if (taskCount == 0) "All clear" else "$taskCount active ${if (taskCount == 1) "task" else "tasks"}",
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+                Text(
+                    text = if (taskCount == 0) "Downloads and updates" else "Tap to see progress",
+                    color = AerixSurface.textSecondary,
+                    fontSize = 10.sp,
+                    maxLines = 1
+                )
+            }
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_right_rounded),
+                contentDescription = null,
+                tint = AerixSurface.textSecondary,
+                modifier = Modifier.size(17.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecentWorldsPanel(
+    versions: List<Version>,
+    selectedVersion: Version?,
+    activeAccent: Color,
+    onSelect: (Version) -> Unit,
+    onSettings: (Version) -> Unit,
+    onLaunchVersion: (Version) -> Unit,
+    onViewAll: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(AerixRadii.panel)
+    Surface(
+        modifier = modifier.liquidGlass(
+            shape = shape,
+            tint = AerixSurface.glassBlue,
+            strength = 0.55f,
+            elevation = AerixMetrics.glassSubtleElevation
+        ),
+        shape = shape,
+        color = Color.Transparent,
+        contentColor = AerixSurface.textPrimary,
+        border = BorderStroke(1.dp, AerixSurface.borderSoft)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                HomeSectionLabel(
+                    title = "RECENT WORLDS",
+                    subtitle = "Pick up right where you left off",
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "ALL",
+                    color = activeAccent,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 0.7.sp,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable(onClick = onViewAll)
+                        .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.sm)
+                )
+            }
+            if (versions.isEmpty()) {
+                Text(
+                    text = "Your recent worlds will appear here.",
+                    color = AerixSurface.textSecondary,
+                    fontSize = 11.sp,
+                    modifier = Modifier.padding(vertical = AerixSpacing.sm)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
+                    contentPadding = PaddingValues(bottom = AerixSpacing.xs)
+                ) {
+                    items(versions.take(5), key = { it.getVersionName() }) { version ->
+                        RecentWorldRow(
+                            version = version,
+                            isSelected = version == selectedVersion,
+                            accent = activeAccent,
+                            onSelect = { onSelect(version) },
+                            onLaunch = {
+                                onSelect(version)
+                                onLaunchVersion(version)
+                            },
+                            onSettings = { onSettings(version) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentWorldRow(
     version: Version,
     isSelected: Boolean,
+    accent: Color,
     onSelect: () -> Unit,
+    onLaunch: () -> Unit,
     onSettings: () -> Unit
 ) {
-    val activeAccent = MiraiThemeManager.currentAccent()
-    val info = version.getVersionInfo()
-    val mcVer = info?.minecraftVersion ?: "Unknown"
-    val loaderName = info?.loaderInfo?.loader?.displayName ?: "Vanilla"
-
+    val shape = RoundedCornerShape(AerixRadii.card)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onSelect),
-        shape = RoundedCornerShape(12.dp),
-        color = ModrinthCardColor.copy(alpha = 0.92f),
+            .liquidGlass(
+                shape = shape,
+                tint = if (isSelected) accent else AerixSurface.glassTint,
+                strength = if (isSelected) 0.56f else 0.24f,
+                elevation = AerixSpacing.zero
+            ),
+        shape = shape,
+        color = if (isSelected) accent.copy(alpha = 0.1f) else Color.Transparent,
+        contentColor = AerixSurface.textPrimary,
         border = BorderStroke(
-            width = 1.dp,
-            color = if (isSelected) activeAccent.copy(alpha = 0.55f) else ModrinthCardBorder
-        )
+            1.dp,
+            if (isSelected) accent.copy(alpha = 0.5f) else AerixSurface.borderSoft.copy(alpha = 0.55f)
+        ),
+        onClick = onSelect
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 9.dp),
+                .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             VersionIconImage(
                 version = version,
                 modifier = Modifier
-                    .size(22.dp)
-                    .clip(RoundedCornerShape(6.dp))
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(AerixRadii.compact))
+                    .background(AerixSurface.panelRaised)
+                    .padding(AerixSpacing.xxs)
             )
-
-            Text(
-                text = "${version.getVersionName()} • $loaderName $mcVer",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFFE5E7EB),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
-
-            IconButton(
-                onClick = onSettings,
-                modifier = Modifier.size(26.dp)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
             ) {
+                Text(
+                    text = version.getVersionName(),
+                    color = AerixSurface.textPrimary,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = version.getVersionInfo()?.let { info ->
+                        "${info.loaderInfo?.loader?.displayName ?: "Vanilla"} · ${info.minecraftVersion ?: "Unknown"}"
+                    } ?: "Installed instance",
+                    color = AerixSurface.textSecondary,
+                    fontSize = 9.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            IconButton(onClick = onLaunch, modifier = Modifier.size(30.dp)) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_play_arrow_filled),
+                    contentDescription = stringResource(R.string.main_launch_game),
+                    tint = accent,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            IconButton(onClick = onSettings, modifier = Modifier.size(30.dp)) {
                 Icon(
                     painter = painterResource(R.drawable.ic_settings_filled),
-                    contentDescription = "Instance Settings",
-                    tint = Color(0xFF9CA3AF),
+                    contentDescription = "Instance settings",
+                    tint = AerixSurface.textSecondary,
                     modifier = Modifier.size(15.dp)
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuickActionTile(
+    iconRes: Int,
+    title: String,
+    subtitle: String,
+    accent: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(AerixRadii.panelSmall)
+    Surface(
+        modifier = modifier.liquidGlass(
+            shape = shape,
+            tint = accent,
+            strength = 0.55f,
+            elevation = AerixMetrics.glassSubtleElevation
+        ),
+        shape = shape,
+        color = Color.Transparent,
+        contentColor = AerixSurface.textPrimary,
+        border = BorderStroke(1.dp, AerixSurface.borderSoft),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(CircleShape)
+                    .background(accent.copy(alpha = 0.19f))
+                    .border(1.dp, accent.copy(alpha = 0.35f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(iconRes),
+                    contentDescription = null,
+                    tint = accent,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
+            ) {
+                Text(
+                    text = title,
+                    color = AerixSurface.textPrimary,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = subtitle,
+                    color = AerixSurface.textSecondary,
+                    fontSize = 9.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_right_rounded),
+                contentDescription = null,
+                tint = AerixSurface.textMuted,
+                modifier = Modifier.size(15.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun QuickToolsPanel(
+    activeAccent: Color,
+    onBoostFps: () -> Unit,
+    onTuneGc: () -> Unit,
+    onCrashDoctor: () -> Unit,
+    onOpenFiles: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(AerixRadii.panel)
+    Surface(
+        modifier = modifier.liquidGlass(
+            shape = shape,
+            tint = AerixSurface.glassViolet,
+            strength = 0.5f,
+            elevation = AerixMetrics.glassSubtleElevation
+        ),
+        shape = shape,
+        color = Color.Transparent,
+        contentColor = AerixSurface.textPrimary,
+        border = BorderStroke(1.dp, AerixSurface.borderSoft)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            HomeToolAction("FPS tune-up", R.drawable.ic_rocket_launch_filled, activeAccent, onBoostFps)
+            HomeToolAction("JRE & memory", R.drawable.ic_settings_filled, AerixSurface.glassBlue, onTuneGc)
+            HomeToolAction("Crash doctor", R.drawable.ic_warning_outlined, AerixSurface.warning, onCrashDoctor)
+            HomeToolAction("Open files", R.drawable.ic_folder_outlined, AerixSurface.glassRose, onOpenFiles)
+        }
+    }
+}
+
+@Composable
+private fun HomeToolAction(label: String, iconRes: Int, accent: Color, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(38.dp)
+            .liquidGlass(
+                shape = CircleShape,
+                tint = accent,
+                strength = 0.42f,
+                elevation = AerixSpacing.zero
+            ),
+        shape = CircleShape,
+        color = Color.Transparent,
+        contentColor = AerixSurface.textPrimary,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = AerixSpacing.smPlus),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+        ) {
+            Icon(painter = painterResource(iconRes), contentDescription = null, tint = accent, modifier = Modifier.size(16.dp))
+            Text(
+                text = label,
+                color = AerixSurface.textPrimary,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_right_rounded),
+                contentDescription = null,
+                tint = AerixSurface.textMuted,
+                modifier = Modifier.size(13.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomeSectionLabel(
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+            text = title,
+            color = AerixSurface.textPrimary,
+            fontSize = 10.sp,
+            letterSpacing = 1.15.sp,
+            fontWeight = FontWeight.ExtraBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = subtitle,
+            color = AerixSurface.textSecondary,
+            fontSize = 9.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun QuietEmptyState(
+    title: String,
+    subtitle: String,
+    accent: Color,
+    onCreateInstance: () -> Unit,
+    onExploreContent: () -> Unit
+) {
+    val shape = RoundedCornerShape(AerixRadii.panel)
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .liquidGlass(shape, tint = accent, strength = 0.64f, elevation = AerixMetrics.glassSubtleElevation),
+        shape = shape,
+        color = Color.Transparent,
+        border = BorderStroke(1.dp, AerixSurface.borderSoft)
+    ) {
+        Column(
+            modifier = Modifier.padding(AerixSpacing.xl),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+        ) {
+            Text(title, color = AerixSurface.textPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+            Text(subtitle, color = AerixSurface.textSecondary, fontSize = 12.sp)
+            Row(horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
+                Button(
+                    onClick = onCreateInstance,
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = AerixSurface.onAccent)
+                ) { Text("Create instance", fontWeight = FontWeight.Bold) }
+                Button(
+                    onClick = onExploreContent,
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(containerColor = AerixSurface.panelRaised, contentColor = AerixSurface.textPrimary)
+                ) { Text("Explore content", fontWeight = FontWeight.SemiBold) }
             }
         }
     }
@@ -645,20 +1324,20 @@ private fun RecentInstanceMobileRow(
 fun ModrinthMetaPill(
     text: String,
     highlighted: Boolean = false,
-    backgroundColor: Color = if (highlighted) Color(0xFF1A3A2A) else Color(0xFF282C36),
-    textColor: Color = if (highlighted) ModrinthEmerald else Color(0xFFD1D5DB),
+    backgroundColor: Color = if (highlighted) AerixSurface.accentContainer else AerixSurface.panelRaised,
+    textColor: Color = if (highlighted) ModrinthEmerald else AerixSurface.textSecondary,
     borderColor: Color? = if (highlighted) ModrinthEmerald.copy(alpha = 0.45f) else null
 ) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(AerixRadii.compact))
             .background(backgroundColor)
             .then(
                 if (borderColor != null) {
-                    Modifier.border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                    Modifier.border(AerixSpacing.hairline, borderColor, RoundedCornerShape(AerixRadii.compact))
                 } else Modifier
             )
-            .padding(horizontal = 7.dp, vertical = 2.dp),
+            .padding(horizontal = AerixSpacing.smTight, vertical = AerixSpacing.xxs),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -681,28 +1360,25 @@ fun ModrinthCompactSearchField(
     Row(
         modifier = modifier
             .height(36.dp)
-            .clip(RoundedCornerShape(18.dp))
-            .background(Color(0xFF21242B))
-            .border(1.dp, Color(0xFF2E333E), RoundedCornerShape(18.dp))
-            .padding(horizontal = 12.dp),
+            .clip(RoundedCornerShape(AerixRadii.cardLarge))
+            .background(AerixSurface.panelRaised)
+            .border(AerixSpacing.hairline, AerixSurface.borderSoft, RoundedCornerShape(AerixRadii.cardLarge))
+            .padding(horizontal = AerixSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_search),
             contentDescription = null,
-            tint = Color(0xFF9CA3AF),
+            tint = AerixSurface.textSecondary,
             modifier = Modifier.size(16.dp)
         )
-        Box(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.CenterStart
-        ) {
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
             if (value.isEmpty()) {
                 Text(
                     text = placeholder,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF8A909E),
+                    color = AerixSurface.textMuted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -711,11 +1387,7 @@ fun ModrinthCompactSearchField(
                 value = value,
                 onValueChange = onValueChange,
                 singleLine = true,
-                textStyle = TextStyle(
-                    color = Color.White,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium
-                ),
+                textStyle = TextStyle(color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium),
                 cursorBrush = SolidColor(ModrinthEmerald),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -724,10 +1396,8 @@ fun ModrinthCompactSearchField(
             Icon(
                 painter = painterResource(R.drawable.ic_close),
                 contentDescription = stringResource(R.string.generic_clear),
-                tint = Color(0xFF9CA3AF),
-                modifier = Modifier
-                    .size(15.dp)
-                    .clickable { onValueChange("") }
+                tint = AerixSurface.textSecondary,
+                modifier = Modifier.size(15.dp).clickable { onValueChange("") }
             )
         }
     }

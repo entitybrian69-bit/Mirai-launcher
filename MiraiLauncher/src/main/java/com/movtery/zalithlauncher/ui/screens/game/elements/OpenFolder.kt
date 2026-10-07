@@ -71,6 +71,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.context.copyLocalFile
 import com.movtery.zalithlauncher.context.getFileName
@@ -190,7 +191,7 @@ fun OpenFolderLayer(
                 }
             ) {
                 BackgroundCard(
-                    modifier = Modifier.padding(all = 12.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.md),
                     influencedByBackground = false,
                     shape = MaterialTheme.shapes.extraLarge
                 ) {
@@ -204,7 +205,7 @@ fun OpenFolderLayer(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(all = 12.dp)
+                                    .padding(all = AerixSpacing.md)
                             ) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
@@ -225,7 +226,7 @@ fun OpenFolderLayer(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                         ) {
                             var deleteFile by remember { mutableStateOf<File?>(null) }
                             var deleteJob by remember { mutableStateOf<Job?>(null) }
@@ -240,8 +241,8 @@ fun OpenFolderLayer(
                                         state = scrollState.scrollIndicatorState!!,
                                         orientation = Orientation.Vertical,
                                     ),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                contentPadding = PaddingValues(all = 12.dp),
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+                                contentPadding = PaddingValues(all = AerixSpacing.md),
                                 state = scrollState,
                             ) {
                                 items(files) { file ->
@@ -305,9 +306,9 @@ fun OpenFolderLayer(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = 12.dp)
-                                        .padding(top = 12.dp, bottom = 10.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
+                                        .padding(horizontal = AerixSpacing.md)
+                                        .padding(top = AerixSpacing.md, bottom = AerixSpacing.smPlus),
+                                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md, Alignment.End)
                                 ) {
                                     //关闭按钮
                                     FilledTonalButton(
@@ -355,7 +356,7 @@ private fun FileItem(
     ) {
         BaseFileItem(
             file = file,
-            modifier = Modifier.padding(all = 12.dp),
+            modifier = Modifier.padding(all = AerixSpacing.md),
             suffix = {
                 IconButton(
                     onClick = onDelete

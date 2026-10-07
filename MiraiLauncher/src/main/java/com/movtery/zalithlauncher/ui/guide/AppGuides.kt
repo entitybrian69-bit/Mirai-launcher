@@ -42,6 +42,7 @@ import com.movtery.guide.GuideController
 import com.movtery.guide.NextTip
 import com.movtery.guide.NodeClickMode
 import com.movtery.guide.rememberGuide
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.utils.logging.Logger
@@ -223,7 +224,7 @@ fun NextTipLabel(tip: NextTip) {
             .alpha(0.8f)
     ) {
         Text(
-            modifier = Modifier.padding(all = 8.dp),
+            modifier = Modifier.padding(all = AerixSpacing.sm),
             text = when (tip) {
                 NextTip.TapBlank -> stringResource(R.string.guide_tip_blank)
                 NextTip.Finish -> stringResource(R.string.guide_tip_finish)
@@ -248,8 +249,8 @@ private fun GuideCard(
             .background(Color.Black.copy(alpha = 0.4f))
     ) {
         Column(
-            modifier = Modifier.padding(all = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(all = AerixSpacing.lgPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             CompositionLocalProvider(
                 LocalTextStyle provides MaterialTheme.typography.bodyMedium

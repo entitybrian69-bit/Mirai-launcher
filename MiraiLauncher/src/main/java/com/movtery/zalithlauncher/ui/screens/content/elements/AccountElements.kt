@@ -109,6 +109,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.account.Account
@@ -304,7 +305,7 @@ fun AccountItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = MaterialTheme.shapes.large)
-                .padding(all = 8.dp)
+                .padding(all = AerixSpacing.sm)
         ) {
             RadioButton(
                 selected = selected,
@@ -320,7 +321,7 @@ fun AccountItem(
                 avatarSize = avatarSize,
                 refreshKey = refreshKey
             )
-            Spacer(modifier = Modifier.width(18.dp))
+            Spacer(modifier = Modifier.width(AerixSpacing.lgPlus))
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
@@ -401,7 +402,7 @@ fun LoginMenuDialog(
     ) {
         BoxWithConstraints(
             modifier = Modifier
-                .padding(all = 16.dp)
+                .padding(all = AerixSpacing.lg)
                 .heightIn(max = rememberDialogMaxHeight())
                 .fillMaxHeight()
                 .fillMaxWidth(0.6f),
@@ -409,7 +410,7 @@ fun LoginMenuDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .fillMaxWidth()
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight())),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -429,9 +430,9 @@ fun LoginMenuDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .verticalScroll(rememberScrollState())
-                                .padding(vertical = 12.dp)
-                                .padding(start = 12.dp, end = 6.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                .padding(vertical = AerixSpacing.md)
+                                .padding(start = AerixSpacing.md, end = AerixSpacing.smCompact),
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                         ) {
                             //微软登录
                             LoginItem(
@@ -456,12 +457,12 @@ fun LoginMenuDialog(
                         LazyColumn(
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(
-                                start = 6.dp,
-                                top = 12.dp,
-                                end = 12.dp,
-                                bottom = 12.dp
+                                start = AerixSpacing.smCompact,
+                                top = AerixSpacing.md,
+                                end = AerixSpacing.md,
+                                bottom = AerixSpacing.md
                             ),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                         ) {
                             item {
                                 //添加认证服务器
@@ -504,8 +505,8 @@ fun LoginMenuDialog(
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                            .padding(bottom = 8.dp),
+                            .padding(horizontal = AerixSpacing.md)
+                            .padding(bottom = AerixSpacing.sm),
                         onClick = onDismissRequest
                     ) {
                         Text(stringResource(R.string.generic_close))
@@ -561,7 +562,7 @@ private fun PreviewLoginItem() {
             LoginItem(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 32.dp),
+                    .padding(all = AerixSpacing.xxxl),
                 title = stringResource(R.string.account_type_microsoft),
                 onClick = {}
             )
@@ -601,13 +602,13 @@ fun MicrosoftLoginTipDialog(
                     text = stringResource(R.string.account_supporting_microsoft_tip_link_make_gameid)
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
 
             Text(
                 text = stringResource(R.string.account_supporting_microsoft_tip_hint_t1),
                 style = MaterialTheme.typography.bodyMedium
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.xs))
 
             Text(
                 text = buildAnnotatedString {
@@ -624,7 +625,7 @@ fun MicrosoftLoginTipDialog(
                 },
                 style = MaterialTheme.typography.bodyMedium
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
 
             Text(
                 text = buildAnnotatedString {
@@ -674,7 +675,7 @@ fun LocalLoginDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -683,14 +684,14 @@ fun LocalLoginDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = stringResource(R.string.account_local_create_account),
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     SingleLineTextCheck(
                         text = userName,
@@ -717,7 +718,7 @@ fun LocalLoginDialog(
                         shape = MaterialTheme.shapes.large
                     )
 
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = isUsernameValid,
@@ -759,7 +760,7 @@ fun OtherServerLoginDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -768,14 +769,14 @@ fun OtherServerLoginDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = server.serverName,
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     val scrollState = rememberScrollState()
                     Column(
@@ -820,7 +821,7 @@ fun OtherServerLoginDialog(
                             shape = MaterialTheme.shapes.large
                         )
 
-                        Spacer(modifier = Modifier.size(8.dp))
+                        Spacer(modifier = Modifier.size(AerixSpacing.sm))
                         /** 是否显示密码 */
                         var showPassword by rememberSaveable { mutableStateOf(false) }
 
@@ -896,11 +897,11 @@ fun OtherServerLoginDialog(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(1f),
@@ -961,7 +962,7 @@ fun OtherAccountReloginDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -970,21 +971,21 @@ fun OtherAccountReloginDialog(
                 shadowElevation = 6.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = account.accountType ?: stringResource(R.string.account_relogin_title),
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(R.string.account_relogin_password_message, account.username),
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    Spacer(modifier = Modifier.size(12.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.md))
 
                     OwnOutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
@@ -1028,7 +1029,7 @@ fun OtherAccountReloginDialog(
                     )
 
                     error?.let { th ->
-                        Spacer(modifier = Modifier.size(8.dp))
+                        Spacer(modifier = Modifier.size(AerixSpacing.sm))
                         AndroidStringText(
                             text = accountErrorText(th),
                             style = MaterialTheme.typography.bodySmall.copy(
@@ -1037,11 +1038,11 @@ fun OtherAccountReloginDialog(
                         )
                     }
 
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(1f),
@@ -1180,7 +1181,7 @@ fun ChangeSkinDialog(
     ) {
         BoxWithConstraints(
             modifier = Modifier
-                .padding(all = 16.dp)
+                .padding(all = AerixSpacing.lg)
                 .heightIn(max = rememberDialogMaxHeight())
                 .fillMaxHeight()
                 .fillMaxWidth(0.6f),
@@ -1188,7 +1189,7 @@ fun ChangeSkinDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(min = (maxHeight * 0.85f).coerceAtMost(rememberDialogMaxHeight()))
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight())),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -1198,13 +1199,13 @@ fun ChangeSkinDialog(
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(16.dp),
+                        .padding(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     Row(
                         modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
                         Box(
                             modifier = Modifier
@@ -1281,7 +1282,7 @@ fun ChangeSkinDialog(
                                 .weight(1f)
                                 .fillMaxHeight()
                                 .verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                         ) {
                             //更换皮肤：选择皮肤图片文件
                             when (skinState) {
@@ -1313,7 +1314,7 @@ fun ChangeSkinDialog(
                                 is ChangeSkin.ChangeSkinData -> {
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
-                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                                     ) {
                                         Text(
                                             text = stringResource(R.string.account_change_skin_arm_style),
@@ -1322,7 +1323,7 @@ fun ChangeSkinDialog(
                                         //选择样式
                                         Column(
                                             modifier = Modifier.fillMaxWidth(),
-                                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                                         ) {
                                             //粗臂
                                             RadioCard(
@@ -1453,7 +1454,7 @@ fun ChangeSkinDialog(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(1f),
@@ -1617,11 +1618,11 @@ fun CapeListItem(
                 contentDescription = null
             )
 
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(AerixSpacing.md))
         }
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             AndroidStringText(
                 text = name,

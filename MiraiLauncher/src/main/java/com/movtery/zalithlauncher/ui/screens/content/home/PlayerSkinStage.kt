@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.game.account.AccountsManager
 import com.movtery.zalithlauncher.game.account.getAccountTypeName
 import com.movtery.zalithlauncher.ui.components.SkinPreview3D
@@ -42,7 +43,7 @@ fun PlayerSkinStage(modifier: Modifier = Modifier) {
             interactionEnabled = true,
             azimuth = 18,
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(AerixSpacing.sm))
         Text(
             text = currentAccount?.username ?: "No account",
             color = MaterialTheme.colorScheme.onSurface,

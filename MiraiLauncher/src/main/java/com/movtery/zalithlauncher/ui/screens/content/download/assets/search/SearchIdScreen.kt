@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.favorites.FavoriteProjectsRepository
 import com.movtery.zalithlauncher.game.download.assets.mapExceptionToMessage
@@ -236,7 +237,7 @@ private fun Content(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
     ) {
         ContentResult(
             modifier = Modifier
@@ -248,14 +249,14 @@ private fun Content(
             onView = onView,
             openLink = openLink,
             defaultClasses = defaultClasses,
-            contentPadding = PaddingValues(start = 12.dp, top = 12.dp, bottom = 12.dp)
+            contentPadding = PaddingValues(start = AerixSpacing.md, top = AerixSpacing.md, bottom = AerixSpacing.md)
         )
 
         ContentFilter(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
-                .padding(top = 12.dp, end = 12.dp, bottom = 12.dp),
+                .padding(top = AerixSpacing.md, end = AerixSpacing.md, bottom = AerixSpacing.md),
             isVisible = isVisible,
             onSearch = onSearch,
             projectId = projectId,
@@ -323,7 +324,7 @@ private fun ContentResult(
                 )
             }
             is SearchIdOperation.Error -> {
-                Box(modifier.padding(all = 12.dp)) {
+                Box(modifier.padding(all = AerixSpacing.md)) {
                     ScalingLabel(
                         modifier = Modifier.align(Alignment.Center),
                         text = {
@@ -349,7 +350,7 @@ private fun IconTip(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         Icon(
             modifier = Modifier.size(68.dp),
@@ -387,7 +388,7 @@ private fun ResultLayout(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
         contentPadding = contentPadding
     ) {
         item {
@@ -428,9 +429,9 @@ private fun ResultLayout(
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(all = 12.dp)
+                            .padding(all = AerixSpacing.md)
                             .fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(
                             text = stringResource(R.string.download_assets_links),
@@ -439,7 +440,7 @@ private fun ResultLayout(
 
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                         ) {
                             ProjectUrlsContent(
                                 platform = platform,
@@ -490,7 +491,7 @@ private fun ContentFilter(
     Column(
         modifier = modifier.offset { IntOffset(x = xOffset.roundToPx(), y = 0) },
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
     ) {
         OwnOutlinedTextField(
             modifier = Modifier.fillMaxWidth(),

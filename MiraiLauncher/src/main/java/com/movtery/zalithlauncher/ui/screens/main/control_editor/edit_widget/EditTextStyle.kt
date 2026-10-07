@@ -38,6 +38,7 @@ import com.movtery.layer_controller.observable.ObservableNormalData
 import com.movtery.layer_controller.observable.ObservableTextData
 import com.movtery.layer_controller.observable.ObservableTranslatableString
 import com.movtery.layer_controller.observable.ObservableWidget
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.screens.TitledNavKey
@@ -58,10 +59,10 @@ fun EditTextStyle(
     ) {
         LazyColumn(
             modifier = Modifier
-                .padding(start = 4.dp, end = 8.dp)
+                .padding(start = AerixSpacing.xs, end = AerixSpacing.sm)
                 .fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            contentPadding = PaddingValues(vertical = AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             when(data) {
                 is ObservableTextData -> {

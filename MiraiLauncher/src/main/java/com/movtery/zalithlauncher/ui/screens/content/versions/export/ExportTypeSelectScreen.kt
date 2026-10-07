@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.version.export.PackType
@@ -72,8 +73,8 @@ fun ExportTypeSelectScreen(
         AnimatedLazyColumn(
             isVisible = isVisible,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(all = AerixSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
         ) { scope ->
             animatedItem(scope) { yOffset ->
                 WarningCard(
@@ -117,7 +118,7 @@ fun ExportTypeSelectScreen(
                     modifier = Modifier
                         .offset { IntOffset(x = 0, y = yOffset.roundToPx()) }
                         .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
                 ) {
                     //MCBBS
                     TypeItem(
@@ -187,9 +188,9 @@ private fun TypeItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 16.dp),
+                .padding(all = AerixSpacing.lg),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
         ) {
             //图标
             Image(

@@ -84,6 +84,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.game.versioninfo.MinecraftVersion
@@ -292,15 +295,15 @@ fun SelectGameVersionScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 4.dp, vertical = 2.dp),
-                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                            .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus)
                     ) {
                         // LEFT PANE: Instance Info & Minecraft Version List (Mockup #5)
                         Column(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -320,7 +323,7 @@ fun SelectGameVersionScreen(
                                     Icon(
                                         painter = painterResource(R.drawable.ic_refresh),
                                         contentDescription = stringResource(R.string.generic_refresh),
-                                        tint = Color(0xFF9CA3AF),
+                                        tint = AerixSurface.textSecondary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -330,24 +333,24 @@ fun SelectGameVersionScreen(
                                 text = "Instance Info",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixSurface.textPrimary
                             )
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                             ) {
                                 Surface(
-                                    shape = RoundedCornerShape(10.dp),
-                                    color = Color(0xFF21242B),
-                                    border = BorderStroke(1.dp, Color(0xFF2E333E))
+                                    shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                    color = AerixSurface.panelRaised,
+                                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
                                 ) {
                                     Image(
                                         painter = painterResource(R.drawable.img_old_grass_block),
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .padding(6.dp)
+                                            .padding(AerixSpacing.smCompact)
                                             .size(28.dp)
                                     )
                                 }
@@ -356,10 +359,10 @@ fun SelectGameVersionScreen(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(40.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(Color(0xFF21242B))
-                                        .border(1.dp, Color(0xFF2E333E), RoundedCornerShape(10.dp))
-                                        .padding(horizontal = 12.dp),
+                                        .clip(RoundedCornerShape(AerixRadii.controlSmall))
+                                        .background(AerixSurface.panelRaised)
+                                        .border(AerixSpacing.hairline, AerixSurface.borderSoft, RoundedCornerShape(AerixRadii.controlSmall))
+                                        .padding(horizontal = AerixSpacing.md),
                                     contentAlignment = Alignment.CenterStart
                                 ) {
                                     BasicTextField(
@@ -381,7 +384,7 @@ fun SelectGameVersionScreen(
                                 text = "Minecraft Version",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE5E7EB)
+                                color = AerixSurface.textPrimary
                             )
 
                             // Filter Pills: Releases, Snapshots, Old Beta + compact search
@@ -389,7 +392,7 @@ fun SelectGameVersionScreen(
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                             ) {
                                 val filterItems = listOf(
                                     Triple("Releases", versionFilter.release) {
@@ -404,20 +407,20 @@ fun SelectGameVersionScreen(
                                 )
                                 filterItems.forEach { (label, active, onToggle) ->
                                     Surface(
-                                        shape = RoundedCornerShape(14.dp),
-                                        color = if (active) MiraiThemeManager.currentAccent() else Color(0xFF21242B),
+                                        shape = RoundedCornerShape(AerixRadii.cardSmall),
+                                        color = if (active) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised,
                                         border = BorderStroke(
-                                            1.dp,
-                                            if (active) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                                            AerixSpacing.hairline,
+                                            if (active) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised
                                         ),
                                         onClick = onToggle
                                     ) {
                                         Text(
                                             text = label,
-                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                            modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
                                             fontSize = 11.sp,
                                             fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Medium,
-                                            color = if (active) Color(0xFF06210F) else Color(0xFFD1D5DB)
+                                            color = if (active) AerixSurface.onAccent else AerixSurface.textSecondary
                                         )
                                     }
                                 }
@@ -426,17 +429,17 @@ fun SelectGameVersionScreen(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(28.dp)
-                                        .clip(RoundedCornerShape(14.dp))
-                                        .background(Color(0xFF21242B))
-                                        .border(1.dp, Color(0xFF2E333E), RoundedCornerShape(14.dp))
-                                        .padding(horizontal = 8.dp),
+                                        .clip(RoundedCornerShape(AerixRadii.cardSmall))
+                                        .background(AerixSurface.panelRaised)
+                                        .border(AerixSpacing.hairline, AerixSurface.borderSoft, RoundedCornerShape(AerixRadii.cardSmall))
+                                        .padding(horizontal = AerixSpacing.sm),
                                     contentAlignment = Alignment.CenterStart
                                 ) {
                                     if (versionFilter.id.isEmpty()) {
                                         Text(
                                             text = "Filter...",
                                             fontSize = 11.sp,
-                                            color = Color(0xFF8A909E)
+                                            color = AerixSurface.textMuted
                                         )
                                     }
                                     BasicTextField(
@@ -459,8 +462,8 @@ fun SelectGameVersionScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(6.dp),
-                                contentPadding = PaddingValues(bottom = 8.dp)
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
+                                contentPadding = PaddingValues(bottom = AerixSpacing.sm)
                             ) {
                                 items(
                                     items = versions,
@@ -471,11 +474,11 @@ fun SelectGameVersionScreen(
 
                                     Surface(
                                         modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(10.dp),
-                                        color = if (isSelected) Color(0xFF172D22) else Color(0xFF21242B),
+                                        shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                        color = if (isSelected) AerixSurface.accentContainer else AerixSurface.panelRaised,
                                         border = BorderStroke(
-                                            width = if (isSelected) 1.5.dp else 1.dp,
-                                            color = if (isSelected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                                            width = if (isSelected) 1.5.dp else AerixSpacing.hairline,
+                                            color = if (isSelected) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised
                                         ),
                                         onClick = {
                                             selectedVersionId = verId
@@ -484,7 +487,7 @@ fun SelectGameVersionScreen(
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(horizontal = 12.dp, vertical = 9.dp),
+                                                .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.smNarrow),
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
@@ -499,15 +502,15 @@ fun SelectGameVersionScreen(
 
                                             if (isSelected) {
                                                 Surface(
-                                                    shape = RoundedCornerShape(10.dp),
-                                                    color = Color(0xFF1F4732)
+                                                    shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                                    color = AerixSurface.accentContainer
                                                 ) {
                                                     Text(
                                                         text = "Selected",
-                                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                                        modifier = Modifier.padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xxs),
                                                         fontSize = 10.sp,
                                                         fontWeight = FontWeight.Bold,
-                                                        color = Color(0xFF6EE7B7)
+                                                        color = AerixSurface.success
                                                     )
                                                 }
                                             }
@@ -524,7 +527,7 @@ fun SelectGameVersionScreen(
                                 .fillMaxHeight(),
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
                                 Text(
                                     text = "Modloader",
                                     fontSize = 14.sp,
@@ -540,7 +543,7 @@ fun SelectGameVersionScreen(
                                 loaderRows.forEach { row ->
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                                     ) {
                                         row.forEach { (loaderName, subLabel) ->
                                             val isSelected = selectedLoader == loaderName
@@ -548,18 +551,18 @@ fun SelectGameVersionScreen(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .height(74.dp),
-                                                shape = RoundedCornerShape(12.dp),
-                                                color = if (isSelected) Color(0xFF1B2B24) else Color(0xFF21242B),
+                                                shape = RoundedCornerShape(AerixRadii.control),
+                                                color = if (isSelected) AerixSurface.accentContainer else AerixSurface.panelRaised,
                                                 border = BorderStroke(
-                                                    width = if (isSelected) 1.5.dp else 1.dp,
-                                                    color = if (isSelected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
+                                                    width = if (isSelected) 1.5.dp else AerixSpacing.hairline,
+                                                    color = if (isSelected) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised
                                                 ),
                                                 onClick = { selectedLoader = loaderName }
                                             ) {
                                                 Column(
                                                     modifier = Modifier
                                                         .fillMaxSize()
-                                                        .padding(8.dp),
+                                                        .padding(AerixSpacing.sm),
                                                     horizontalAlignment = Alignment.CenterHorizontally,
                                                     verticalArrangement = Arrangement.Center
                                                 ) {
@@ -573,7 +576,7 @@ fun SelectGameVersionScreen(
                                                         Text(
                                                             text = subLabel,
                                                             fontSize = 11.sp,
-                                                            color = if (isSelected) MiraiThemeManager.currentAccent() else Color(0xFF9CA3AF)
+                                                            color = if (isSelected) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary
                                                         )
                                                     }
                                                 }
@@ -588,10 +591,10 @@ fun SelectGameVersionScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(44.dp),
-                                shape = RoundedCornerShape(22.dp),
+                                shape = RoundedCornerShape(AerixRadii.panel),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MiraiThemeManager.currentAccent(),
-                                    contentColor = Color(0xFF06210F)
+                                    contentColor = AerixSurface.onAccent
                                 )
                             ) {
                                 Text(
@@ -639,7 +642,7 @@ private fun VersionHeader(
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 val scrollState = rememberScrollState()
                 Row(
@@ -651,7 +654,7 @@ private fun VersionHeader(
                         .widthIn(max = this@BoxWithConstraints.maxWidth / 5 * 3) //3/5
                         .horizontalScroll(scrollState),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     //版本筛选条件
                     VersionTypeItem(
@@ -688,7 +691,7 @@ private fun VersionHeader(
                 Row(
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                 ) {
                     SimpleTextInputField(
                         modifier = Modifier.weight(1f),
@@ -754,14 +757,14 @@ private fun VersionList(
             state = scrollState.scrollIndicatorState!!,
             orientation = Orientation.Vertical,
         ),
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+        contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
         state = scrollState,
     ) {
         items(versions) { version ->
             VersionItemLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp),
+                    .padding(vertical = AerixSpacing.smCompact),
                 version = version,
                 onClick = {
                     onVersionSelect(version.version.id)
@@ -804,7 +807,7 @@ private fun VersionItemLayout(
             modifier = Modifier
                 .clip(shape = shape)
                 .backgroundGlass(blur, color, influencedByBackground)
-                .padding(all = 12.dp),
+                .padding(all = AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon?.let { versionIcon ->
@@ -813,16 +816,16 @@ private fun VersionItemLayout(
                     painter = versionIcon,
                     contentDescription = null
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(AerixSpacing.md))
             }
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                 ) {
                     Text(
                         text = version.version.id,

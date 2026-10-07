@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,8 +46,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -83,6 +84,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.JsonSyntaxException
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
 import com.movtery.zalithlauncher.game.download.game.GameDownloadInfo
@@ -92,7 +96,6 @@ import com.movtery.zalithlauncher.game.download.jvm_server.JvmCrashException
 import com.movtery.zalithlauncher.game.download.jvm_server.isProcessStartRefused
 import com.movtery.zalithlauncher.game.optimization.JvmGcAutoTunerDialog
 import com.movtery.zalithlauncher.game.optimization.MobileFpsBoosterDialog
-import com.movtery.zalithlauncher.game.optimization.ModDependencyResolverDialog
 import com.movtery.zalithlauncher.game.version.download.DownloadFailedException
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
@@ -271,8 +274,8 @@ fun VersionSettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) }
-                .padding(horizontal = 14.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             // 1. Compact Mobile Instance Header Row (Mockup #3)
             ModrinthInstanceHeroBanner(
@@ -336,7 +339,7 @@ private fun ModrinthInstanceHeroBanner(
     val ramMb = remember(version) { version.getRamAllocation(context) }
     var showFpsBooster by remember { mutableStateOf(false) }
     var showJreGcTuner by remember { mutableStateOf(false) }
-    var showModResolver by remember { mutableStateOf(false) }
+    var showActionsMenu by remember { mutableStateOf(false) }
 
     if (showFpsBooster) {
         MobileFpsBoosterDialog(
@@ -352,183 +355,147 @@ private fun ModrinthInstanceHeroBanner(
         )
     }
 
-    if (showModResolver) {
-        ModDependencyResolverDialog(
-            version = version,
-            onDismiss = { showModResolver = false }
-        )
-    }
-
-    Row(
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        shape = RoundedCornerShape(AerixRadii.card),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
     ) {
-        // Back Arrow Button
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
-            contentColor = Color.White,
-            onClick = onBack
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
-            Box(
-                modifier = Modifier.size(34.dp),
-                contentAlignment = Alignment.Center
+            Surface(
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = AerixSurface.panelRaised,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                contentColor = Color.White,
+                onClick = onBack
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_back),
-                    contentDescription = stringResource(R.string.generic_back),
-                    modifier = Modifier.size(18.dp)
+                Box(
+                    modifier = Modifier.size(34.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_back),
+                        contentDescription = stringResource(R.string.generic_back),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+
+            Surface(
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = AerixSurface.panelRaised,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+            ) {
+                VersionIconImage(
+                    version = version,
+                    modifier = Modifier
+                        .padding(AerixSpacing.xs)
+                        .size(28.dp)
                 )
             }
-        }
 
-        // Instance Icon
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E))
-        ) {
-            VersionIconImage(
-                version = version,
-                modifier = Modifier
-                    .padding(5.dp)
-                    .size(28.dp)
-            )
-        }
-
-        // Title + Inline Subtitle
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(1.dp)
-        ) {
-            Text(
-                text = version.getVersionName(),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = "$loaderName $mcVer • $ramMb MB",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color(0xFF9CA3AF),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-
-        // Smart Mod Dependency & Conflict Resolver Button (Feature #2)
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
-            onClick = { showModResolver = true }
-        ) {
-            Row(
-                modifier = Modifier
-                    .height(34.dp)
-                    .padding(horizontal = 9.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.hairline)
             ) {
                 Text(
-                    text = "🛡️ Mod Check",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFE5E7EB)
-                )
-            }
-        }
-
-        // JRE Auto-Tuner & GC Optimizer Button (Feature #17)
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
-            onClick = { showJreGcTuner = true }
-        ) {
-            Row(
-                modifier = Modifier
-                    .height(34.dp)
-                    .padding(horizontal = 9.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "☕ JRE & GC",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFE5E7EB)
-                )
-            }
-        }
-
-        // 1-Tap Mobile FPS Booster Button
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = activeAccent.copy(alpha = 0.16f),
-            border = BorderStroke(1.dp, activeAccent.copy(alpha = 0.7f)),
-            onClick = { showFpsBooster = true }
-        ) {
-            Row(
-                modifier = Modifier
-                    .height(34.dp)
-                    .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "⚡ Boost FPS",
-                    style = MaterialTheme.typography.labelSmall,
+                    text = version.getVersionName(),
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.ExtraBold,
-                    color = activeAccent
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "$loaderName $mcVer • $ramMb MB",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AerixSurface.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
-        }
 
-        // Open Folder Button
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF21242B),
-            border = BorderStroke(1.dp, Color(0xFF2E333E)),
-            contentColor = Color(0xFFE5E7EB),
-            onClick = onOpenFolder
-        ) {
-            Box(
-                modifier = Modifier.size(34.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_folder_outlined),
-                    contentDescription = "Folder",
-                    modifier = Modifier.size(18.dp)
-                )
+            InstancePlayButton(
+                activeAccent = activeAccent,
+                onPlay = onPlay
+            )
+
+            Box {
+                IconButton(
+                    onClick = { showActionsMenu = true },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_more_vert),
+                        contentDescription = stringResource(R.string.generic_more),
+                        tint = AerixSurface.textPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showActionsMenu,
+                    onDismissRequest = { showActionsMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Boost FPS") },
+                        onClick = {
+                            showActionsMenu = false
+                            showFpsBooster = true
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("JRE & GC") },
+                        onClick = {
+                            showActionsMenu = false
+                            showJreGcTuner = true
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Open instance folder") },
+                        onClick = {
+                            showActionsMenu = false
+                            onOpenFolder()
+                        }
+                    )
+                }
             }
         }
+    }
+}
 
-        // Dynamic Accent '▶ Play' Button
-        Button(
-            onClick = onPlay,
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = activeAccent,
-                contentColor = Color(0xFF06210F)
-            ),
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-            modifier = Modifier.height(34.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_play_arrow_filled),
-                contentDescription = stringResource(R.string.main_launch_game),
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(Modifier.width(4.dp))
-            Text(
-                text = "Play",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.ExtraBold
-            )
-        }
+@Composable
+private fun InstancePlayButton(
+    activeAccent: Color,
+    onPlay: () -> Unit
+) {
+    Button(
+        onClick = onPlay,
+        shape = RoundedCornerShape(AerixRadii.controlSmall),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = activeAccent,
+            contentColor = AerixSurface.onAccent
+        ),
+        contentPadding = PaddingValues(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
+        modifier = Modifier.height(34.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_play_arrow_filled),
+            contentDescription = stringResource(R.string.main_launch_game),
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(Modifier.width(AerixSpacing.xs))
+        Text(
+            text = "Play",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.ExtraBold
+        )
     }
 }
 
@@ -560,28 +527,28 @@ private fun ModrinthInstanceSubTabs(
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         tabs.forEach { tab ->
             val selected = versionsScreenKey === tab.key
             val bgColor by animateColorAsState(
-                targetValue = if (selected) activeAccent else Color(0xFF21242B),
+                targetValue = if (selected) activeAccent else AerixSurface.panelRaised,
                 animationSpec = tween(140),
                 label = "subTabBg"
             )
             val textColor by animateColorAsState(
-                targetValue = if (selected) Color(0xFF06210F) else Color(0xFFE5E7EB),
+                targetValue = if (selected) AerixSurface.onAccent else AerixSurface.textPrimary,
                 animationSpec = tween(140),
                 label = "subTabText"
             )
 
             Surface(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(AerixRadii.card),
                 color = bgColor,
                 border = BorderStroke(
-                    1.dp,
-                    if (selected) activeAccent else Color(0xFF2E333E)
+                    AerixSpacing.hairline,
+                    if (selected) activeAccent else AerixSurface.borderSoft
                 ),
                 onClick = {
                     if (tab.key == NormalNavKey.Versions.UpdateLoader) {
@@ -596,7 +563,10 @@ private fun ModrinthInstanceSubTabs(
             ) {
                 Text(
                     text = tab.label,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                    modifier = Modifier.padding(
+                        horizontal = AerixSpacing.smPlus,
+                        vertical = AerixSpacing.xsPlus
+                    ),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
                     color = textColor
@@ -827,7 +797,7 @@ private fun UpdateLoaderOperation(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(text = stringResource(R.string.versions_update_loader_diff_message))
 
@@ -909,7 +879,7 @@ private fun UpdateLoaderOperation(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(text = stringResource(R.string.versions_update_loader_error_message))
                         Text(text = message)

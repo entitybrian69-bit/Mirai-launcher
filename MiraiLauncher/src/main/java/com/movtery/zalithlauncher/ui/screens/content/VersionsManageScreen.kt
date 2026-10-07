@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,11 @@ package com.movtery.zalithlauncher.ui.screens.content
 
 import android.os.Environment
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -46,20 +39,23 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -79,7 +75,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -91,6 +86,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.game.path.GamePathManager
@@ -101,9 +100,14 @@ import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.game.version.installed.cleanup.GameAssetCleaner
 import com.movtery.zalithlauncher.ui.activities.MainActivity
 import com.movtery.zalithlauncher.ui.base.BaseScreen
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
+import com.movtery.zalithlauncher.ui.components.liquidGlass
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.ScalingActionButton
+import com.movtery.zalithlauncher.ui.screens.NestedNavKey
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
+import com.movtery.zalithlauncher.ui.screens.TitledNavKey
 import com.movtery.zalithlauncher.ui.screens.content.elements.CleanupOperation
 import com.movtery.zalithlauncher.ui.screens.content.elements.GamePathItemLayout
 import com.movtery.zalithlauncher.ui.screens.content.elements.GamePathOperation
@@ -112,7 +116,6 @@ import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
 import com.movtery.zalithlauncher.ui.screens.content.elements.VersionsOperation
 import com.movtery.zalithlauncher.ui.screens.content.home.ModrinthCompactSearchField
 import com.movtery.zalithlauncher.ui.screens.content.home.ModrinthMetaPill
-import com.movtery.zalithlauncher.ui.screens.content.home.resolveRendererShortLabel
 import com.movtery.zalithlauncher.utils.animation.swapAnimateDpAsState
 import com.movtery.zalithlauncher.utils.canHandlePermission
 import com.movtery.zalithlauncher.utils.checkStoragePermissions
@@ -138,6 +141,8 @@ private enum class LibrarySortMode(val label: String) {
     NAME_ASC("Sort: Name (A–Z)"),
     MC_VERSION("Sort: MC Version")
 }
+
+private fun Version.managementKey(): String = "${getGameHome()}\u0000${getVersionName()}"
 
 private class VersionsScreenViewModel : ViewModel() {
     var versionCategory by mutableStateOf(VersionCategory.ALL)
@@ -263,6 +268,14 @@ fun VersionsManageScreen(
     val versions by rememberVersions(VersionsManager.versions, viewModel)
     val currentVersion by VersionsManager.currentVersion.collectAsStateWithLifecycle()
     val isRefreshing by VersionsManager.isRefreshing.collectAsStateWithLifecycle()
+    var selectedVersionKey by rememberSaveable { mutableStateOf<String?>(null) }
+    val selectedVersion = versions.firstOrNull { it.managementKey() == selectedVersionKey }
+        ?: currentVersion?.let { active -> versions.firstOrNull { it.managementKey() == active.managementKey() } }
+        ?: versions.firstOrNull()
+    LaunchedEffect(selectedVersionKey, selectedVersion) {
+        val resolvedKey = selectedVersion?.managementKey()
+        if (selectedVersionKey != resolvedKey) selectedVersionKey = resolvedKey
+    }
     var showGamePathDrawer by rememberSaveable { mutableStateOf(false) }
 
     GamePathOperation(
@@ -285,8 +298,8 @@ fun VersionsManageScreen(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(240.dp),
-                    color = Color(0xFF17191F),
-                    border = BorderStroke(1.dp, Color(0xFF282C36))
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
                 ) {
                     LeftMenu(
                         isVisible = isVisible,
@@ -321,6 +334,21 @@ fun VersionsManageScreen(
                 isRefreshing = isRefreshing,
                 versions = versions,
                 currentVersion = currentVersion,
+                selectedVersion = selectedVersion,
+                selectedVersionKey = selectedVersionKey,
+                onSelectVersion = { version -> selectedVersionKey = version.managementKey() },
+                openVersionSubscreen = { version, destination ->
+                    val versionSettings = NestedNavKey.VersionSettings(version)
+                    versionSettings.clearWith(destination)
+                    backScreenViewModel.mainScreen.navigateTo(versionSettings, useClassEquality = true)
+                },
+                onOpenFolder = { version ->
+                    eventViewModel.sendEvent(
+                        EventViewModel.Event.OpenFileManager(
+                            rootPath = version.getGameDir().absolutePath
+                        )
+                    )
+                },
                 versionCategory = viewModel.versionCategory,
                 onCategoryChange = { viewModel.changeCategory(it) },
                 allVersionsCount = viewModel.allVersionsCount,
@@ -397,10 +425,10 @@ private fun LeftMenu(
                 .fillMaxWidth()
                 .weight(1f),
             contentPadding = PaddingValues(
-                start = 12.dp,
-                end = 12.dp,
-                top = 12.dp,
-                bottom = 12.dp
+                start = AerixSpacing.md,
+                end = AerixSpacing.md,
+                top = AerixSpacing.md,
+                bottom = AerixSpacing.md
             )
         ) {
             items(gamePaths, key = { it.id }) { pathItem ->
@@ -438,8 +466,8 @@ private fun LeftMenu(
 
         ScalingActionButton(
             modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .padding(top = 8.dp)
+                .padding(horizontal = AerixSpacing.md)
+                .padding(top = AerixSpacing.sm)
                 .fillMaxWidth(),
             onClick = {
                 (context as? MainActivity)?.let { activity ->
@@ -460,7 +488,7 @@ private fun LeftMenu(
 
         ScalingActionButton(
             modifier = Modifier
-                .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 12.dp)
+                .padding(start = AerixSpacing.md, end = AerixSpacing.md, top = AerixSpacing.sm, bottom = AerixSpacing.md)
                 .fillMaxWidth(),
             onClick = onCleanupGameFiles
         ) {
@@ -477,6 +505,11 @@ private fun VersionsLayout(
     isRefreshing: Boolean,
     versions: List<Version>,
     currentVersion: Version?,
+    selectedVersion: Version?,
+    selectedVersionKey: String?,
+    onSelectVersion: (Version) -> Unit,
+    openVersionSubscreen: (Version, TitledNavKey) -> Unit,
+    onOpenFolder: (Version) -> Unit,
     versionCategory: VersionCategory,
     onCategoryChange: (VersionCategory) -> Unit,
     allVersionsCount: Int,
@@ -557,228 +590,498 @@ private fun VersionsLayout(
             )
 
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                val columns = if (maxWidth >= 440.dp) 2 else 1
+                val compactToolbar = maxWidth < 520.dp
+                val landscapeManagement = maxWidth >= 760.dp && maxWidth > maxHeight
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    // Top Mobile Library Toolbar (Mockup #2: Search + Sort Icon + New Instance CTA)
+                if (landscapeManagement) {
+                    val compactWideToolbar = maxWidth < 1080.dp
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
-                        ModrinthCompactSearchField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            placeholder = "Search instances...",
-                            modifier = Modifier.weight(1f)
-                        )
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(0.39f),
+                            shape = RoundedCornerShape(AerixRadii.card),
+                            color = AerixSurface.panel,
+                            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(AerixSpacing.md),
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = "Instance Management",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = Color.White,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = "Manage your Minecraft instances",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = AerixSurface.textSecondary,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                    Text(
+                                        text = "${displayedVersions.size}",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = AerixSurface.textSecondary
+                                    )
+                                }
 
-                        Box {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                                ) {
+                                    ModrinthCompactSearchField(
+                                        value = searchQuery,
+                                        onValueChange = { searchQuery = it },
+                                        placeholder = "Search instances...",
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Box {
+                                        Surface(
+                                            modifier = Modifier.size(34.dp),
+                                            shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                            color = AerixSurface.panelRaised,
+                                            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                                            onClick = { showSortMenu = true }
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Icon(
+                                                    painter = painterResource(R.drawable.ic_sort),
+                                                    contentDescription = "Sort",
+                                                    tint = AerixSurface.textSecondary,
+                                                    modifier = Modifier.size(17.dp)
+                                                )
+                                            }
+                                        }
+                                        DropdownMenu(
+                                            expanded = showSortMenu,
+                                            onDismissRequest = { showSortMenu = false }
+                                        ) {
+                                            LibrarySortMode.entries.forEach { mode ->
+                                                DropdownMenuItem(
+                                                    text = { Text(mode.label) },
+                                                    onClick = {
+                                                        sortMode = mode
+                                                        showSortMenu = false
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Surface(
+                                        modifier = Modifier.size(34.dp),
+                                        shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                        color = if (showGamePathDrawer) AerixSurface.accentContainer else AerixSurface.panelRaised,
+                                        border = BorderStroke(
+                                            AerixSpacing.hairline,
+                                            if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixSurface.borderSoft
+                                        ),
+                                        onClick = onToggleGamePathDrawer
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                painter = painterResource(R.drawable.ic_folder_outlined),
+                                                contentDescription = "Directories",
+                                                tint = if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary,
+                                                modifier = Modifier.size(17.dp)
+                                            )
+                                        }
+                                    }
+                                    Surface(
+                                        modifier = Modifier
+                                            .height(34.dp)
+                                            .widthIn(min = 34.dp),
+                                        shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                        color = MiraiThemeManager.currentAccent(),
+                                        contentColor = AerixSurface.onAccent,
+                                        onClick = onInstall
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(
+                                                horizontal = if (compactWideToolbar) AerixSpacing.sm else AerixSpacing.md,
+                                                vertical = AerixSpacing.xs
+                                            ),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(R.drawable.ic_add),
+                                                contentDescription = if (compactWideToolbar) "Install instance" else null,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            if (!compactWideToolbar) {
+                                                Text("Install", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                                            }
+                                        }
+                                    }
+                                }
+
+                                AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
+                                    LibraryFilterGroup.entries.forEach { group ->
+                                        val selected = selectedFilter == group
+                                        AerixPillTab(
+                                            selected = selected,
+                                            onClick = { selectedFilter = group }
+                                        ) {
+                                            Text(
+                                                text = group.label,
+                                                style = MaterialTheme.typography.labelSmall,
+                                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                                maxLines = 1
+                                            )
+                                        }
+                                    }
+                                }
+
+                                if (displayedVersions.isEmpty()) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(1f),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = if (versions.isEmpty()) {
+                                                stringResource(R.string.versions_manage_no_versions)
+                                            } else {
+                                                "No instances match this search."
+                                            },
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = AerixSurface.textSecondary
+                                        )
+                                        if (versions.isEmpty()) {
+                                            Button(
+                                                onClick = onInstall,
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = MiraiThemeManager.currentAccent(),
+                                                    contentColor = AerixSurface.onAccent
+                                                )
+                                            ) {
+                                                Text("Install an instance", fontWeight = FontWeight.Bold)
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    LazyColumn(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(1f),
+                                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
+                                        contentPadding = PaddingValues(bottom = AerixSpacing.xs)
+                                    ) {
+                                        items(
+                                            items = displayedVersions,
+                                            key = { it.managementKey() }
+                                        ) { version ->
+                                            LandscapeInstanceListItem(
+                                                version = version,
+                                                selected = version.managementKey() == selectedVersion?.managementKey(),
+                                                active = version.managementKey() == currentVersion?.managementKey(),
+                                                onClick = {
+                                                    onSelectVersion(version)
+                                                    if (version.managementKey() != currentVersion?.managementKey() &&
+                                                        !VersionsManager.saveVersion(version)
+                                                    ) {
+                                                        versionsOperation = VersionsOperation.InvalidDelete(version)
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        VersionManagementDetailPane(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(0.61f),
+                            version = selectedVersion,
+                            isCurrent = selectedVersion?.managementKey() == currentVersion?.managementKey(),
+                            onInstall = onInstall,
+                            onPlay = onLaunchVersion,
+                            onOpenFolder = onOpenFolder,
+                            openSubscreen = openVersionSubscreen,
+                            onToggleFavorite = { version ->
+                                runCatching {
+                                    version.setPinnedAndSave(!version.pinnedState)
+                                }.onSuccess { onVersionPinned() }
+                            },
+                            onRename = { versionsOperation = VersionsOperation.Rename(it) },
+                            onCopy = { versionsOperation = VersionsOperation.Copy(it) },
+                            onExport = navigateToExport,
+                            onDelete = { versionsOperation = VersionsOperation.Delete(it) }
+                        )
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus),
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Instance Management",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color.White,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "Select an instance to manage",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = AerixSurface.textSecondary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                             Surface(
-                                modifier = Modifier.size(36.dp),
-                                shape = RoundedCornerShape(10.dp),
-                                color = Color(0xFF21242B),
-                                border = BorderStroke(1.dp, Color(0xFF2E333E)),
-                                onClick = { showSortMenu = true }
+                                modifier = Modifier.size(30.dp),
+                                shape = RoundedCornerShape(AerixRadii.pill),
+                                color = AerixSurface.panelRaised,
+                                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = "${displayedVersions.size}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = AerixSurface.textPrimary
+                                    )
+                                }
+                            }
+                            Surface(
+                                modifier = Modifier.size(34.dp),
+                                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                color = if (showGamePathDrawer) AerixSurface.accentContainer else AerixSurface.panel,
+                                border = BorderStroke(
+                                    AerixSpacing.hairline,
+                                    if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixSurface.borderSoft
+                                ),
+                                onClick = onToggleGamePathDrawer
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        painter = painterResource(R.drawable.ic_sort),
-                                        contentDescription = "Sort",
-                                        tint = Color(0xFFD1D5DB),
-                                        modifier = Modifier.size(18.dp)
+                                        painter = painterResource(R.drawable.ic_folder_outlined),
+                                        contentDescription = "Directories",
+                                        tint = if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary,
+                                        modifier = Modifier.size(17.dp)
                                     )
                                 }
                             }
-                            DropdownMenu(
-                                expanded = showSortMenu,
-                                onDismissRequest = { showSortMenu = false }
-                            ) {
-                                LibrarySortMode.entries.forEach { mode ->
-                                    DropdownMenuItem(
-                                        text = { Text(mode.label) },
-                                        onClick = {
-                                            sortMode = mode
-                                            showSortMenu = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        Surface(
-                            modifier = Modifier.size(36.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            color = if (showGamePathDrawer) Color(0xFF143825) else Color(0xFF21242B),
-                            border = BorderStroke(
-                                1.dp,
-                                if (showGamePathDrawer) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
-                            ),
-                            onClick = onToggleGamePathDrawer
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_folder_outlined),
-                                    contentDescription = "Directories",
-                                    tint = if (showGamePathDrawer) MiraiThemeManager.currentAccent() else Color(0xFFD1D5DB),
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        }
-
-                        Button(
-                            onClick = onInstall,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MiraiThemeManager.currentAccent(),
-                                contentColor = Color(0xFF06210F)
-                            ),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp),
-                            modifier = Modifier.height(36.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_add),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            Text(
-                                text = "New Instance",
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                        }
-                    }
-
-                    // Compact Filter Pills Row (Mockup #2: All, Modpacks, Vanilla, 1.17+ LTW, Legacy)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        LibraryFilterGroup.entries.forEach { group ->
-                            val selected = selectedFilter == group
                             Surface(
-                                shape = RoundedCornerShape(16.dp),
-                                color = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF21242B),
-                                border = BorderStroke(
-                                    1.dp,
-                                    if (selected) MiraiThemeManager.currentAccent() else Color(0xFF2E333E)
-                                ),
-                                onClick = { selectedFilter = group }
+                                modifier = Modifier
+                                    .height(34.dp)
+                                    .widthIn(min = 34.dp),
+                                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                color = MiraiThemeManager.currentAccent(),
+                                contentColor = AerixSurface.onAccent,
+                                onClick = onInstall
                             ) {
-                                Text(
-                                    text = group.label,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                                    color = if (selected) Color(0xFF06210F) else Color(0xFFD1D5DB)
-                                )
-                            }
-                        }
-                    }
-
-                    // 3-Column Modrinth Instance Cards Grid
-                    if (displayedVersions.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(16.dp),
-                                color = Color(0xFF21242B),
-                                border = BorderStroke(1.dp, Color(0xFF2E323C))
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(24.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                Row(
+                                    modifier = Modifier.padding(
+                                        horizontal = if (compactToolbar) AerixSpacing.sm else AerixSpacing.md,
+                                        vertical = AerixSpacing.xs
+                                    ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                                 ) {
-                                    Text(
-                                        text = stringResource(R.string.versions_manage_no_versions),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_add),
+                                        contentDescription = "Install instance",
+                                        modifier = Modifier.size(16.dp)
                                     )
-                                    Button(
-                                        onClick = onInstall,
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = MiraiThemeManager.currentAccent(),
-                                            contentColor = Color(0xFF06210F)
-                                        )
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.ic_add),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                        Spacer(Modifier.width(6.dp))
+                                    if (!compactToolbar) {
                                         Text(
-                                            text = "Create First Instance",
+                                            text = "Install",
+                                            style = MaterialTheme.typography.labelMedium,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
                                 }
                             }
                         }
-                    } else {
-                        val rows = displayedVersions.chunked(columns)
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            contentPadding = PaddingValues(bottom = 14.dp)
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                         ) {
-                            items(
-                                count = rows.size,
-                                key = { idx -> rows[idx].joinToString("_") { it.toString() } }
-                            ) { idx ->
-                                val rowItems = rows[idx]
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ModrinthCompactSearchField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                placeholder = "Search instances...",
+                                modifier = Modifier.weight(1f)
+                            )
+                            Box {
+                                Surface(
+                                    modifier = Modifier.size(36.dp),
+                                    shape = RoundedCornerShape(AerixRadii.controlSmall),
+                                    color = AerixSurface.panel,
+                                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                                    onClick = { showSortMenu = true }
                                 ) {
-                                    rowItems.forEach { version ->
-                                        ModrinthLibraryInstanceCard(
-                                            version = version,
-                                            selected = version == currentVersion,
-                                            onSelect = {
-                                                if (version != currentVersion) {
-                                                    if (!VersionsManager.saveVersion(version)) {
-                                                        versionsOperation = VersionsOperation.InvalidDelete(version)
-                                                    }
-                                                }
-                                            },
-                                            onPlayClick = { onLaunchVersion(version) },
-                                            onSettingsClick = { navigateToVersions(version) },
-                                            onPinToggle = {
-                                                runCatching {
-                                                    version.setPinnedAndSave(!version.pinnedState)
-                                                }.onSuccess {
-                                                    onVersionPinned()
-                                                }
-                                            },
-                                            onRenameClick = { versionsOperation = VersionsOperation.Rename(version) },
-                                            onCopyClick = { versionsOperation = VersionsOperation.Copy(version) },
-                                            onExportClick = { navigateToExport(version) },
-                                            onDeleteClick = { versionsOperation = VersionsOperation.Delete(version) },
-                                            modifier = Modifier.weight(1f)
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_sort),
+                                            contentDescription = "Sort instances",
+                                            tint = AerixSurface.textSecondary,
+                                            modifier = Modifier.size(18.dp)
                                         )
                                     }
-                                    repeat((columns - rowItems.size).coerceAtLeast(0)) {
-                                        Spacer(modifier = Modifier.weight(1f))
+                                }
+                                DropdownMenu(
+                                    expanded = showSortMenu,
+                                    onDismissRequest = { showSortMenu = false }
+                                ) {
+                                    LibrarySortMode.entries.forEach { mode ->
+                                        DropdownMenuItem(
+                                            text = { Text(mode.label) },
+                                            onClick = {
+                                                sortMode = mode
+                                                showSortMenu = false
+                                            }
+                                        )
                                     }
                                 }
                             }
                         }
+
+                        AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
+                            LibraryFilterGroup.entries.forEach { group ->
+                                val selected = selectedFilter == group
+                                AerixPillTab(
+                                    selected = selected,
+                                    onClick = { selectedFilter = group }
+                                ) {
+                                    Text(
+                                        text = group.label,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "YOUR INSTANCES",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = AerixSurface.textSecondary
+                            )
+                            Text(
+                                text = "${versions.size} installed",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = AerixSurface.textMuted
+                            )
+                        }
+
+                        if (displayedVersions.isEmpty()) {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(64.dp),
+                                shape = RoundedCornerShape(AerixRadii.cardSmall),
+                                color = AerixSurface.panel,
+                                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(horizontal = AerixSpacing.md),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    Text(
+                                        text = if (versions.isEmpty()) {
+                                            "No instances yet — install one to get started."
+                                        } else {
+                                            "No instances match this search."
+                                        },
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = AerixSurface.textSecondary
+                                    )
+                                }
+                            }
+                        } else {
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(horizontal = AerixSpacing.xs),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                            ) {
+                                items(
+                                    items = displayedVersions,
+                                    key = { it.managementKey() }
+                                ) { version ->
+                                    LandscapeInstanceListItem(
+                                        version = version,
+                                        selected = version.managementKey() == selectedVersion?.managementKey(),
+                                        active = version.managementKey() == currentVersion?.managementKey(),
+                                        onClick = {
+                                            onSelectVersion(version)
+                                            if (version.managementKey() != currentVersion?.managementKey() &&
+                                                !VersionsManager.saveVersion(version)
+                                            ) {
+                                                versionsOperation = VersionsOperation.InvalidDelete(version)
+                                            }
+                                        },
+                                        modifier = Modifier.width(220.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        VersionManagementDetailPane(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            compactLayout = true,
+                            version = selectedVersion,
+                            isCurrent = selectedVersion?.managementKey() == currentVersion?.managementKey(),
+                            onInstall = onInstall,
+                            onPlay = onLaunchVersion,
+                            onOpenFolder = onOpenFolder,
+                            openSubscreen = openVersionSubscreen,
+                            onToggleFavorite = { version ->
+                                runCatching {
+                                    version.setPinnedAndSave(!version.pinnedState)
+                                }.onSuccess { onVersionPinned() }
+                            },
+                            onRename = { versionsOperation = VersionsOperation.Rename(it) },
+                            onCopy = { versionsOperation = VersionsOperation.Copy(it) },
+                            onExport = navigateToExport,
+                            onDelete = { versionsOperation = VersionsOperation.Delete(it) }
+                        )
                     }
                 }
             }
@@ -787,259 +1090,539 @@ private fun VersionsLayout(
 }
 
 @Composable
-private fun ModrinthLibraryInstanceCard(
+private fun LandscapeInstanceListItem(
     version: Version,
     selected: Boolean,
-    onSelect: () -> Unit,
-    onPlayClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onPinToggle: () -> Unit,
-    onRenameClick: () -> Unit,
-    onCopyClick: () -> Unit,
-    onExportClick: () -> Unit,
-    onDeleteClick: () -> Unit,
+    active: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.97f else 1f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-        label = "libCardScale"
-    )
-    val borderColor by animateColorAsState(
-        targetValue = if (selected) MiraiThemeManager.currentAccent() else Color(0xFF2E323C),
-        animationSpec = tween(220),
-        label = "libCardBorder"
-    )
-
     val info = version.getVersionInfo()
-    val mcVer = info?.minecraftVersion ?: "Unknown"
-    val loaderName = info?.loaderInfo?.loader?.displayName ?: "Vanilla"
-    var menuExpanded by remember { mutableStateOf(false) }
+    val loaderLabel = info?.loaderInfo?.let { "${it.loader.displayName} ${it.version}" } ?: "Vanilla"
+    val gameVersion = info?.minecraftVersion ?: "Unknown"
+    val shape = RoundedCornerShape(AerixRadii.cardSmall)
+    val accent = MiraiThemeManager.currentAccent()
 
     Surface(
-        modifier = modifier.graphicsLayer {
-            scaleX = scale
-            scaleY = scale
-        },
-        shape = RoundedCornerShape(14.dp),
-        color = Color(0xFF21242B),
-        border = BorderStroke(if (selected) 1.5.dp else 1.dp, borderColor),
-        onClick = onSelect
+        modifier = modifier
+            .fillMaxWidth()
+            .liquidGlass(
+                shape = shape,
+                tint = if (selected) accent else AerixSurface.glassBlue,
+                strength = if (selected) 0.88f else 0.58f,
+                elevation = AerixMetrics.glassSubtleElevation
+            ),
+        shape = shape,
+        color = if (selected) AerixSurface.panelRaised else AerixSurface.panel.copy(alpha = 0.82f),
+        border = BorderStroke(
+            if (selected) 1.5.dp else AerixSpacing.hairline,
+            if (selected) accent.copy(alpha = 0.86f) else AerixSurface.borderSoft
+        ),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AerixSpacing.smPlus),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+        ) {
+            Surface(
+                shape = RoundedCornerShape(AerixRadii.controlSmall),
+                color = AerixSurface.panelRaised,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+            ) {
+                VersionIconImage(
+                    version = version,
+                    modifier = Modifier
+                        .padding(AerixSpacing.xs)
+                        .size(46.dp)
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
+            ) {
+                Text(
+                    text = version.getVersionName(),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "$loaderLabel • $gameVersion",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AerixSurface.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (active || version.pinnedState) {
+                    Text(
+                        text = if (active) "Active" else "Pinned",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (active) AerixSurface.success else AerixSurface.accent
+                    )
+                }
+            }
+            Surface(
+                modifier = Modifier.size(8.dp),
+                shape = RoundedCornerShape(AerixRadii.pill),
+                color = if (version.isValid()) AerixSurface.success else AerixSurface.warning
+            ) {}
+        }
+    }
+}
+
+private data class VersionManagementTab(
+    val label: String,
+    val iconRes: Int,
+    val destination: TitledNavKey? = null
+)
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun VersionManagementDetailPane(
+    modifier: Modifier = Modifier,
+    compactLayout: Boolean = false,
+    version: Version?,
+    isCurrent: Boolean,
+    onInstall: () -> Unit,
+    onPlay: (Version) -> Unit,
+    onOpenFolder: (Version) -> Unit,
+    openSubscreen: (Version, TitledNavKey) -> Unit,
+    onToggleFavorite: (Version) -> Unit,
+    onRename: (Version) -> Unit,
+    onCopy: (Version) -> Unit,
+    onExport: (Version) -> Unit,
+    onDelete: (Version) -> Unit
+) {
+    val shape = RoundedCornerShape(AerixRadii.card)
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+    ) {
+        if (version == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(AerixSpacing.xl),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Select an instance to manage it",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = AerixSurface.textSecondary
+                )
+            }
+        } else {
+            val info = version.getVersionInfo()
+            val loaderInfo = info?.loaderInfo
+            val loaderLabel = loaderInfo?.let { "${it.loader.displayName} ${it.version}" } ?: "Vanilla"
+            val gameVersion = info?.minecraftVersion ?: "Unknown"
+            val tabs = listOf(
+                VersionManagementTab("Overview", R.drawable.ic_dashboard_outlined),
+                VersionManagementTab("Mods", R.drawable.ic_extension_outlined, NormalNavKey.Versions.ModsManager),
+                VersionManagementTab("Resource Packs", R.drawable.ic_format_paint_outlined, NormalNavKey.Versions.ResourcePackManager),
+                VersionManagementTab("Worlds", R.drawable.ic_public, NormalNavKey.Versions.SavesManager),
+                VersionManagementTab("Settings", R.drawable.ic_build_outlined, NormalNavKey.Versions.Config)
+            )
+            var showActions by remember(version.managementKey()) { mutableStateOf(false) }
+            val healthy = version.isValid()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(AerixSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(AerixRadii.controlSmall),
+                        color = AerixSurface.panelRaised,
+                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+                    ) {
+                        VersionIconImage(
+                            version = version,
+                            modifier = Modifier
+                                .padding(AerixSpacing.xs)
+                                .size(42.dp)
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
+                    ) {
+                        Text(
+                            text = version.getVersionName(),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                        ) {
+                            ModrinthMetaPill(
+                                text = loaderLabel,
+                                backgroundColor = AerixSurface.panelRaised,
+                                textColor = AerixSurface.textPrimary
+                            )
+                            Text(
+                                text = "Minecraft $gameVersion",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = AerixSurface.textSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                    IconButton(onClick = { onToggleFavorite(version) }) {
+                        Icon(
+                            painter = painterResource(
+                                if (version.pinnedState) R.drawable.ic_favorite_filled else R.drawable.ic_favorite_outlined
+                            ),
+                            contentDescription = stringResource(
+                                if (version.pinnedState) R.string.favorite_added else R.string.favorite_add
+                            ),
+                            tint = if (version.pinnedState) AerixSurface.accent else AerixSurface.textSecondary
+                        )
+                    }
+                    Box {
+                        IconButton(onClick = { showActions = true }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_more_horiz),
+                                contentDescription = stringResource(R.string.generic_more),
+                                tint = AerixSurface.textPrimary
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showActions,
+                            onDismissRequest = { showActions = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(if (version.pinnedState) "Unpin" else stringResource(R.string.versions_manage_pin)) },
+                                onClick = {
+                                    showActions = false
+                                    onToggleFavorite(version)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.generic_rename)) },
+                                onClick = { showActions = false; onRename(version) }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.generic_copy)) },
+                                onClick = { showActions = false; onCopy(version) }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.versions_export)) },
+                                onClick = { showActions = false; onExport(version) }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Open instance folder") },
+                                onClick = { showActions = false; onOpenFolder(version) }
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = stringResource(R.string.generic_delete),
+                                        color = AerixSurface.danger
+                                    )
+                                },
+                                onClick = { showActions = false; onDelete(version) }
+                            )
+                        }
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(38.dp),
+                        shape = RoundedCornerShape(AerixRadii.control),
+                        color = AerixSurface.panelRaised,
+                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                        contentColor = AerixSurface.textPrimary,
+                        onClick = onInstall
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(AerixSpacing.xs))
+                            Text("Install", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(38.dp),
+                        shape = RoundedCornerShape(AerixRadii.control),
+                        color = AerixSurface.accentContainer,
+                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.accent.copy(alpha = 0.72f)),
+                        contentColor = AerixSurface.accent
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(painterResource(R.drawable.ic_check), contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(AerixSpacing.xs))
+                            Text("Installed", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+
+                AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
+                    tabs.forEach { tab ->
+                        val selected = tab.destination == null
+                        AerixPillTab(
+                            selected = selected,
+                            onClick = { tab.destination?.let { openSubscreen(version, it) } }
+                        ) {
+                            Icon(
+                                painter = painterResource(tab.iconRes),
+                                contentDescription = null,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(Modifier.width(AerixSpacing.xs))
+                            Text(
+                                text = tab.label,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+                ) {
+                    if (compactLayout) {
+                        Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                            ) {
+                                VersionManagementInfoTile(
+                                    modifier = Modifier.weight(1f),
+                                    title = "Status",
+                                    value = if (healthy) "Healthy" else "Missing files",
+                                    valueColor = if (healthy) AerixSurface.success else AerixSurface.warning
+                                )
+                                VersionManagementInfoTile(
+                                    modifier = Modifier.weight(1f),
+                                    title = "Version / Loader",
+                                    value = loaderLabel
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                            ) {
+                                VersionManagementInfoTile(
+                                    modifier = Modifier.weight(1f),
+                                    title = "Game Version",
+                                    value = gameVersion
+                                )
+                                VersionManagementInfoTile(
+                                    modifier = Modifier.weight(1f),
+                                    title = "Instance Folder",
+                                    value = version.getGameDir().name.ifBlank { "Default" }
+                                )
+                            }
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                        ) {
+                            VersionManagementInfoTile(
+                                modifier = Modifier.weight(1f),
+                                title = "Status",
+                                value = if (healthy) "Healthy" else "Missing files",
+                                valueColor = if (healthy) AerixSurface.success else AerixSurface.warning
+                            )
+                            VersionManagementInfoTile(
+                                modifier = Modifier.weight(1f),
+                                title = "Version / Loader",
+                                value = loaderLabel
+                            )
+                            VersionManagementInfoTile(
+                                modifier = Modifier.weight(1f),
+                                title = "Game Version",
+                                value = gameVersion
+                            )
+                            VersionManagementInfoTile(
+                                modifier = Modifier.weight(1f),
+                                title = "Instance Folder",
+                                value = version.getGameDir().name.ifBlank { "Default" }
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = "Quick Actions",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = AerixSurface.textPrimary
+                    )
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                    ) {
+                        VersionManagementQuickAction(
+                            label = "Add Mod",
+                            iconRes = R.drawable.ic_extension_outlined,
+                            onClick = { openSubscreen(version, NormalNavKey.Versions.ModsManager) }
+                        )
+                        VersionManagementQuickAction(
+                            label = "Add Resource Pack",
+                            iconRes = R.drawable.ic_format_paint_outlined,
+                            onClick = { openSubscreen(version, NormalNavKey.Versions.ResourcePackManager) }
+                        )
+                        VersionManagementQuickAction(
+                            label = "Worlds",
+                            iconRes = R.drawable.ic_public,
+                            onClick = { openSubscreen(version, NormalNavKey.Versions.SavesManager) }
+                        )
+                        VersionManagementQuickAction(
+                            label = "Advanced Settings",
+                            iconRes = R.drawable.ic_build_outlined,
+                            onClick = { openSubscreen(version, NormalNavKey.Versions.Config) }
+                        )
+                    }
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(46.dp),
+                    shape = RoundedCornerShape(AerixRadii.cardSmall),
+                    color = MiraiThemeManager.currentAccent(),
+                    contentColor = AerixSurface.onAccent,
+                    onClick = { onPlay(version) }
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_play_arrow_filled),
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(Modifier.width(AerixSpacing.sm))
+                        Text(
+                            text = "PLAY",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+                }
+                if (isCurrent) {
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Selected as the current launch instance",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AerixSurface.textSecondary
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun VersionManagementInfoTile(
+    modifier: Modifier = Modifier,
+    title: String,
+    value: String,
+    valueColor: Color = AerixSurface.textPrimary
+) {
+    Surface(
+        modifier = modifier.heightIn(min = 70.dp),
+        shape = RoundedCornerShape(AerixRadii.control),
+        color = AerixSurface.panelRaised.copy(alpha = 0.82f),
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(AerixSpacing.smPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = Color(0xFF2B2F3A),
-                    border = BorderStroke(1.dp, Color(0xFF343946))
-                ) {
-                    VersionIconImage(
-                        version = version,
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .size(36.dp)
-                    )
-                }
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                color = AerixSurface.textSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = valueColor,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
 
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Text(
-                        text = version.getVersionName(),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        ModrinthMetaPill(
-                            text = "$loaderName $mcVer",
-                            backgroundColor = Color(0xFF2C303C),
-                            textColor = Color(0xFFE5E7EB)
-                        )
-                    }
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Left: Overflow Options Gear Button (Mockup #2)
-                Box {
-                    Surface(
-                        shape = RoundedCornerShape(9.dp),
-                        color = Color(0xFF282C36),
-                        border = BorderStroke(1.dp, Color(0xFF343946)),
-                        contentColor = Color(0xFFD1D5DB),
-                        onClick = { menuExpanded = true }
-                    ) {
-                        Box(
-                            modifier = Modifier.size(32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_more_horiz),
-                                contentDescription = stringResource(R.string.generic_more),
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    }
-
-                    DropdownMenu(
-                        expanded = menuExpanded,
-                        onDismissRequest = { menuExpanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.versions_manage_pin)) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(
-                                        if (version.pinnedState) R.drawable.ic_pinned_filled else R.drawable.ic_pinned_outlined
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onPinToggle()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.generic_rename)) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_edit_filled),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onRenameClick()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.generic_copy)) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_file_copy_filled),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onCopyClick()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.versions_export)) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_folder_zip_filled),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onExportClick()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.generic_delete),
-                                    color = Color(0xFFF87171)
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_delete_filled),
-                                    contentDescription = null,
-                                    tint = Color(0xFFF87171),
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onDeleteClick()
-                            }
-                        )
-                    }
-                }
-
-                // Right: Settings Gear + Emerald '▶ Play' Pill Button (Mockup #2)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(9.dp),
-                        color = Color(0xFF282C36),
-                        border = BorderStroke(1.dp, Color(0xFF343946)),
-                        contentColor = Color(0xFFD1D5DB),
-                        onClick = onSettingsClick
-                    ) {
-                        Box(
-                            modifier = Modifier.size(32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_settings_filled),
-                                contentDescription = stringResource(R.string.versions_manage_settings),
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    }
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MiraiThemeManager.currentAccent(),
-                        contentColor = Color(0xFF06210F),
-                        onClick = onPlayClick
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .height(32.dp)
-                                .padding(horizontal = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_play_arrow_filled),
-                                contentDescription = stringResource(R.string.main_launch_game),
-                                modifier = Modifier.size(15.dp)
-                            )
-                            Text(
-                                text = "Play",
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                        }
-                    }
-                }
-            }
+@Composable
+private fun VersionManagementQuickAction(
+    label: String,
+    iconRes: Int,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.height(40.dp),
+        shape = RoundedCornerShape(AerixRadii.control),
+        color = AerixSurface.panelRaised,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+        contentColor = AerixSurface.textPrimary,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = AerixSpacing.smPlus),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+        ) {
+            Icon(painter = painterResource(iconRes), contentDescription = null, modifier = Modifier.size(16.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

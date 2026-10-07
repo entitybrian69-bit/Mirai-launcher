@@ -35,6 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 
 @Composable
 fun FakeShadowUp(
@@ -48,7 +50,7 @@ fun FakeShadowUp(
                 brush = Brush.verticalGradient(
                     colors = listOf(
                         Color.Transparent,
-                        Color(0x3A000000),
+                        AerixSurface.shadowSoft,
                     )
                 )
             )
@@ -66,7 +68,7 @@ fun FakeShadowDown(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0x3A000000),
+                        AerixSurface.shadowSoft,
                         Color.Transparent,
                     )
                 )
@@ -85,7 +87,7 @@ fun FakeShadowLeft(
             .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
-                        Color(0x1A000000),
+                        AerixSurface.shadowSubtle,
                         Color.Transparent,
                     )
                 )
@@ -105,7 +107,7 @@ fun FakeShadowRight(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
                         Color.Transparent,
-                        Color(0x1A000000),
+                        AerixSurface.shadowSubtle,
                     )
                 )
             )
@@ -117,7 +119,7 @@ fun FakeShadowRight(
 private fun PreviewFakeShadows() {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         FakeShadowUp(
             modifier = Modifier.fillMaxWidth()
@@ -129,7 +131,7 @@ private fun PreviewFakeShadows() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = AerixSpacing.md),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             FakeShadowLeft(

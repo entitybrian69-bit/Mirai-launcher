@@ -54,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
@@ -84,7 +85,7 @@ fun ScalingLabel(
         Row(
             modifier = Modifier
                 .backgroundGlass(blur, color, influencedByBackground)
-                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm)
         ) {
             Text(text = text)
         }
@@ -136,7 +137,7 @@ fun ScalingLabel(
         onClick = onClick
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm),
             content = text,
         )
     }
@@ -164,7 +165,7 @@ fun LittleTextLabel(
                     if (singleLine) Modifier.basicMarquee(Int.MAX_VALUE)
                     else Modifier
                 )
-                .padding(horizontal = 4.dp, vertical = 2.dp),
+                .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
             text = text,
             style = textStyle,
             maxLines = if (singleLine) 1 else Int.MAX_VALUE
@@ -192,7 +193,7 @@ fun SimpleListItem(
             onClick = onClick
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(
                 text = itemName,
@@ -225,7 +226,7 @@ fun SimpleListItem(
             onCheckedChange = onCheckedChange
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(
                 text = itemName,
@@ -295,7 +296,7 @@ fun TitleAndSummary(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         Text(
             text = title,

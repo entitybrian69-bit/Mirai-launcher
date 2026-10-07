@@ -39,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.CardPosition
@@ -64,8 +66,8 @@ fun WarningCard(
         )
     },
     position: CardPosition = CardPosition.Single,
-    outerShapeSize: Dp = 12.dp,
-    innerShapeSize: Dp = 4.dp,
+    outerShapeSize: Dp = AerixRadii.control,
+    innerShapeSize: Dp = AerixRadii.tiny,
     influencedByBackground: Boolean = true,
     blur: Int = AllSettings.backgroundBlur.state,
     containerColor: Color = influencedByBackgroundColor(
@@ -92,22 +94,22 @@ fun WarningCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(all = AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             //标题部分
             Row(
                 modifier = Modifier
                     .height(IntrinsicSize.Min)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 icon(
                     Modifier
                         .fillMaxHeight()
                         .aspectRatio(1f)
-                        .padding(vertical = 2.dp)
+                        .padding(vertical = AerixSpacing.xxs)
                 )
                 Text(
                     text = title,

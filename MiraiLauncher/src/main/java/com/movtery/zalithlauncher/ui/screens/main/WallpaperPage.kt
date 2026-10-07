@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,11 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.crossfade
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
+import com.movtery.zalithlauncher.ui.components.liquidGlass
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
@@ -80,7 +85,7 @@ import com.movtery.zalithlauncher.viewmodel.LocalBackgroundViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 
-fun wallpaperFile(context: Context) = File(context.filesDir, "mirai-wallpaper.jpg")
+fun wallpaperFile(context: Context) = File(context.filesDir, "aerix-wallpaper.jpg")
 
 var wallpaperRevision by mutableIntStateOf(0)
 
@@ -113,30 +118,37 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+            .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
     ) {
         // Top Header & Controls Bar
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            color = Color(0xFF21242B).copy(alpha = 0.92f),
-            border = BorderStroke(1.dp, activeAccent.copy(alpha = 0.45f))
+            modifier = Modifier
+                .fillMaxWidth()
+                .liquidGlass(
+                    shape = RoundedCornerShape(AerixRadii.cardSmall),
+                    tint = AerixSurface.glassTint,
+                    strength = 0.9f,
+                    elevation = AerixMetrics.glassFloatingElevation
+                ),
+            shape = RoundedCornerShape(AerixRadii.cardSmall),
+            color = AerixSurface.panelRaised.copy(alpha = 0.66f),
+            border = BorderStroke(AerixSpacing.hairline, activeAccent.copy(alpha = 0.45f))
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                    .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
             ) {
                 // Active Theme Swatch
                 Box(
                     modifier = Modifier
                         .size(32.dp)
-                        .clip(RoundedCornerShape(9.dp))
+                        .clip(RoundedCornerShape(AerixRadii.compact))
                         .background(activeAccent.copy(alpha = 0.18f))
-                        .border(1.dp, activeAccent, RoundedCornerShape(9.dp)),
+                        .border(AerixSpacing.hairline, activeAccent, RoundedCornerShape(AerixRadii.compact)),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
@@ -150,7 +162,7 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                 Column(modifier = Modifier.weight(1f)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                     ) {
                         Text(
                             text = "20 Minecraft HD Wallpapers & Dynamic Theme",
@@ -177,12 +189,12 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                 // Dimming Slider (Compact)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                 ) {
                     Text(
                         text = "Dim ${opacitySetting}%",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF9CA3AF)
+                        color = AerixSurface.textSecondary
                     )
                     Slider(
                         value = opacitySetting.toFloat(),
@@ -195,18 +207,18 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                         colors = SliderDefaults.colors(
                             thumbColor = activeAccent,
                             activeTrackColor = activeAccent,
-                            inactiveTrackColor = Color(0xFF16181C)
+                            inactiveTrackColor = AerixSurface.canvas
                         )
                     )
                 }
 
                 // Solid Dark Button
                 Surface(
-                    shape = RoundedCornerShape(9.dp),
-                    color = if (selectedId == "none") activeAccent.copy(alpha = 0.2f) else Color(0xFF1A1D23),
+                    shape = RoundedCornerShape(AerixRadii.compact),
+                    color = if (selectedId == "none") activeAccent.copy(alpha = 0.2f) else AerixSurface.panel,
                     border = BorderStroke(
-                        1.dp,
-                        if (selectedId == "none") activeAccent else Color(0xFF2E333E)
+                        AerixSpacing.hairline,
+                        if (selectedId == "none") activeAccent else AerixSurface.borderSoft
                     ),
                     onClick = {
                         scope.launch {
@@ -219,22 +231,22 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
                         text = "Solid Dark",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (selectedId == "none") activeAccent else Color(0xFFE5E7EB),
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        color = if (selectedId == "none") activeAccent else AerixSurface.textPrimary,
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.smCompact)
                     )
                 }
 
                 // Import Custom Image Button
                 Surface(
-                    shape = RoundedCornerShape(9.dp),
+                    shape = RoundedCornerShape(AerixRadii.compact),
                     color = activeAccent,
-                    contentColor = Color(0xFF06210F),
+                    contentColor = AerixSurface.onAccent,
                     onClick = { picker.launch("image/*") }
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.smCompact),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_add),
@@ -257,9 +269,9 @@ fun WallpaperPage(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            contentPadding = PaddingValues(bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            contentPadding = PaddingValues(bottom = AerixSpacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
         ) {
             items(
                 items = MiraiThemeManager.wallpapers,
@@ -299,13 +311,19 @@ private fun WallpaperPresetCard(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(AerixRadii.control))
+            .liquidGlass(
+                shape = RoundedCornerShape(AerixRadii.control),
+                tint = if (isSelected) preset.accentColor else AerixSurface.glassTint,
+                strength = if (isSelected) 0.95f else 0.7f,
+                elevation = if (isSelected) AerixMetrics.glassSelectedElevation else AerixMetrics.glassSubtleElevation
+            )
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        color = Color(0xFF21242B).copy(alpha = 0.94f),
+        shape = RoundedCornerShape(AerixRadii.control),
+        color = AerixSurface.panelRaised.copy(alpha = 0.68f),
         border = BorderStroke(
-            width = if (isSelected) 2.dp else 1.dp,
-            color = if (isSelected) preset.accentColor else Color(0xFF2E333E)
+            width = if (isSelected) 2.dp else AerixSpacing.hairline,
+            color = if (isSelected) preset.accentColor else AerixSurface.panelRaised
         )
     ) {
         Column {
@@ -329,7 +347,7 @@ private fun WallpaperPresetCard(
                         .align(Alignment.BottomCenter)
                         .background(
                             Brush.verticalGradient(
-                                listOf(Color.Transparent, Color(0xCC0D0F13))
+                                listOf(Color.Transparent, AerixSurface.canvas.copy(alpha = 0.8f))
                             )
                         )
                 )
@@ -338,15 +356,15 @@ private fun WallpaperPresetCard(
                 Surface(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(6.dp),
-                    shape = RoundedCornerShape(6.dp),
-                    color = Color(0xD914161A),
-                    border = BorderStroke(1.dp, preset.accentColor.copy(alpha = 0.7f))
+                        .padding(AerixSpacing.smCompact),
+                    shape = RoundedCornerShape(AerixRadii.micro),
+                    color = AerixSurface.panelGlassTint.copy(alpha = 0.66f),
+                    border = BorderStroke(AerixSpacing.hairline, preset.accentColor.copy(alpha = 0.7f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smCompact, vertical = AerixSpacing.xxs),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Box(
                             modifier = Modifier
@@ -368,15 +386,15 @@ private fun WallpaperPresetCard(
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(6.dp),
-                        shape = RoundedCornerShape(6.dp),
+                            .padding(AerixSpacing.smCompact),
+                        shape = RoundedCornerShape(AerixRadii.micro),
                         color = preset.accentColor,
-                        contentColor = Color(0xFF06210F)
+                        contentColor = AerixSurface.onAccent
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            modifier = Modifier.padding(horizontal = AerixSpacing.smCompact, vertical = AerixSpacing.xxs),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(3.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.tiny)
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_check),
@@ -396,8 +414,8 @@ private fun WallpaperPresetCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 9.dp, vertical = 6.dp),
-                verticalArrangement = Arrangement.spacedBy(1.dp)
+                    .padding(horizontal = AerixSpacing.smNarrow, vertical = AerixSpacing.smCompact),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.hairline)
             ) {
                 Text(
                     text = preset.title,
@@ -410,7 +428,7 @@ private fun WallpaperPresetCard(
                 Text(
                     text = preset.biome,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF9CA3AF),
+                    color = AerixSurface.textSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

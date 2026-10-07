@@ -1,7 +1,7 @@
 /*
  * Zalith Launcher 2
  * Copyright (C) 2025 MovTery <movtery228@qq.com> and contributors
- * Copyright (C) 2026 Mirai Launcher contributors.
+ * Copyright (C) 2026 Aerix Launcher contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.components.FloatingBall
@@ -152,19 +155,19 @@ private fun MiraiQuickOverlayPillContent(
     val fpsVal = gameFps ?: 0
     val fpsColor = when {
         gameFps == null -> accentColor
-        fpsVal >= 55 -> Color(0xFF1BD96A)
-        fpsVal >= 30 -> Color(0xFFFBBF24)
-        else -> Color(0xFFEF4444)
+        fpsVal >= 55 -> AerixSurface.success
+        fpsVal >= 30 -> AerixSurface.warning
+        else -> AerixSurface.danger
     }
 
     Column(
-        modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        modifier = Modifier.padding(horizontal = AerixSpacing.smCompact, vertical = AerixSpacing.xs),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
     ) {
-        // Collapsed Mirai Pill Header Row
+        // Collapsed Aerix Pill Header Row
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
         ) {
             // Full Menu Icon
             Box(
@@ -197,7 +200,7 @@ private fun MiraiQuickOverlayPillContent(
                 )
             } else {
                 Text(
-                    text = "⚡ Mirai",
+                    text = "⚡ Aerix",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.ExtraBold,
                     color = accentColor
@@ -208,7 +211,7 @@ private fun MiraiQuickOverlayPillContent(
             Text(
                 text = "${tempCelsius}°C",
                 style = MaterialTheme.typography.labelSmall,
-                color = if (tempCelsius >= 43) Color(0xFFFBBF24) else Color(0xFFD1D5DB)
+                color = if (tempCelsius >= 43) AerixSurface.warning else AerixSurface.textSecondary
             )
 
             // Expand / Collapse Quick HUD Toggle
@@ -216,7 +219,7 @@ private fun MiraiQuickOverlayPillContent(
                 modifier = Modifier
                     .size(22.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF282C36))
+                    .background(AerixSurface.panelRaised)
                     .clickable { hudExpanded = !hudExpanded },
                 contentAlignment = Alignment.Center
             ) {
@@ -236,7 +239,7 @@ private fun MiraiQuickOverlayPillContent(
             MemoryPreview(
                 modifier = Modifier
                     .width(164.dp)
-                    .padding(horizontal = 2.dp),
+                    .padding(horizontal = AerixSpacing.xxs),
                 mainColor = accentColor.copy(alpha = 0.7f),
                 backgroundColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 textStyle = MaterialTheme.typography.labelSmall,
@@ -246,7 +249,7 @@ private fun MiraiQuickOverlayPillContent(
             )
         }
 
-        // Expanded Mirai Quick-Overlay Drawer
+        // Expanded Aerix Quick-Overlay Drawer
         AnimatedVisibility(
             visible = hudExpanded,
             enter = expandVertically() + fadeIn(),
@@ -257,13 +260,13 @@ private fun MiraiQuickOverlayPillContent(
 
             Surface(
                 modifier = Modifier.width(232.dp),
-                shape = RoundedCornerShape(12.dp),
-                color = Color(0xE614161A),
-                border = BorderStroke(1.dp, accentColor.copy(alpha = 0.55f))
+                shape = RoundedCornerShape(AerixRadii.control),
+                color = AerixSurface.panelGlassTint.copy(alpha = 0.9f),
+                border = BorderStroke(AerixSpacing.hairline, accentColor.copy(alpha = 0.55f))
             ) {
                 Column(
-                    modifier = Modifier.padding(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    modifier = Modifier.padding(AerixSpacing.smPlus),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                 ) {
                     // Telemetry Summary Row
                     Row(
@@ -272,7 +275,7 @@ private fun MiraiQuickOverlayPillContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "MIRAI QUICK HUD",
+                            text = "AERIX QUICK HUD",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.ExtraBold,
                             color = accentColor
@@ -280,7 +283,7 @@ private fun MiraiQuickOverlayPillContent(
                         Text(
                             text = "🔋 $batteryPct% • ${tempCelsius}°C",
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF9CA3AF)
+                            color = AerixSurface.textSecondary
                         )
                     }
 
@@ -344,7 +347,7 @@ private fun MiraiQuickOverlayPillContent(
                     // Quick Action Buttons Row (F2 Shot, F3 Debug, Logs, Kill)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xsPlus)
                     ) {
                         QuickHudPillButton(
                             text = "📸 Shot",
@@ -366,11 +369,68 @@ private fun MiraiQuickOverlayPillContent(
                         )
                         QuickHudPillButton(
                             text = "Kill",
-                            accent = Color(0xFFEF4444),
+                            accent = AerixSurface.danger,
                             isDanger = true,
                             modifier = Modifier.weight(0.8f),
                             onClick = onForceClose
                         )
+                    }
+
+                    // In-Game Quick Download Actions (Feature #3: Saves, Resource Packs, Shaders)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                    ) {
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(AerixRadii.compact),
+                            color = AerixSurface.panel,
+                            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                            onClick = { onToggleLogOverlay() }
+                        ) {
+                            Text(
+                                text = "💾 Saves",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(vertical = AerixSpacing.xsPlus, horizontal = AerixSpacing.xxs),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+
+                        Surface(
+                            modifier = Modifier.weight(1.1f),
+                            shape = RoundedCornerShape(AerixRadii.compact),
+                            color = AerixSurface.panel,
+                            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                            onClick = { onToggleLogOverlay() }
+                        ) {
+                            Text(
+                                text = "🎨 Packs",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(vertical = AerixSpacing.xsPlus, horizontal = AerixSpacing.xxs),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+
+                        Surface(
+                            modifier = Modifier.weight(1.1f),
+                            shape = RoundedCornerShape(AerixRadii.compact),
+                            color = AerixSurface.panel,
+                            border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft),
+                            onClick = { onToggleLogOverlay() }
+                        ) {
+                            Text(
+                                text = "✨ Shaders",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(vertical = AerixSpacing.xsPlus, horizontal = AerixSpacing.xxs),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
@@ -388,24 +448,24 @@ private fun QuickHudPillButton(
 ) {
     Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(AerixRadii.compact))
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(8.dp),
-        color = if (isDanger) Color(0xFF3A181C) else Color(0xFF21242B),
+        shape = RoundedCornerShape(AerixRadii.compact),
+        color = if (isDanger) AerixSurface.dangerContainer else AerixSurface.panelRaised,
         border = BorderStroke(
-            1.dp,
-            if (isDanger) Color(0xFFEF4444).copy(alpha = 0.6f) else accent.copy(alpha = 0.4f)
+            AerixSpacing.hairline,
+            if (isDanger) AerixSurface.danger.copy(alpha = 0.6f) else accent.copy(alpha = 0.4f)
         )
     ) {
         Box(
-            modifier = Modifier.padding(vertical = 5.dp),
+            modifier = Modifier.padding(vertical = AerixSpacing.xsPlus),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
-                color = if (isDanger) Color(0xFFFCA5A5) else Color.White
+                color = if (isDanger) AerixSurface.danger else Color.White
             )
         }
     }

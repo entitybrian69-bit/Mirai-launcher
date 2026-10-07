@@ -41,6 +41,7 @@ import com.movtery.layer_controller.observable.ObservableButtonStyle
 import com.movtery.layer_controller.observable.ObservableNormalData
 import com.movtery.layer_controller.observable.ObservableTextData
 import com.movtery.layer_controller.observable.ObservableWidget
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.enums.isLauncherInDarkTheme
 import com.movtery.zalithlauncher.ui.base.BaseScreen
@@ -105,7 +106,7 @@ private fun MainContent(
         ) {
             items(styles) { style ->
                 ChoseStyleItem(
-                    modifier = Modifier.padding(all = 8.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.sm),
                     style = style,
                     selected = buttonStyle == style.uuid,
                     onSelectedChange = { selected ->
@@ -116,7 +117,7 @@ private fun MainContent(
         }
     } else {
         InfoLayoutTextItem(
-            modifier = Modifier.padding(all = 24.dp),
+            modifier = Modifier.padding(all = AerixSpacing.xxl),
             title = stringResource(R.string.control_editor_edit_style_config_empty),
             onClick = openStyleList
         )
@@ -148,7 +149,7 @@ private fun ChoseStyleItem(
                 isDark = isLauncherInDarkTheme(),
                 isPressed = false
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.xs))
             MarqueeText(
                 modifier = Modifier.fillMaxWidth(),
                 text = style.name.takeIf { it.isNotEmptyOrBlank() } ?: stringResource(R.string.generic_unspecified),

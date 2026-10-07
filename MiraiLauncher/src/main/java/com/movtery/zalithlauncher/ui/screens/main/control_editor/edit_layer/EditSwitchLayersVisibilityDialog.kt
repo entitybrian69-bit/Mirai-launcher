@@ -49,6 +49,7 @@ import androidx.compose.ui.window.Dialog
 import com.movtery.layer_controller.event.ClickEvent
 import com.movtery.layer_controller.observable.ObservableClickEventsProvider
 import com.movtery.layer_controller.observable.ObservableControlLayer
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.fadeEdge
@@ -114,7 +115,7 @@ fun EditSwitchLayersVisibilityDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 3.dp)
+                    .padding(all = AerixSpacing.tiny)
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shadowElevation = 3.dp,
@@ -123,7 +124,7 @@ fun EditSwitchLayersVisibilityDialog(
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Column(
-                    modifier = Modifier.padding(all = 16.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     val title = remember(type) {
@@ -149,8 +150,8 @@ fun EditSwitchLayersVisibilityDialog(
                                 orientation = Orientation.Vertical,
                             ),
                         state = scrollState,
-                        contentPadding = PaddingValues(horizontal = 2.dp, vertical = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        contentPadding = PaddingValues(horizontal = AerixSpacing.xxs, vertical = AerixSpacing.md),
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
                         items(layers) { layer ->
                             LayerVisibilityItem(

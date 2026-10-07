@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Mirai Launcher are recorded here.
+All notable changes to Aerix Launcher are recorded here.
 
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
@@ -24,10 +24,9 @@ First public release.
 - `CHANGELOG.md` (this file).
 - **MobileGlues renderer** (`libmobileglues.so`) — a modern OpenGL-on-GLES wrapper by
   MobileGL-Dev covering Minecraft **1.17 – 26.3**, bundled for all four ABIs. The launcher
-  writes its tuned MG-ES `config.json` at startup (error checking off for the fastest path,
-  upstream defaults otherwise), keeps it out of the Zink/Mesa env forcing, adds it to the
-  auto-picker's modern order (LTW → MobileGlues → Zink), and gives it a FASTEST quick-pick
-  card in renderer settings.
+  writes its tuned MG-ES `config.json` at startup (error checking disabled, upstream defaults
+  otherwise), keeps it out of the Zink/Mesa env forcing, adds it to the auto-picker's modern
+  order (LTW → MobileGlues → Zink), and gives it a quick-pick card in renderer settings.
 - **VGPU renderers** (`libvgpu.so`, `libvgpu_1368.so`) — Pojav Glow-Worm vgpu and VGPU 1.3.6β
   options for Minecraft **1.16.5 and older**, bundled for all four ABIs with Sodium and shader
   support, plus picker tests.
@@ -51,7 +50,7 @@ First public release.
 - **Minimizable modpack install dialog** — the Installing Modpack window has a Minimize button
   (left of Cancel) that shrinks it to a small floating reopen button while the install keeps
   running in the background.
-- **In-game Mirai Pill HUD** and world/screenshot quick actions.
+- **In-game Aerix Pill HUD** and world/screenshot quick actions.
 - **Interactive 3D paper doll** — drag to spin 360°, tap to open account management.
 
 ### Changed

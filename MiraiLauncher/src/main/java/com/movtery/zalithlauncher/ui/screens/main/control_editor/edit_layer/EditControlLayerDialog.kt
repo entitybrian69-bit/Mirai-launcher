@@ -52,6 +52,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.movtery.layer_controller.data.VisibilityType
 import com.movtery.layer_controller.observable.ObservableControlLayer
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.ImePanContainer
 import com.movtery.zalithlauncher.ui.components.MarqueeText
@@ -91,7 +92,7 @@ fun EditControlLayerDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 3.dp)
+                    .padding(all = AerixSpacing.tiny)
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shadowElevation = 3.dp,
@@ -100,9 +101,9 @@ fun EditControlLayerDialog(
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Column(
-                    modifier = Modifier.padding(all = 16.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     MarqueeText(
                         text = stringResource(R.string.control_editor_layers_attribute),
@@ -127,7 +128,7 @@ fun EditControlLayerDialog(
                             .weight(1f, fill = false)
                             .fillMaxWidth()
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
                         SingleLineTextCheck(
                             text = layer.name,
@@ -236,7 +237,7 @@ fun EditControlLayerDialog(
                                 text = stringResource(R.string.generic_delete)
                             )
                         }
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(AerixSpacing.lg))
                         Button(
                             modifier = Modifier.weight(1f, fill = false),
                             onClick = onDismissRequest

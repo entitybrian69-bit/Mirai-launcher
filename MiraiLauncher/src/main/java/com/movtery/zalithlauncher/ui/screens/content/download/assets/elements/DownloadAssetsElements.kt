@@ -69,6 +69,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
@@ -266,14 +267,14 @@ fun AssetsVersionItemLayout(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(max = maxListHeight)
-                                .padding(vertical = 4.dp),
-                            contentPadding = PaddingValues(horizontal = 4.dp)
+                                .padding(vertical = AerixSpacing.xs),
+                            contentPadding = PaddingValues(horizontal = AerixSpacing.xs)
                         ) {
                             items(infoMap.versions) { version ->
                                 AssetsVersionListItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(all = 4.dp),
+                                        .padding(all = AerixSpacing.xs),
                                     version = version,
                                     installed = installedChecker?.invoke(version),
                                     onClick = {
@@ -301,19 +302,19 @@ private fun AssetsVersionHeadLayout(
     Row(
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(vertical = 4.dp),
+            .padding(vertical = AerixSpacing.xs),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         Row(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 12.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = AerixSpacing.sm),
                 text = infoMap.gameVersion,
                 style = MaterialTheme.typography.titleSmall
             )
@@ -333,15 +334,15 @@ private fun AssetsVersionHeadLayout(
         }
         if (hasInstalled) {
             InstalledModBadge(
-                modifier = Modifier.padding(start = 4.dp),
+                modifier = Modifier.padding(start = AerixSpacing.xs),
                 size = 16.dp
             )
         }
         if (!infoMap.versions.isEmpty()) {
             Row(
-                modifier = Modifier.padding(end = 4.dp),
+                modifier = Modifier.padding(end = AerixSpacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 val rotation by animateFloatAsState(
                     targetValue = if (expanded) -180f else 0f,
@@ -388,7 +389,7 @@ private fun AssetsVersionListItem(
 
         Box(
             modifier = Modifier
-                .padding(start = 12.dp, end = 8.dp)
+                .padding(start = AerixSpacing.md, end = AerixSpacing.sm)
                 .size(34.dp)
                 .clip(shape = CircleShape)
                 .background(releaseType.color.copy(alpha = 0.2f)),
@@ -403,8 +404,8 @@ private fun AssetsVersionListItem(
 
         //版本简要信息
         Column(
-            modifier = Modifier.padding(all = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(all = AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Text(
                 text = displayName,
@@ -415,11 +416,11 @@ private fun AssetsVersionListItem(
 
             Row(
                 modifier = Modifier.alpha(0.7f),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 //下载量
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -434,7 +435,7 @@ private fun AssetsVersionListItem(
                 }
                 //更新时间
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -452,7 +453,7 @@ private fun AssetsVersionListItem(
                 }
                 //版本状态
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -563,7 +564,7 @@ fun ScreenshotItemLayout(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (state) {

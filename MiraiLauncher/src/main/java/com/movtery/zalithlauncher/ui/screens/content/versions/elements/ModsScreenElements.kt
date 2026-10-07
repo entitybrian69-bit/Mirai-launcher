@@ -59,6 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.gson.JsonSyntaxException
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.utils.getMcmodTitle
 import com.movtery.zalithlauncher.game.download.jvm_server.JvmCrashException
@@ -220,7 +222,7 @@ fun ModsUpdateOperation(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(text = stringResource(R.string.mods_update_failed_text))
                         Text(text = message)
@@ -287,7 +289,7 @@ private fun ModsUpdateListDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -297,7 +299,7 @@ private fun ModsUpdateListDialog(
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(AerixSpacing.lg)
                         .wrapContentHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -305,7 +307,7 @@ private fun ModsUpdateListDialog(
                         text = stringResource(R.string.mods_update_task_show),
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
 
                     val scrollState = rememberLazyListState()
                     LazyColumn(
@@ -317,8 +319,8 @@ private fun ModsUpdateListDialog(
                                 orientation = Orientation.Vertical,
                             ),
                         state = scrollState,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        contentPadding = PaddingValues(vertical = 12.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+                        contentPadding = PaddingValues(vertical = AerixSpacing.md)
                     ) {
                         items(manifests) { entry ->
                             ModsUpdateEntryItem(
@@ -328,10 +330,10 @@ private fun ModsUpdateListDialog(
                         }
                     }
 
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(AerixSpacing.lg))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         FilledTonalButton(
                             modifier = Modifier.weight(0.5f),
@@ -385,12 +387,12 @@ private fun ModsUpdateEntryItem(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(AerixSpacing.sm),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AssetsIcon(
-                    modifier = Modifier.clip(shape = RoundedCornerShape(12.dp)),
+                    modifier = Modifier.clip(shape = RoundedCornerShape(AerixRadii.control)),
                     size = 52.dp,
                     iconUrl = data.project.iconUrl
                 )

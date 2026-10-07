@@ -34,6 +34,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.bridge.ZLBridge
 import com.movtery.zalithlauncher.bridge.ZLNativeInvoker
@@ -99,9 +101,9 @@ fun JVMScreen(
             modifier = Modifier
                 .alpha(alpha = if (logState.value) 0.5f else 1f)
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(AerixSpacing.sm)
                 .then(
-                    if (logState.value) Modifier.padding(end = 58.dp)
+                    if (logState.value) Modifier.padding(end = AerixMetrics.expandedKeyboardEndInset)
                     else Modifier
                 ),
             changeKeyboard = {

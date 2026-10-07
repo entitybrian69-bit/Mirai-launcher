@@ -40,5 +40,7 @@ enum class ColorThemeType {
     URBAN_ASH,
     VERDANT_DAWN,
     CUSTOM,
+    AERIX,
+    /** Legacy persisted value from pre-Aerix installs; keep it readable. */
     MIRAI
 }

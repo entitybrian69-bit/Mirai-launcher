@@ -18,9 +18,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +39,10 @@ import com.movtery.layer_controller.observable.ObservableClickEventsProvider
 import com.movtery.layer_controller.observable.ObservableJoystickData
 import com.movtery.layer_controller.observable.joystickDirectionEventsProvider
 import com.movtery.layer_controller.observable.joystickLockEventsProvider
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
+import com.movtery.zalithlauncher.ui.components.AerixPillTab
+import com.movtery.zalithlauncher.ui.components.AerixPillTabRow
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.rememberDialogMaxHeight
 import com.movtery.zalithlauncher.ui.components.verticalScrollWithBar
@@ -90,19 +91,19 @@ fun EditJoystickEvents(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 4.dp)
+            .padding(horizontal = AerixSpacing.xs)
     ) {
         // 摇杆方向选择
         Box(
             modifier = Modifier
                 .weight(2f)
                 .fillMaxHeight()
-                .padding(end = 4.dp),
+                .padding(end = AerixSpacing.xs),
             contentAlignment = Alignment.Center
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxl),
             ) {
                 AreaButton(
                     text = stringResource(R.string.control_editor_edit_joystick_lock_events),
@@ -116,7 +117,7 @@ fun EditJoystickEvents(
                 FakeJoystick(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = AerixSpacing.sm),
                     selectedArea = selectedArea,
                     onAreaSelected = { area ->
                         selectedArea = if (selectedArea == area) null else area
@@ -130,7 +131,7 @@ fun EditJoystickEvents(
             modifier = Modifier
                 .weight(3f)
                 .fillMaxHeight()
-                .padding(start = 8.dp, end = 4.dp, top = 12.dp)
+                .padding(start = AerixSpacing.sm, end = AerixSpacing.xs, top = AerixSpacing.md)
         ) {
             if (selectedArea == null) {
                 Box(
@@ -141,13 +142,13 @@ fun EditJoystickEvents(
                         text = stringResource(R.string.control_editor_edit_joystick_select_area),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(start = 6.dp, end = 12.dp)
+                        modifier = Modifier.padding(start = AerixSpacing.smCompact, end = AerixSpacing.md)
                     )
                 }
             } else {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                 ) {
                     InfoLayoutTextItem(
                         modifier = Modifier.fillMaxWidth(),
@@ -324,9 +325,9 @@ private fun AreaButton(
     ) {
         Box(
             modifier = if (position == CardPosition.Single) {
-                Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                Modifier.padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.smCompact)
             } else {
-                Modifier.padding(all = 8.dp)
+                Modifier.padding(all = AerixSpacing.sm)
             },
             contentAlignment = Alignment.Center
         ) {
@@ -377,18 +378,14 @@ private fun JoystickLauncherEventDialog(
                     pagerState.animateScrollToPage(selectedTabIndex)
                 }
 
-                SecondaryTabRow(
-                    selectedTabIndex = selectedTabIndex,
-                    containerColor = cardColor(false)
-                ) {
+                AerixPillTabRow(modifier = Modifier.fillMaxWidth()) {
                     tabs.forEachIndexed { index, titleRes ->
-                        Tab(
+                        AerixPillTab(
                             selected = index == selectedTabIndex,
-                            onClick = { selectedTabIndex = index },
-                            text = {
-                                MarqueeText(text = stringResource(titleRes))
-                            }
-                        )
+                            onClick = { selectedTabIndex = index }
+                        ) {
+                            MarqueeText(text = stringResource(titleRes))
+                        }
                     }
                 }
 
@@ -422,7 +419,7 @@ private fun JoystickLauncherEventDialog(
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(all = 12.dp)
+                                    .padding(all = AerixSpacing.md)
                             )
                         }
                     }
@@ -440,8 +437,8 @@ private fun JoystickBasicEventPage(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScrollWithBar(rememberScrollState())
-            .padding(all = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(all = AerixSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         // 切换控件层可见性
         InfoLayoutTextItem(
@@ -487,7 +484,7 @@ private fun JoystickKeyEventDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 3.dp)
+                    .padding(all = AerixSpacing.tiny)
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -498,12 +495,12 @@ private fun JoystickKeyEventDialog(
                 Column(
                     modifier = Modifier.wrapContentHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                 ) {
                     Text(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 16.dp),
+                            .padding(horizontal = AerixSpacing.lg)
+                            .padding(top = AerixSpacing.lg),
                         text = stringResource(R.string.control_editor_edit_event_key),
                         style = MaterialTheme.typography.titleMedium,
                     )
@@ -512,7 +509,7 @@ private fun JoystickKeyEventDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f, fill = false)
-                            .padding(horizontal = 12.dp),
+                            .padding(horizontal = AerixSpacing.md),
                         provider = if (isLock) {
                             joystickLockEventsProvider(data)
                         } else {

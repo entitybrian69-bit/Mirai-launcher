@@ -52,6 +52,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.unit.EnumSettingUnit
 import com.movtery.zalithlauncher.setting.unit.StringListSettingUnit
@@ -71,13 +73,13 @@ private fun <E> BaseListSettingsCard(
     position: CardPosition,
     itemLayout: @Composable (E) -> Unit,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     middleLayout: (@Composable ColumnScope.() -> Unit)? = null,
     trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
-    itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
+    itemListPadding: PaddingValues = PaddingValues(start = AerixSpacing.sm, end = AerixSpacing.sm, bottom = AerixSpacing.sm),
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
     summaryStyle: TextStyle = MaterialTheme.typography.labelSmall
 ) {
@@ -105,11 +107,11 @@ private fun <E> BaseListSettingsCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(enabled = enabled) { onExpandChange(!expanded) }
-                        .padding(all = 16.dp)
+                        .padding(all = AerixSpacing.lg)
                 ) {
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) innerColumn@ {
                         TitleAndSummary(
                             title = title,
@@ -175,8 +177,8 @@ fun <E> ListSettingsCard(
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     getItemText: @Composable (E) -> String,
     getItemId: (E) -> String,
@@ -184,7 +186,7 @@ fun <E> ListSettingsCard(
     trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
     autoCollapse: Boolean = true,
-    itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
+    itemListPadding: PaddingValues = PaddingValues(start = AerixSpacing.sm, end = AerixSpacing.sm, bottom = AerixSpacing.sm),
     onValueChange: (E) -> Unit = {},
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
     summaryStyle: TextStyle = MaterialTheme.typography.labelSmall
@@ -249,8 +251,8 @@ fun <E> ListSettingsCard(
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     getItemText: @Composable (E) -> String,
     getItemId: (E) -> String,
@@ -258,7 +260,7 @@ fun <E> ListSettingsCard(
     trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
     autoCollapse: Boolean = true,
-    itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
+    itemListPadding: PaddingValues = PaddingValues(start = AerixSpacing.sm, end = AerixSpacing.sm, bottom = AerixSpacing.sm),
     onValueChange: (E) -> Unit = {},
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
     summaryStyle: TextStyle = MaterialTheme.typography.labelSmall
@@ -296,14 +298,14 @@ fun <E: Enum<E>> ListSettingsCard(
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     getItemText: @Composable (E) -> String,
     getItemSummary: (@Composable (E) -> Unit)? = null,
     enabled: Boolean = true,
     autoCollapse: Boolean = true,
-    itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
+    itemListPadding: PaddingValues = PaddingValues(start = AerixSpacing.sm, end = AerixSpacing.sm, bottom = AerixSpacing.sm),
     onValueChange: (E) -> Unit = {},
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
     summaryStyle: TextStyle = MaterialTheme.typography.labelSmall
@@ -341,8 +343,8 @@ fun <E> StringListSettingsCard(
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     getItemID: (E) -> String,
     getItemText: @Composable (E) -> String,
@@ -350,7 +352,7 @@ fun <E> StringListSettingsCard(
     getItemCheck: (contains: Boolean) -> Boolean = { it },
     trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
-    itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
+    itemListPadding: PaddingValues = PaddingValues(start = AerixSpacing.sm, end = AerixSpacing.sm, bottom = AerixSpacing.sm),
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
     summaryStyle: TextStyle = MaterialTheme.typography.labelSmall
 ) {
@@ -405,7 +407,7 @@ fun SimpleIDListCard(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
-    itemListPadding: PaddingValues = PaddingValues(bottom = 4.dp),
+    itemListPadding: PaddingValues = PaddingValues(bottom = AerixSpacing.xs),
     onValueChange: (IDItem) -> Unit = {}
 ) {
     ListSettingsCard(

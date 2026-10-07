@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.movtery.inputmap.keycodes.ControlEventKeyName
 import com.movtery.layer_controller.event.ClickEvent
 import com.movtery.layer_controller.observable.ObservableClickEventsProvider
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.control.Keyboard
@@ -75,8 +76,8 @@ fun KeyEventEdit(
                 orientation = Orientation.Vertical,
             )
             .then(modifier),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+        contentPadding = PaddingValues(vertical = AerixSpacing.md),
         state = scrollState,
     ) {
         item {
@@ -90,7 +91,7 @@ fun KeyEventEdit(
                 contentColor = contentColor,
                 showArrow = false
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         items(
@@ -142,7 +143,7 @@ private fun EditKeyItem(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .padding(vertical = 4.dp),
+                .padding(vertical = AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             MarqueeText(

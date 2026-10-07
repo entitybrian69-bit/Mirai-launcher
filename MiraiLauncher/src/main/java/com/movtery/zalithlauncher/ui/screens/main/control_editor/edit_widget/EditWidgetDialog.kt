@@ -68,6 +68,7 @@ import com.movtery.layer_controller.observable.ObservableJoystickStyle
 import com.movtery.layer_controller.observable.ObservableNormalData
 import com.movtery.layer_controller.observable.ObservableTranslatableString
 import com.movtery.layer_controller.observable.ObservableWidget
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.EdgeDirection
 import com.movtery.zalithlauncher.ui.components.MarqueeText
@@ -165,7 +166,7 @@ fun EditWidgetDialog(
                     modifier = Modifier
                         .fillMaxWidth(0.75f)
                         .fillMaxHeight()
-                        .padding(all = 16.dp),
+                        .padding(all = AerixSpacing.lg),
                     shadowElevation = 3.dp,
                     color = cardColor(false),
                     contentColor = onCardColor(),
@@ -174,7 +175,7 @@ fun EditWidgetDialog(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 4.dp)
+                            .padding(horizontal = AerixSpacing.xs)
                     ) {
                         Row(
                             modifier = Modifier
@@ -216,7 +217,7 @@ fun EditWidgetDialog(
                         //底部操作栏
                         Row(
                             modifier = Modifier
-                                .padding(all = 8.dp)
+                                .padding(all = AerixSpacing.sm)
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -228,7 +229,7 @@ fun EditWidgetDialog(
                                 ) {
                                     MarqueeText(text = stringResource(dialogTransparent.buttonText))
                                 }
-                                Spacer(Modifier.width(16.dp))
+                                Spacer(Modifier.width(AerixSpacing.lg))
                             } else {
                                 //占位用，防止右侧按钮向左靠齐
                                 Spacer(Modifier)
@@ -245,7 +246,7 @@ fun EditWidgetDialog(
                                         direction = EdgeDirection.Horizontal
                                     )
                                     .horizontalScroll(state = scrollState),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                             ) {
                                 FilledTonalButton(
                                     onClick = {
@@ -288,7 +289,7 @@ private fun EditWidgetTabLayout(
         modifier = modifier.verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(AerixSpacing.md))
         items.forEach { item ->
             NavigationRailItem(
                 selected = currentKey == item.key,
@@ -308,7 +309,7 @@ private fun EditWidgetTabLayout(
                 }
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
     }
 }

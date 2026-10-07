@@ -71,6 +71,8 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AerixMetrics
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.favorites.FavoriteEntry
 import com.movtery.zalithlauncher.game.download.assets.favorites.FavoriteProjectsRepository
@@ -248,9 +250,9 @@ private fun FavoritesContent(
             Column(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(horizontal = 24.dp),
+                    .padding(horizontal = AerixSpacing.xxl),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 Icon(
                     modifier = Modifier.size(68.dp),
@@ -304,14 +306,14 @@ private fun FavoritesContent(
                     .topFade(listTopFadePx),
                 state = listState,
                 contentPadding = PaddingValues(
-                    start = 12.dp,
-                    end = 12.dp,
-                    bottom = 12.dp,
+                    start = AerixSpacing.md,
+                    end = AerixSpacing.md,
+                    bottom = AerixSpacing.md,
                     top = with(density) {
                         (headerHeightPx + topAppBarState.heightOffset).coerceAtLeast(0f).toDp()
                     }
                 ),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 val entries = viewModel.items
                 if (entries.isEmpty()) {
@@ -320,7 +322,7 @@ private fun FavoritesContent(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 80.dp),
+                                .padding(top = AerixMetrics.favoritesEmptyStateTopInset),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -365,7 +367,7 @@ private fun FavoritesContent(
                 val blur = AllSettings.backgroundBlur.state
                 val barColor = cardColor()
                 Surface(
-                    modifier = Modifier.padding(all = 12.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.md),
                     color = barColor,
                     contentColor = onCardColor(),
                     shape = MaterialTheme.shapes.large,
@@ -381,8 +383,8 @@ private fun FavoritesContent(
                                 direction = EdgeDirection.Horizontal
                             )
                             .horizontalScroll(state = scrollState)
-                            .padding(all = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            .padding(all = AerixSpacing.sm),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         FavoriteCategoryItem(
@@ -438,8 +440,8 @@ private fun FavoritesFilter(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(top = 12.dp, end = 12.dp, bottom = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(top = AerixSpacing.md, end = AerixSpacing.md, bottom = AerixSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
     ) {
         //名称搜索，直接从数据池过滤，无需主动触发
         item {
@@ -534,19 +536,3 @@ private fun FavoritesFilter(
  * 在组件顶部绘制指定像素高度的线性渐隐
  */
 private fun Modifier.topFade(heightPx: Float): Modifier = this
-    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-    .drawWithContent {
-        drawContent()
-        if (heightPx <= 0f) return@drawWithContent
-        inset(
-            left = 0f,
-            top = 0f,
-            right = 0f,
-            bottom = (size.height - heightPx).coerceAtLeast(0f)
-        ) {
-            drawRect(
-                brush = Brush.verticalGradient(0f to Color.Black, 1f to Color.Transparent),
-                blendMode = BlendMode.DstOut
-            )
-        }
-    }

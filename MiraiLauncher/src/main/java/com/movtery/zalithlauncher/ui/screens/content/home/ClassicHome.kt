@@ -28,6 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 
 @Composable
@@ -43,52 +46,52 @@ fun ClassicHome(
 ) {
     val versions by VersionsManager.versions.collectAsStateWithLifecycle()
     val count = versions.size
-    Column(modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier.fillMaxSize().padding(AerixSpacing.lg)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Mirai Launcher  /  Main Menu", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
-                Text("Unofficial Modified Version", color = Color(0xFFD7CFC8), fontSize = 12.sp)
+                Text("Aerix Launcher  /  Main Menu", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                Text("Unofficial Modified Version", color = AerixSurface.textSecondary, fontSize = 12.sp)
             }
             TopAction("Files", onFiles)
             TopAction("Accounts", onAccounts)
             TopAction("Download", onDownload)
             TopAction("Settings", onSettings)
         }
-        Spacer(Modifier.height(16.dp))
-        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Spacer(Modifier.height(AerixSpacing.lg))
+        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus)) {
+            Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)) {
                 Text("Jump in", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 28.sp)
-                Text("Recently played, selected, and pinned installations", color = Color(0xFFD7CFC8))
+                Text("Recently played, selected, and pinned installations", color = AerixSurface.textSecondary)
                 GlassCard {
                     Text(if (count == 0) "Nothing to jump into yet" else "${versions.first().getVersionName()}", color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Text(if (count == 0) "Install a version or pin one from your library for quick access." else "Selected installation", color = Color(0xFFD7CFC8))
+                    Text(if (count == 0) "Install a version or pin one from your library for quick access." else "Selected installation", color = AerixSurface.textSecondary)
                 }
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text("Library", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 28.sp)
-                        Text("$count installed", color = Color(0xFFD7CFC8))
+                        Text("$count installed", color = AerixSurface.textSecondary)
                     }
-                    Text("+  New instance", color = Color(0xFF06210F), fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(24.dp)).background(Color(0xFF1BD96A)).clickable(onClick = onCreateInstance).padding(horizontal = 16.dp, vertical = 10.dp))
+                    Text("+  New instance", color = AerixSurface.onAccent, fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(AerixRadii.dialog)).background(AerixSurface.accent).clickable(onClick = onCreateInstance).padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.smPlus))
                 }
                 GlassCard {
                     Text(if (count == 0) "Your library is empty" else "${count} installed versions", color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Text(if (count == 0) "Install a Minecraft version to get started." else "Tap New instance to add another, or Launch to play the selected one.", color = Color(0xFFD7CFC8))
+                    Text(if (count == 0) "Install a Minecraft version to get started." else "Tap New instance to add another, or Launch to play the selected one.", color = AerixSurface.textSecondary)
                     if (count == 0) {
-                        Spacer(Modifier.height(8.dp))
-                        Text("+  New instance", color = Color(0xFF06210F), fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(24.dp)).background(Color(0xFF1BD96A)).clickable(onClick = onCreateInstance).padding(horizontal = 16.dp, vertical = 10.dp))
+                        Spacer(Modifier.height(AerixSpacing.sm))
+                        Text("+  New instance", color = AerixSurface.onAccent, fontWeight = FontWeight.SemiBold, modifier = Modifier.clip(RoundedCornerShape(AerixRadii.dialog)).background(AerixSurface.accent).clickable(onClick = onCreateInstance).padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.smPlus))
                     }
                 }
             }
             Column(
-                Modifier.width(220.dp).fillMaxHeight().clip(RoundedCornerShape(24.dp)).background(Color(0x66161618)).padding(18.dp),
+                Modifier.width(220.dp).fillMaxHeight().clip(RoundedCornerShape(AerixRadii.dialog)).background(AerixSurface.panel.copy(alpha = 0.4f)).padding(AerixSpacing.lgPlus),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
             ) {
                 Text("+", color = Color.White, fontSize = 36.sp, modifier = Modifier.clickable(onClick = onAddAccount))
                 Text("Add Account", color = Color.White, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable(onClick = onAddAccount))
                 Spacer(Modifier.weight(1f))
                 Text("$count installed versions", color = Color.White)
-                Text("Launch", color = Color(0xFF06210F), fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(Color(0xFF1BD96A)).clickable(onClick = onLaunch).padding(vertical = 12.dp))
+                Text("Launch", color = AerixSurface.onAccent, fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.dialog)).background(AerixSurface.accent).clickable(onClick = onLaunch).padding(vertical = AerixSpacing.md))
             }
         }
     }
@@ -96,10 +99,10 @@ fun ClassicHome(
 
 @Composable
 private fun TopAction(label: String, onClick: () -> Unit) {
-    Text(label, color = Color.White, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 6.dp).clickable(onClick = onClick))
+    Text(label, color = Color.White, fontSize = 12.sp, modifier = Modifier.padding(horizontal = AerixSpacing.smCompact).clickable(onClick = onClick))
 }
 
 @Composable
 private fun GlassCard(content: @Composable () -> Unit) {
-    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Color(0x66161618)).padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) { content() }
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.cardLarge)).background(AerixSurface.panel.copy(alpha = 0.4f)).padding(AerixSpacing.lg), verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)) { content() }
 }

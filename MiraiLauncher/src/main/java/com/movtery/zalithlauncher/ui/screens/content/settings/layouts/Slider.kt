@@ -34,6 +34,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.setting.unit.IntSettingUnit
 import com.movtery.zalithlauncher.setting.unit.NullableIntSettingUnit
 import com.movtery.zalithlauncher.setting.unit.min
@@ -48,8 +50,8 @@ fun IntSliderSettingsCard(
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     valueRange: ClosedFloatingPointRange<Float>,
     steps: Int = 0,
@@ -75,8 +77,8 @@ fun IntSliderSettingsCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(all = AerixSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Column(
                 modifier = Modifier.alpha(alpha = if (enabled) 1f else DisabledAlpha)
@@ -128,8 +130,8 @@ fun IntSliderSettingsCard(
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     valueRange: ClosedFloatingPointRange<Float>,
     steps: Int = 0,
@@ -175,8 +177,8 @@ fun IntSliderSettingsCard(
     title: String,
     position: CardPosition,
     modifier: Modifier = Modifier,
-    outerShape: Dp = 28.dp,
-    innerShape: Dp = 4.dp,
+    outerShape: Dp = AerixRadii.hero,
+    innerShape: Dp = AerixRadii.tiny,
     summary: String? = null,
     valueRange: ClosedFloatingPointRange<Float>,
     steps: Int = 0,

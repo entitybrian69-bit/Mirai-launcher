@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.MarkdownView
 import com.movtery.zalithlauncher.ui.components.defaultRichTextStyle
@@ -90,7 +91,7 @@ fun UpgradeDialog(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 6.dp)
+                    .padding(all = AerixSpacing.smCompact)
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -100,13 +101,13 @@ fun UpgradeDialog(
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 16.dp),
+                            .padding(horizontal = AerixSpacing.lg)
+                            .padding(top = AerixSpacing.lg),
                         text = stringResource(R.string.upgrade_new)
                     )
 
@@ -133,7 +134,7 @@ fun UpgradeDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f, fill = false)
-                                .padding(horizontal = 20.dp)
+                                .padding(horizontal = AerixSpacing.xl)
                                 .verticalScrollWithBar(rememberScrollState()),
                             content = markdownBody,
                             richTextStyle = defaultRichTextStyle(),
@@ -144,9 +145,9 @@ fun UpgradeDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            .padding(horizontal = AerixSpacing.lg)
+                            .padding(bottom = AerixSpacing.lg),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (cloudDrive == null) {

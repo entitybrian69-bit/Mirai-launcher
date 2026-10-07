@@ -1,7 +1,7 @@
-# Mirai Launcher
+# Aerix Launcher
 
 <p align="center">
-  <img src="assets/mirai-logo.png" alt="Mirai Launcher logo" width="192">
+  <img src="assets/aerix-logo.png" alt="Aerix Launcher logo" width="192">
 </p>
 
 <p align="center"><strong>More worlds. More control.</strong><br>
@@ -15,7 +15,7 @@ An Android launcher for Minecraft: Java Edition.</p>
 
 ![GitHub downloads](https://img.shields.io/github/downloads/entitybrian69-bit/Mirai-launcher/total)
 
-> **Unofficial Modified Version** — Mirai is for players who want a clear, capable way to manage Minecraft Java Edition on Android. Set up your installations, content, accounts, and controls in one place, then get back to the world you came for.
+> **Unofficial Modified Version** — Aerix is for players who want a clear, capable way to manage Minecraft Java Edition on Android. Set up your installations, content, accounts, and controls in one place, then get back to the world you came for.
 
 ## Features
 
@@ -28,7 +28,7 @@ An Android launcher for Minecraft: Java Edition.</p>
 - **Game file tools:** use the built-in file manager, import or export modpacks, and configure version isolation.
 - **Personalize:** use the green-and-dark interface, choose a background, and adjust launcher settings.
 
-Mirai keeps versions, content, accounts, controls, and everyday tools together. It focuses on practical choices and configurable setups rather than promising identical performance on every device.
+Aerix keeps versions, content, accounts, controls, and everyday tools together. It focuses on practical choices and configurable setups rather than promising identical performance on every device.
 
 ## Downloads and builds
 
@@ -48,7 +48,7 @@ Replace `all` with `arm`, `arm64`, `x86`, or `x86_64` for a specific architectur
 
 This project is licensed under the **[GPL-3.0 license](LICENSE)**.
 
-Mirai Launcher includes code originally developed for Zalith Launcher 2 by MovTery and contributors. The original source copyright notices and applicable GPL-3.0 terms are retained.
+Aerix Launcher includes code originally developed for Zalith Launcher 2 by MovTery and contributors. The original source copyright notices and applicable GPL-3.0 terms are retained.
 
 ### Additional Terms (Pursuant to Section 7 of the GPLv3 License)
 

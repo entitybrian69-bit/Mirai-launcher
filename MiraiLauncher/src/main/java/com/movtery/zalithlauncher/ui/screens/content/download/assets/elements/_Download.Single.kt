@@ -72,6 +72,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.DependencyRequest
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
@@ -304,7 +306,7 @@ private fun DownloadDialog(
             ) {
                 Surface(
                     modifier = Modifier
-                        .padding(all = 6.dp)
+                        .padding(all = AerixSpacing.smCompact)
                         .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                         .wrapContentHeight(),
                     shape = MaterialTheme.shapes.extraLarge,
@@ -313,15 +315,15 @@ private fun DownloadDialog(
                     shadowElevation = 6.dp
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(AerixSpacing.lg),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                     ) {
                         Row(
                             modifier = Modifier
                                 .weight(1f, fill = false)
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                         ) {
                             if (hasDeps) {
                                 val listState = rememberLazyListState()
@@ -334,8 +336,8 @@ private fun DownloadDialog(
                                             state = listState.scrollIndicatorState!!,
                                             orientation = Orientation.Vertical,
                                         ),
-                                    contentPadding = PaddingValues(vertical = 8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                                    contentPadding = PaddingValues(vertical = AerixSpacing.sm),
+                                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
                                     state = listState
                                 ) {
                                     dependencies.takeIf { it.isNotEmpty() }?.let { dependencies ->
@@ -368,7 +370,7 @@ private fun DownloadDialog(
                             ) {
                                 MarqueeText(
                                     modifier = if (hasDeps) {
-                                        Modifier.padding(top = 8.dp)
+                                        Modifier.padding(top = AerixSpacing.sm)
                                     } else {
                                         Modifier.align(Alignment.CenterHorizontally)
                                     },
@@ -432,7 +434,7 @@ private fun DownloadDialog(
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                         ) {
                             FilledTonalButton(
                                 modifier = Modifier.weight(0.5f),
@@ -490,8 +492,8 @@ private fun ChoseGameVersionLayout(
                 state = listState.scrollIndicatorState!!,
                 orientation = Orientation.Vertical,
             ),
-            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = AerixSpacing.xs, vertical = AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             state = listState
         ) {
             items(versions) { version ->
@@ -538,7 +540,7 @@ private fun SelectVersionListItem(
         }
     ) {
         Row(
-            modifier = modifier.padding(vertical = 8.dp),
+            modifier = modifier.padding(vertical = AerixSpacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
@@ -557,7 +559,7 @@ private fun SelectVersionListItem(
             )
             if (detected) {
                 LittleTextLabel(
-                    modifier = Modifier.padding(end = 8.dp),
+                    modifier = Modifier.padding(end = AerixSpacing.sm),
                     text = "Detected",
                     shape = MaterialTheme.shapes.small
                 )
@@ -654,15 +656,15 @@ private fun AssetsUnavailableDependencyItem(
         contentColor = contentColor,
     ) {
         Column(
-            modifier = Modifier.padding(all = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(all = AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 AssetsIcon(
-                    modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
+                    modifier = Modifier.clip(shape = RoundedCornerShape(AerixRadii.controlSmall)),
                     size = 48.dp,
                     iconUrl = null
                 )
@@ -676,7 +678,7 @@ private fun AssetsUnavailableDependencyItem(
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
@@ -729,15 +731,15 @@ private fun AssetsVersionDependencyItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(all = 8.dp)
+                .padding(all = AerixSpacing.sm)
                 .height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             Column(
                 modifier = Modifier.fillMaxHeight()
             ) {
                 AssetsIcon(
-                    modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
+                    modifier = Modifier.clip(shape = RoundedCornerShape(AerixRadii.controlSmall)),
                     size = 48.dp,
                     iconUrl = iconUrl
                 )
@@ -753,7 +755,7 @@ private fun AssetsVersionDependencyItem(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
                 ProjectTitleHead(
                     platform = platform,
@@ -763,7 +765,7 @@ private fun AssetsVersionDependencyItem(
                 summary?.let { summary ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                     ) {
                         //描述
                         Text(
@@ -786,7 +788,7 @@ private fun AssetsVersionDependencyItem(
                 //加载器标签与已安装标注
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AssetsDependencyTags(
@@ -822,7 +824,7 @@ private fun AssetsDependencyTags(
         modifier = modifier
             .alpha(0.7f)
             .basicMarquee(iterations = Int.MAX_VALUE),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         modLoaders?.forEach { modLoader ->
             Text(
@@ -847,10 +849,10 @@ private fun AssetsDependencyCounts(
     Column(
         modifier = modifier.alpha(0.7f),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -865,7 +867,7 @@ private fun AssetsDependencyCounts(
         }
         follows?.let {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(

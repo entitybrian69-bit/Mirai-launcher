@@ -72,6 +72,7 @@ import com.movtery.layer_controller.layout.ControlLayout
 import com.movtery.layer_controller.layout.EmptyControlLayout
 import com.movtery.layer_controller.layout.loadLayoutFromFile
 import com.movtery.layer_controller.observable.ObservableControlLayout
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.bridge.CURSOR_DISABLED
 import com.movtery.zalithlauncher.bridge.ZLBridgeStates
@@ -663,7 +664,7 @@ fun GameScreen(
         GameInfoBox(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(all = 16.dp),
+                .padding(all = AerixSpacing.lg),
             versionName = version.getVersionName(),
             versionInfo = version.getVersionInfo()?.getInfoString(),
             visible = showGameInfo,
@@ -861,9 +862,9 @@ private fun GameInfoBox(
                 Row(
                     modifier = Modifier
                         .weight(1f, fill = false)
-                        .padding(vertical = 16.dp)
-                        .padding(start = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        .padding(vertical = AerixSpacing.lg)
+                        .padding(start = AerixSpacing.lg),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
                 ) {
                     LoadingIndicator(
                         modifier = Modifier.align(Alignment.CenterVertically)
@@ -872,7 +873,7 @@ private fun GameInfoBox(
                     //提示信息
                     Column(
                         modifier = Modifier.weight(1f, fill = false),
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
                     ) {
                         Text(
                             text = stringResource(R.string.game_loading),
@@ -892,7 +893,7 @@ private fun GameInfoBox(
                 }
 
                 IconButton(
-                    modifier = Modifier.padding(top = 4.dp, end = 4.dp),
+                    modifier = Modifier.padding(top = AerixSpacing.xs, end = AerixSpacing.xs),
                     onClick = onClose
                 ) {
                     Icon(

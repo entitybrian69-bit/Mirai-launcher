@@ -26,6 +26,8 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.screens.content.elements.DisabledAlpha
 
 /**
@@ -41,9 +43,9 @@ enum class ButtonPosition {
 @Composable
 fun rememberButtonPosShape(
     position: ButtonPosition,
-    outerShape: Dp = 28.dp,
+    outerShape: Dp = AerixRadii.hero,
     outerShapePressed: Dp = outerShape,
-    innerShape: Dp = 4.dp,
+    innerShape: Dp = AerixRadii.tiny,
     innerShapePressed: Dp = innerShape,
 ): Shape {
     return remember(position, outerShape, outerShapePressed, innerShape, innerShapePressed) {
@@ -66,7 +68,7 @@ fun rememberButtonPosShape(
     }
 }
 
-private val PositionButtonDefaultsContentPadding = PaddingValues(horizontal = 24.dp, vertical = 0.dp)
+private val PositionButtonDefaultsContentPadding = PaddingValues(horizontal = AerixSpacing.xxl, vertical = AerixSpacing.zero)
 
 @Composable
 private fun PositionButtonBase(
@@ -166,7 +168,7 @@ fun PositionOutlinedButton(
     position = position,
     containerColor = MaterialTheme.colorScheme.surface,
     contentColor = MaterialTheme.colorScheme.onSurface,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+    border = BorderStroke(AerixSpacing.hairline, MaterialTheme.colorScheme.outline),
     shadowElevation = 0.dp,
     contentPadding = contentPadding,
     content = content

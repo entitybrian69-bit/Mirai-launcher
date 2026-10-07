@@ -70,6 +70,7 @@ import com.movtery.layer_controller.observable.ObservableJoystickStyle
 import com.movtery.layer_controller.observable.ObservableTranslatableString
 import com.movtery.layer_controller.observable.ObservableWidget
 import com.movtery.layer_controller.utils.snap.SnapMode
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.bridge.CURSOR_DISABLED
 import com.movtery.zalithlauncher.bridge.CURSOR_ENABLED
@@ -200,7 +201,7 @@ fun MenuBox(
     ) {
         Box(
             modifier = Modifier
-                .padding(all = 2.dp)
+                .padding(all = AerixSpacing.xxs)
                 .size(28.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -254,7 +255,7 @@ fun EditorMenu(
         closeScreen = closeScreen,
         leftMenuTitle = {
             Text(
-                modifier = Modifier.padding(all = 8.dp),
+                modifier = Modifier.padding(all = AerixSpacing.sm),
                 text = stringResource(R.string.control_editor_menu_title),
                 style = MaterialTheme.typography.titleMedium
             )
@@ -281,7 +282,7 @@ fun EditorMenu(
         },
         rightMenuTitle = {
             Text(
-                modifier = Modifier.padding(all = 8.dp),
+                modifier = Modifier.padding(all = AerixSpacing.sm),
                 text = stringResource(R.string.control_editor_layers_title),
                 style = MaterialTheme.typography.titleMedium
             )
@@ -359,8 +360,8 @@ private fun EditorMenuContent(
             }
             .lazyScrollWithBar(listState),
         state = listState,
-        contentPadding = PaddingValues(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         //添加按钮
         item(key = "add_button") {
@@ -454,7 +455,7 @@ private fun EditorMenuContent(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         //预览控制布局
@@ -543,7 +544,7 @@ private fun EditorMenuContent(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         //控件吸附
@@ -591,7 +592,7 @@ private fun EditorMenuContent(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.sm))
         }
 
         //保存
@@ -689,8 +690,8 @@ private fun ColumnScope.ControlLayerMenu(
             .weight(1f)
             .lazyScrollWithBar(lazyListState),
         state = lazyListState,
-        contentPadding = PaddingValues(all = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(all = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         items(layers, { it.uuid }) { layer ->
             ReorderableItem(
@@ -730,7 +731,7 @@ private fun ColumnScope.ControlLayerMenu(
                 key = GuideKeys.Editor.Step.CreateLayer,
                 holeRadius = 50.dp
             )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs)
             .fillMaxWidth(),
         onClick = createLayer
     ) {
@@ -780,7 +781,7 @@ private fun ControlLayerItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = MaterialTheme.shapes.large)
-                .padding(all = 8.dp),
+                .padding(all = AerixSpacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
@@ -823,7 +824,7 @@ private fun ControlLayerItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier.padding(all = 4.dp),
+                    modifier = Modifier.padding(all = AerixSpacing.xs),
                     painter = painterResource(R.drawable.ic_drag_handle),
                     contentDescription = null
                 )

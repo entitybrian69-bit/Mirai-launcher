@@ -30,6 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
@@ -47,16 +50,16 @@ fun MiraiPlayPage(
     val versions by VersionsManager.versions.collectAsStateWithLifecycle()
     val current by VersionsManager.currentVersion.collectAsStateWithLifecycle()
     val selected = current ?: versions.firstOrNull()
-    val glass = ButtonDefaults.buttonColors(containerColor = Color(0x991BD96A), contentColor = Color(0xFF06210F))
+    val glass = ButtonDefaults.buttonColors(containerColor = AerixSurface.accent.copy(alpha = 0.6f), contentColor = AerixSurface.onAccent)
 
-    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = modifier.fillMaxSize().padding(AerixSpacing.lg)) {
         Text("Instances", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(AerixSpacing.md))
         if (versions.isEmpty()) {
-            Text("No instances yet.", color = Color(0xFFD7CFC8))
+            Text("No instances yet.", color = AerixSurface.textSecondary)
             Spacer(Modifier.weight(1f))
         } else {
-            LazyColumn(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(bottom = 12.dp)) {
+            LazyColumn(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm), contentPadding = PaddingValues(bottom = AerixSpacing.md)) {
                 items(versions, key = { it.getVersionName() }) { version ->
                     InstanceRow(version, version.getVersionName() == selected?.getVersionName()) {
                         VersionsManager.saveVersion(version)
@@ -65,22 +68,22 @@ fun MiraiPlayPage(
                 }
             }
         }
-        Button(onClick = onAddAccount, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp), colors = glass) { Text("Add Account", fontWeight = FontWeight.SemiBold) }
-        Spacer(Modifier.height(8.dp))
-        Button(onClick = onCreateInstance, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp), colors = glass) { Text("Create instance", fontWeight = FontWeight.SemiBold) }
+        Button(onClick = onAddAccount, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(AerixRadii.dialog), colors = glass) { Text("Add Account", fontWeight = FontWeight.SemiBold) }
+        Spacer(Modifier.height(AerixSpacing.sm))
+        Button(onClick = onCreateInstance, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(AerixRadii.dialog), colors = glass) { Text("Create instance", fontWeight = FontWeight.SemiBold) }
     }
 }
 
 @Composable
 private fun InstanceRow(version: Version, selected: Boolean, onClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(if (selected) Color(0xCC1BD96A) else Color(0x331C1C1F)).clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 10.dp),
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(AerixRadii.control)).background(if (selected) AerixSurface.accent.copy(alpha = 0.8f) else AerixSurface.panel.copy(alpha = 0.2f)).clickable(onClick = onClick).padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.smPlus),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
     ) {
-        Box(modifier = Modifier.size(28.dp).clip(RoundedCornerShape(8.dp)).background(Color(0x33000000)), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.size(28.dp).clip(RoundedCornerShape(AerixRadii.compact)).background(AerixSurface.scrimSoft), contentAlignment = Alignment.Center) {
             VersionIconImage(version = version, modifier = Modifier.size(22.dp))
         }
-        Text(version.getVersionName(), color = if (selected) Color(0xFF06210F) else Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(version.getVersionName(), color = if (selected) AerixSurface.onAccent else Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

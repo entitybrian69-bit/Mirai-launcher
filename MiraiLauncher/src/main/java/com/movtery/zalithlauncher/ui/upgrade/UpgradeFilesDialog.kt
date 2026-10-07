@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.SimpleListDialog
@@ -118,7 +119,7 @@ private fun UpgradeFileLayout(
         )
         Column(
             modifier = Modifier.alpha(if (enabled) 1.0f else DisabledAlpha),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
         ) {
             //文件名
             MarqueeText(
@@ -130,7 +131,7 @@ private fun UpgradeFileLayout(
                     .fillMaxWidth()
                     .alpha(0.7f),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 if (currentArch == file.arch) {
                     Icon(
@@ -142,7 +143,7 @@ private fun UpgradeFileLayout(
                 Row(
                     modifier = Modifier.basicMarquee(Int.MAX_VALUE),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
                 ) {
                     //架构信息
                     Text(

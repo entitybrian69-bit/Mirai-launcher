@@ -78,6 +78,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.gif.GifDecoder
 import coil3.svg.SvgDecoder
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.addons.modloader.ModLoader
 import com.movtery.zalithlauncher.game.path.GamePath
@@ -167,7 +168,7 @@ fun GamePathItemLayout(
         label = {
             Column(
                 modifier = Modifier
-                    .padding(top = 4.dp, bottom = 4.dp)
+                    .padding(top = AerixSpacing.xs, bottom = AerixSpacing.xs)
                     .alpha(if (enabled) 1f else DisabledAlpha)
             ) {
                 Text(
@@ -335,7 +336,7 @@ fun VersionCategoryItem(
                 text = stringResource(value.textRes),
                 style = style
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(AerixSpacing.xs))
             Text(
                 text = "($versionsCount)",
                 style = style
@@ -570,7 +571,7 @@ fun DeleteVersionDialog(
         SimpleAlertDialog(
             title = stringResource(R.string.versions_manage_delete_version),
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)) {
                     Text(text = stringResource(R.string.versions_manage_delete_version_tip_hint1, version.getVersionName()))
                     Text(text = stringResource(R.string.versions_manage_delete_version_tip_hint2))
                     Text(text = stringResource(R.string.versions_manage_delete_version_tip_hint3))
@@ -603,7 +604,7 @@ fun CleanupOperation(
                 title = stringResource(R.string.versions_manage_cleanup),
                 text = {
                     Text(stringResource(R.string.versions_manage_cleanup_tip))
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(AerixSpacing.xs))
                     Text(stringResource(R.string.versions_manage_cleanup_warning))
                     Text("../assets/..")
                     //不再清理依赖库，文件并不会太大，也有可能导致其他问题：#617
@@ -718,7 +719,7 @@ fun VersionItemLayout(
                 .fillMaxWidth()
                 .clip(shape = MaterialTheme.shapes.large)
                 .backgroundGlass(blur, color, influencedByBackground)
-                .padding(all = 4.dp),
+                .padding(all = AerixSpacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
@@ -898,7 +899,7 @@ fun CommonVersionInfoLayout(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
     ) {
         VersionIconImage(
             modifier = Modifier.size(iconSize),
@@ -930,7 +931,7 @@ fun CommonVersionInfoLayout(
             //版本详细信息
             FlowRow(
                 modifier = Modifier.alpha(0.7f),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 if (!isValid) {
                     LittleTextLabel(

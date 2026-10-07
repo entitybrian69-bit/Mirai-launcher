@@ -58,6 +58,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.bridge.CursorShape
 import com.movtery.zalithlauncher.setting.unit.ParcelableSettingUnit
@@ -93,7 +95,7 @@ fun MouseHotspotEditorDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(all = 3.dp)
+                    .padding(all = AerixSpacing.tiny)
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shadowElevation = 3.dp,
@@ -104,7 +106,7 @@ fun MouseHotspotEditorDialog(
                 Row(
                     modifier = Modifier
                         .height(IntrinsicSize.Min)
-                        .padding(all = 12.dp),
+                        .padding(all = AerixSpacing.md),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     MouseHotspotPreview(
@@ -117,13 +119,13 @@ fun MouseHotspotEditorDialog(
                     VerticalDivider(
                         modifier = Modifier
                             .fillMaxHeight(0.5f)
-                            .padding(horizontal = 12.dp),
+                            .padding(horizontal = AerixSpacing.md),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                     )
 
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
                         //X坐标
                         InfoLayoutSliderItem(
@@ -219,7 +221,7 @@ private fun MouseHotspotPreview(
                 val center = Offset(x, y)
 
                 drawCircle(
-                    color = Color(0xFFC9350F),
+                    color = AerixSurface.accent,
                     radius = radius,
                     center = center
                 )

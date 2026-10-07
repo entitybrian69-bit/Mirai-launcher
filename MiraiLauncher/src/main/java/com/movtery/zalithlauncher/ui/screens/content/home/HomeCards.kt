@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.movtery.cardgrid.model.CardLimits
 import com.movtery.cardgrid.model.CardType
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.BuildConfig
 import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
@@ -80,8 +81,8 @@ object HomeCards {
             shape = MaterialTheme.shapes.extraLarge
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 Text(
                     text = stringResource(R.string.generic_warning),

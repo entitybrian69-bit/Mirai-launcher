@@ -30,7 +30,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Surface
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
+import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -400,7 +410,7 @@ private fun ModPackInstallOperation(
                     Text(text = stringResource(R.string.download_modpack_warning1))
                     Text(text = stringResource(R.string.download_modpack_warning2))
 
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(AerixSpacing.sm))
                     Text(
                         text = stringResource(R.string.download_modpack_warning3),
                         fontWeight = FontWeight.Bold
@@ -428,14 +438,25 @@ private fun ModPackInstallOperation(
                                 .zIndex(1f),
                             contentAlignment = Alignment.BottomEnd
                         ) {
-                            SmallFloatingActionButton(
-                                modifier = Modifier.padding(16.dp),
-                                onClick = { onInstallMinimizedChange(false) }
+                            Surface(
+                                modifier = Modifier
+                                    .padding(AerixSpacing.lg)
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .clickable { onInstallMinimizedChange(false) },
+                                shape = CircleShape,
+                                color = AerixSurface.panel,
+                                border = BorderStroke(2.dp, MiraiThemeManager.currentAccent()),
+                                shadowElevation = 8.dp
                             ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_download),
-                                    contentDescription = stringResource(R.string.generic_expand)
-                                )
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_download),
+                                        contentDescription = stringResource(R.string.generic_expand),
+                                        tint = MiraiThemeManager.currentAccent(),
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
                             }
                         }
                     } else {
@@ -483,7 +504,7 @@ private fun ModPackInstallOperation(
                         modifier = Modifier
                             .fadeEdge(state = scrollState)
                             .verticalScrollWithBar(state = scrollState),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
                         Text(text = stringResource(R.string.download_install_error_message))
                         Text(text = message)

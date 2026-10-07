@@ -16,6 +16,7 @@ import com.movtery.layer_controller.data.JOYSTICK_DEAD_ZONE_RANGE
 import com.movtery.layer_controller.data.JOYSTICK_LOCK_THRESHOLD_RANGE
 import com.movtery.layer_controller.data.JoystickTriggerMode
 import com.movtery.layer_controller.observable.ObservableJoystickData
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.verticalScrollWithBar
@@ -37,10 +38,10 @@ fun EditJoystickConfig(
     ) {
         Column(
             modifier = Modifier
-                .padding(start = 4.dp, end = 8.dp)
+                .padding(start = AerixSpacing.xs, end = AerixSpacing.sm)
                 .fillMaxSize()
                 .verticalScrollWithBar(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
         ) {
             Spacer(Modifier)
 
@@ -65,7 +66,7 @@ fun EditJoystickConfig(
                 getItemText = { it.getTriggerModeText() }
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AerixSpacing.xs))
 
             // 前进锁
             InfoLayoutSwitchItem(

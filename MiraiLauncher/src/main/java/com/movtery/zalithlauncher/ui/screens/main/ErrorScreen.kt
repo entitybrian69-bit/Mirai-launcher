@@ -57,10 +57,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.activities.CrashType
+import com.movtery.zalithlauncher.ui.components.AerixSectionHeader
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.ScalingActionButton
@@ -153,7 +155,7 @@ private fun ErrorScreenLandscape(
                 IconButton(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .padding(end = 12.dp),
+                        .padding(end = AerixSpacing.md),
                     onClick = onRotateClick
                 ) {
                     Icon(
@@ -176,8 +178,8 @@ private fun ErrorScreenLandscape(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(start = AerixSpacing.lg, end = AerixSpacing.lg, bottom = AerixSpacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
         ) {
             ErrorContent(
                 modifier = Modifier.weight(7f),
@@ -228,8 +230,7 @@ private fun ErrorScreenPortrait(
                     actionIconContentColor = MaterialTheme.colorScheme.onSurface,
                 ),
                 title = {
-                    //应用标题
-                    Text(text = BuildKeys.LAUNCHER_NAME)
+                    AerixSectionHeader(title = BuildKeys.LAUNCHER_NAME)
                 },
                 actions = {
                     //旋转横屏
@@ -308,8 +309,8 @@ private fun ErrorScreenPortrait(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScrollWithBar(rememberScrollState())
-                .padding(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(all = AerixSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
         ) {
             //崩溃类型
             Text(
@@ -354,8 +355,8 @@ private fun ErrorContent(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScrollWithBar(state = rememberScrollState())
-                .padding(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(all = AerixSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             content = body
         )
     }
@@ -388,7 +389,7 @@ private fun ActionLayout(
         }
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Bottom)
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs, Alignment.Bottom)
         ) {
             if (canUpload) {
                 ScalingActionButton(

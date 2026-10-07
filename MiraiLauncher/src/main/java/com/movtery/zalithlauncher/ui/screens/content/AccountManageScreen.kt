@@ -71,6 +71,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.theme.AerixRadii
+import com.movtery.zalithlauncher.ui.theme.AerixSpacing
+import com.movtery.zalithlauncher.ui.theme.AerixSurface
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.context.COPY_LABEL_ACCOUNT_UUID
@@ -245,7 +248,7 @@ private fun AccountManageContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 14.dp, vertical = 10.dp)
+            .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus)
     ) {
         AccountsLayout(
             isVisible = isVisible,
@@ -313,15 +316,15 @@ private fun ActionsLayout(
         modifier = modifier
             .offset { IntOffset(x = xOffset.roundToPx(), y = 0) }
             .fillMaxHeight(),
-        shape = RoundedCornerShape(16.dp),
-        color = Color(0xFF21242B),
-        border = BorderStroke(1.dp, Color(0xFF2E333E))
+        shape = RoundedCornerShape(AerixRadii.card),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.border)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             // Header + Wide/Slim Toggle Pill (Mockup #6)
             val isSlim = currentAccount?.skinModelType?.name?.contains("SLIM", ignoreCase = true) == true
@@ -338,9 +341,9 @@ private fun ActionsLayout(
                 )
 
                 Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = Color(0xFF16181D),
-                    border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                    shape = RoundedCornerShape(AerixRadii.cardSmall),
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                     onClick = {
                         currentAccount?.let { acc ->
                             actions.onIntent(
@@ -352,31 +355,31 @@ private fun ActionsLayout(
                     }
                 ) {
                     Row(
-                        modifier = Modifier.padding(2.dp),
+                        modifier = Modifier.padding(AerixSpacing.xxs),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(AerixRadii.control),
                             color = if (!isSlim) MiraiThemeManager.currentAccent() else Color.Transparent
                         ) {
                             Text(
                                 text = "Wide (4px)",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                modifier = Modifier.padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.tiny),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (!isSlim) Color(0xFF06210F) else Color(0xFF9CA3AF)
+                                color = if (!isSlim) AerixSurface.onAccent else AerixSurface.textSecondary
                             )
                         }
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(AerixRadii.control),
                             color = if (isSlim) MiraiThemeManager.currentAccent() else Color.Transparent
                         ) {
                             Text(
                                 text = "Slim (3px)",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                modifier = Modifier.padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.tiny),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isSlim) Color(0xFF06210F) else Color(0xFF9CA3AF)
+                                color = if (isSlim) AerixSurface.onAccent else AerixSurface.textSecondary
                             )
                         }
                     }
@@ -389,9 +392,9 @@ private fun ActionsLayout(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                color = Color(0xFF17191E),
-                border = BorderStroke(1.dp, Color(0xFF282C36))
+                shape = RoundedCornerShape(AerixRadii.cardSmall),
+                color = AerixSurface.panel,
+                border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -409,7 +412,7 @@ private fun ActionsLayout(
                     SkinPreview3D(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = 18.dp),
+                            .padding(bottom = AerixSpacing.lgPlus),
                         skinFile = remember(currentAccount, refreshWardrobe) {
                             currentAccount?.getSkinFile()?.takeIf { it.exists() }
                         },
@@ -417,7 +420,8 @@ private fun ActionsLayout(
                             currentAccount?.getCapeFile()?.takeIf { it.exists() }
                         },
                         modelType = currentAccount?.skinModelType,
-                        animation = null
+                        animation = null,
+                        isVisible = isVisible
                     )
                 }
             }
@@ -425,19 +429,19 @@ private fun ActionsLayout(
             // Bottom Wardrobe Action Buttons (Mockup #6: Change Skin + Equip Cape)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
                 Button(
                     modifier = Modifier
                         .weight(1f)
                         .height(38.dp),
                     enabled = currentAccount != null,
-                    shape = RoundedCornerShape(19.dp),
+                    shape = RoundedCornerShape(AerixRadii.cardLarge),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MiraiThemeManager.currentAccent(),
-                        contentColor = Color(0xFF06210F)
+                        contentColor = AerixSurface.onAccent
                     ),
-                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    contentPadding = PaddingValues(horizontal = AerixSpacing.sm),
                     onClick = {
                         skinPicker.launch(arrayOf("image/png"))
                     }
@@ -447,7 +451,7 @@ private fun ActionsLayout(
                         contentDescription = null,
                         modifier = Modifier.size(15.dp)
                     )
-                    Spacer(Modifier.width(5.dp))
+                    Spacer(Modifier.width(AerixSpacing.xsPlus))
                     Text(
                         text = "Change Skin",
                         style = MaterialTheme.typography.labelMedium,
@@ -459,9 +463,9 @@ private fun ActionsLayout(
                     modifier = Modifier
                         .weight(1f)
                         .height(38.dp),
-                    shape = RoundedCornerShape(19.dp),
-                    color = Color(0xFF181A20),
-                    border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                    shape = RoundedCornerShape(AerixRadii.cardLarge),
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                     onClick = {
                         if (currentAccount?.isLocalAccount() == true) {
                             capePicker.launch(arrayOf("image/png"))
@@ -482,10 +486,10 @@ private fun ActionsLayout(
                         Icon(
                             painter = painterResource(R.drawable.ic_upload),
                             contentDescription = null,
-                            tint = Color(0xFFE5E7EB),
+                            tint = AerixSurface.textPrimary,
                             modifier = Modifier.size(15.dp)
                         )
-                        Spacer(Modifier.width(5.dp))
+                        Spacer(Modifier.width(AerixSpacing.xsPlus))
                         Text(
                             text = "Equip Cape",
                             style = MaterialTheme.typography.labelMedium,
@@ -791,7 +795,7 @@ private fun AccountsLayout(
 
     Column(
         modifier = modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
         // Unified Single-Row Header + Quick Add Pills (Mockup #6)
         Row(
@@ -808,10 +812,10 @@ private fun AccountsLayout(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
             ) {
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(AerixRadii.card),
                     color = MiraiThemeManager.currentAccent(),
                     onClick = {
                         if (!isMicrosoftLogging()) {
@@ -825,24 +829,24 @@ private fun AccountsLayout(
                 ) {
                     Text(
                         text = "+ Microsoft",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xsPlus),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF06210F)
+                        color = AerixSurface.onAccent
                     )
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF21242B),
-                    border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                    shape = RoundedCornerShape(AerixRadii.card),
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                     onClick = {
                         actions.onIntent(AccountManageIntent.UpdateLocalLoginOp(LocalLoginOperation.Edit))
                     }
                 ) {
                     Text(
                         text = "+ Offline",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xsPlus),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -850,16 +854,16 @@ private fun AccountsLayout(
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF21242B),
-                    border = BorderStroke(1.dp, Color(0xFF2E333E)),
+                    shape = RoundedCornerShape(AerixRadii.card),
+                    color = AerixSurface.panel,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.border),
                     onClick = {
                         actions.onIntent(AccountManageIntent.UpdateLoginMenuOp(LoginMenuOperation.Login))
                     }
                 ) {
                     Text(
                         text = "+ Auth Server",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        modifier = Modifier.padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xsPlus),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -878,7 +882,7 @@ private fun AccountsLayout(
                             state = scrollState.scrollIndicatorState!!,
                             orientation = Orientation.Vertical,
                         ),
-                    contentPadding = PaddingValues(vertical = 4.dp),
+                    contentPadding = PaddingValues(vertical = AerixSpacing.xs),
                     state = scrollState,
                 ) {
                     items(accounts, key = { it.uniqueUUID }) { account ->
@@ -886,7 +890,7 @@ private fun AccountsLayout(
                             AccountItem(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 5.dp),
+                                    .padding(vertical = AerixSpacing.xsPlus),
                                 currentAccount = currentAccount,
                                 account = account,
                                 enabled = !isOffline,
@@ -969,8 +973,8 @@ private fun LocalAccountWardrobeActions(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+            .padding(start = AerixSpacing.md, end = AerixSpacing.md, bottom = AerixSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
     ) {
         OutlinedButton(
             modifier = Modifier.fillMaxWidth(),
@@ -981,7 +985,7 @@ private fun LocalAccountWardrobeActions(
                 painter = painterResource(R.drawable.ic_checkroom),
                 contentDescription = null
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(AerixSpacing.sm))
             Text(text = stringResource(R.string.account_local_add_skin))
         }
         OutlinedButton(
@@ -993,7 +997,7 @@ private fun LocalAccountWardrobeActions(
                 painter = painterResource(R.drawable.ic_upload),
                 contentDescription = null
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(AerixSpacing.sm))
             Text(text = stringResource(R.string.account_local_add_cape))
         }
     }
