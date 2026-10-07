@@ -88,6 +88,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -1047,27 +1048,22 @@ private fun ModsCompactToolbar(
             }
         }
 
-        Button(
-            onClick = swapToDownload,
+        Surface(
             shape = RoundedCornerShape(AerixRadii.control),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MiraiThemeManager.currentAccent(),
-                contentColor = AerixSurface.onAccent
-            ),
-            contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.xs),
-            modifier = Modifier.height(36.dp)
+            color = AerixSurface.action,
+            contentColor = AerixSurface.onAction,
+            onClick = swapToDownload
         ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_add),
-                contentDescription = null,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(Modifier.width(AerixSpacing.smCompact))
-            Text(
-                text = "Add",
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.ExtraBold
-            )
+            Box(
+                modifier = Modifier.size(36.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = "Add",
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
 }
@@ -1455,14 +1451,14 @@ private fun ModItemLayout(
         contentColor = itemContentColor,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smCompact),
+            modifier = Modifier.padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.sm),
             horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ModIcon(
                 modifier = Modifier.clip(shape = RoundedCornerShape(AerixRadii.control)),
                 mod = mod,
-                iconSize = 38.dp
+                iconSize = 40.dp
             )
 
             Column(
@@ -1517,7 +1513,9 @@ private fun ModItemLayout(
                     }
 
                     Text(
-                        text = localMod.file.name,
+                        text = localMod.file.name
+                            .removeSuffix(".disabled")
+                            .removeSuffix(".jar"),
                         style = MaterialTheme.typography.labelSmall,
                         color = AerixSurface.textSecondary,
                         maxLines = 1,
@@ -1540,46 +1538,58 @@ private fun ModItemLayout(
                 }
 
                 Switch(
+                    modifier = Modifier.scale(0.75f),
                     checked = mod.localMod.file.isEnabled(),
                     onCheckedChange = { checked ->
                         if (checked) onEnable()
                         else onDisable()
                     },
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = AerixSurface.onAccent,
-                        checkedTrackColor = MiraiThemeManager.currentAccent(),
+                        checkedThumbColor = AerixSurface.onAction,
+                        checkedTrackColor = AerixSurface.action,
                         uncheckedThumbColor = AerixSurface.textSecondary,
                         uncheckedTrackColor = AerixSurface.panelRaised,
                         uncheckedBorderColor = AerixSurface.panelRaised
                     )
                 )
 
-                if (projectInfo != null) {
+                //更多操作收进一个菜单，行内只留开关与“⋮”，与设计稿一致
+                var showActionsMenu by remember { mutableStateOf(false) }
+                Box {
                     IconButton(
-                        modifier = Modifier.size(36.dp),
-                        onClick = {
-                            onSwapMoreInfo(projectInfo.id, projectInfo.platform)
-                        }
+                        modifier = Modifier.size(32.dp),
+                        onClick = { showActionsMenu = true }
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_info_outlined),
-                            contentDescription = stringResource(R.string.mods_manage_info),
+                            painter = painterResource(R.drawable.ic_more_vert),
+                            contentDescription = stringResource(R.string.generic_more),
                             tint = AerixSurface.textSecondary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
-                }
 
-                IconButton(
-                    modifier = Modifier.size(36.dp),
-                    onClick = onDelete
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_delete_outlined),
-                        contentDescription = stringResource(R.string.generic_delete),
-                        tint = AerixSurface.textSecondary,
-                        modifier = Modifier.size(18.dp)
-                    )
+                    DropdownMenu(
+                        expanded = showActionsMenu,
+                        onDismissRequest = { showActionsMenu = false }
+                    ) {
+                        val info = projectInfo
+                        if (info != null) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.mods_manage_info)) },
+                                onClick = {
+                                    showActionsMenu = false
+                                    onSwapMoreInfo(info.id, info.platform)
+                                }
+                            )
+                        }
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.generic_delete)) },
+                            onClick = {
+                                showActionsMenu = false
+                                onDelete()
+                            }
+                        )
+                    }
                 }
             }
         }

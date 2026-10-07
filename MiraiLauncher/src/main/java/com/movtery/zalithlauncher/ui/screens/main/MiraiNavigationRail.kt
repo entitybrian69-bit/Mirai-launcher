@@ -264,20 +264,21 @@ private fun RailIconItem(
     compact: Boolean = false,
     onClick: () -> Unit
 ) {
+    //选中项：实心主操作色方块 + 深色图标；未选中：半透明玻璃方块（对齐设计稿）
     val containerColor by animateColorAsState(
-        targetValue = if (selected) accentColor.copy(alpha = 0.18f) else Color.Transparent,
+        targetValue = if (selected) AerixSurface.action else AerixSurface.panel,
         animationSpec = tween(140),
         label = "railContainerColor"
     )
     val iconTint by animateColorAsState(
-        targetValue = if (selected) accentColor else AerixSurface.textSecondary,
+        targetValue = if (selected) AerixSurface.onAction else AerixSurface.textSecondary,
         animationSpec = tween(140),
         label = "railIconTint"
     )
 
     val itemWidth = when {
         expanded -> 64.dp
-        compact -> 38.dp
+        compact -> 36.dp
         else -> 44.dp
     }
     val itemHeight = when {
@@ -286,28 +287,18 @@ private fun RailIconItem(
         else -> 42.dp
     }
 
+    val itemShape = RoundedCornerShape(AerixRadii.control)
     Box(
         modifier = Modifier
             .size(width = itemWidth, height = itemHeight)
-            .clip(RoundedCornerShape(AerixRadii.panelSmall))
+            .clip(itemShape)
             .background(containerColor)
-            .then(
-                if (selected) {
-                    Modifier.liquidGlass(
-                        shape = RoundedCornerShape(AerixRadii.panelSmall),
-                        tint = accentColor,
-                        strength = 0.9f,
-                        elevation = AerixMetrics.glassSubtleElevation
-                    )
-                } else Modifier
-            )
-            .then(
-                if (selected) {
-                    Modifier.border(
-                        BorderStroke(1.5.dp, accentColor.copy(alpha = 0.75f)),
-                        RoundedCornerShape(AerixRadii.panelSmall)
-                    )
-                } else Modifier
+            .border(
+                BorderStroke(
+                    AerixSpacing.hairline,
+                    if (selected) AerixSurface.action else AerixSurface.borderSoft
+                ),
+                itemShape
             )
             .clickable(role = Role.Tab, onClick = onClick)
             .semantics { contentDescription = label },

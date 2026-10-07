@@ -32,6 +32,9 @@ object AerixSurface {
     val auroraViolet = Color(0xFF7A71F5)
     val glassShadow = Color(0x66000610)
     val accent = Color(0xFF8DEFE0)
+    /** 主操作色：启动、开关、选中态等（对齐界面设计稿的薄荷绿） */
+    val action = Color(0xFF2FD9A5)
+    val onAction = Color(0xFF06231A)
     val accentSecondary = Color(0xFFC1B5FF)
     val accentGlow = Color(0x668DEFE0)
     val accentContainer = Color(0x5539C8C1)

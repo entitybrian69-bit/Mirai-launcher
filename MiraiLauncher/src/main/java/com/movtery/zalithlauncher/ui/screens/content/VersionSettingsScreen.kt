@@ -224,6 +224,8 @@ private fun rememberUpdateLoaderViewModel(
 private data class InstanceTabItem(
     val key: TitledNavKey,
     val label: String,
+    /** 紧凑侧栏网格使用的短标签（对齐设计稿） */
+    val shortLabel: String,
     val iconRes: Int
 )
 
@@ -235,7 +237,7 @@ private val InstanceSidebarMaxWidth = 336.dp
 /** 侧栏高度低于该阈值时（横屏手机），改用紧凑摘要卡与导航网格 */
 private val InstanceRoomySidebarMinHeight = 620.dp
 /** 导航网格单元格高度 */
-private val InstanceNavCellHeight = 40.dp
+private val InstanceNavCellHeight = 38.dp
 /** 侧栏导航项的高度 */
 private val InstanceNavItemHeight = 46.dp
 /** 单栏布局下实例图标尺寸 */
@@ -247,18 +249,19 @@ private fun rememberInstanceTabs(
     isUpdateLoader: Boolean
 ): List<InstanceTabItem> = remember(canUpdateLoader, isUpdateLoader) {
     buildList {
-        add(InstanceTabItem(NormalNavKey.Versions.ModsManager, "Mods", R.drawable.ic_extension_outlined))
-        add(InstanceTabItem(NormalNavKey.Versions.ResourcePackManager, "Resource Packs", R.drawable.ic_format_paint_outlined))
-        add(InstanceTabItem(NormalNavKey.Versions.ShadersManager, "Shaders", R.drawable.ic_lightbulb))
-        add(InstanceTabItem(NormalNavKey.Versions.SavesManager, "Worlds", R.drawable.ic_public))
-        add(InstanceTabItem(NormalNavKey.Versions.ScreenshotsManager, "Screenshots", R.drawable.ic_image_outlined))
-        add(InstanceTabItem(NormalNavKey.Versions.Config, "Settings", R.drawable.ic_build_outlined))
-        add(InstanceTabItem(NormalNavKey.Versions.OverView, "Overview", R.drawable.ic_dashboard_outlined))
+        add(InstanceTabItem(NormalNavKey.Versions.ModsManager, "Mods", "Mods", R.drawable.ic_extension_outlined))
+        add(InstanceTabItem(NormalNavKey.Versions.ResourcePackManager, "Resource Packs", "Packs", R.drawable.ic_format_paint_outlined))
+        add(InstanceTabItem(NormalNavKey.Versions.ShadersManager, "Shaders", "Shaders", R.drawable.ic_lightbulb))
+        add(InstanceTabItem(NormalNavKey.Versions.SavesManager, "Worlds", "Worlds", R.drawable.ic_public))
+        add(InstanceTabItem(NormalNavKey.Versions.ScreenshotsManager, "Screenshots", "Shots", R.drawable.ic_image_outlined))
+        add(InstanceTabItem(NormalNavKey.Versions.Config, "Settings", "Settings", R.drawable.ic_build_outlined))
+        add(InstanceTabItem(NormalNavKey.Versions.OverView, "Overview", "Overview", R.drawable.ic_dashboard_outlined))
         if (canUpdateLoader) {
             add(
                 InstanceTabItem(
                     NormalNavKey.Versions.UpdateLoader,
                     if (isUpdateLoader) "Update Loader" else "Install Loader",
+                    "Loader",
                     R.drawable.ic_update
                 )
             )
@@ -385,7 +388,6 @@ fun VersionSettingsScreen(
                                 //横屏手机：一行摘要 + 双列功能网格，所有入口都看得见
                                 InstanceSidebarCard(
                                     version = key.version,
-                                    onBack = backToMainScreen,
                                     onPlay = launchGame,
                                     onOpenFolder = openInstanceFolder
                                 )
@@ -484,13 +486,11 @@ fun VersionSettingsScreen(
 @Composable
 private fun InstanceSidebarCard(
     version: Version,
-    onBack: () -> Unit,
     onPlay: () -> Unit,
     onOpenFolder: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val activeAccent = MiraiThemeManager.currentAccent()
     val info = version.getVersionInfo()
     val mcVer = info?.minecraftVersion ?: "Unknown"
     val loaderName = info?.loaderInfo?.loader?.displayName ?: "Vanilla"
@@ -508,19 +508,12 @@ private fun InstanceSidebarCard(
                 .padding(AerixSpacing.sm),
             verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
+            //一行摘要：实例图标、名称、加载器/版本/内存，右侧更多操作
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
-                InstanceIconButton(
-                    iconRes = R.drawable.ic_arrow_back,
-                    description = stringResource(R.string.generic_back),
-                    onClick = onBack,
-                    buttonSize = 34.dp,
-                    iconSize = 17.dp
-                )
-
                 Surface(
                     shape = RoundedCornerShape(AerixRadii.control),
                     color = AerixSurface.panelRaised,
@@ -530,7 +523,7 @@ private fun InstanceSidebarCard(
                         version = version,
                         modifier = Modifier
                             .padding(AerixSpacing.xxs)
-                            .size(34.dp)
+                            .size(38.dp)
                     )
                 }
 
@@ -547,7 +540,7 @@ private fun InstanceSidebarCard(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "$loaderName · $mcVer · $ramMb MB",
+                        text = "$loaderName $mcVer   ·   $ramMb MB RAM",
                         style = MaterialTheme.typography.labelSmall,
                         color = AerixSurface.textSecondary,
                         maxLines = 1,
@@ -558,17 +551,18 @@ private fun InstanceSidebarCard(
                 InstanceOverflowAction(
                     version = version,
                     onOpenFolder = onOpenFolder,
-                    buttonSize = 34.dp,
+                    buttonSize = 32.dp,
                     iconSize = 18.dp
                 )
             }
 
+            //整行启动按钮，使用设计稿中的主操作色
             Button(
                 onClick = onPlay,
                 shape = RoundedCornerShape(AerixRadii.control),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = activeAccent,
-                    contentColor = AerixSurface.onAccent
+                    containerColor = AerixSurface.action,
+                    contentColor = AerixSurface.onAction
                 ),
                 contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.xs),
                 modifier = Modifier
@@ -643,10 +637,10 @@ private fun InstanceNavGridItem(
     Surface(
         modifier = modifier.height(InstanceNavCellHeight),
         shape = RoundedCornerShape(AerixRadii.control),
-        color = if (selected) AerixSurface.accentContainer else AerixSurface.panel,
-        contentColor = if (selected) activeAccent else AerixSurface.textPrimary,
+        color = if (selected) AerixSurface.action.copy(alpha = 0.16f) else AerixSurface.panel,
+        contentColor = if (selected) AerixSurface.action else AerixSurface.textPrimary,
         border = if (selected) {
-            BorderStroke(AerixSpacing.hairline, activeAccent)
+            BorderStroke(AerixSpacing.hairline, AerixSurface.action)
         } else {
             BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
         },
@@ -662,14 +656,14 @@ private fun InstanceNavGridItem(
             Icon(
                 painter = painterResource(tab.iconRes),
                 contentDescription = null,
-                tint = if (selected) activeAccent else AerixSurface.textSecondary,
-                modifier = Modifier.size(16.dp)
+                tint = if (selected) AerixSurface.action else AerixSurface.textSecondary,
+                modifier = Modifier.size(18.dp)
             )
             Text(
-                text = tab.label,
+                text = tab.shortLabel,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                color = if (selected) activeAccent else AerixSurface.textPrimary,
+                color = if (selected) AerixSurface.action else AerixSurface.textPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
