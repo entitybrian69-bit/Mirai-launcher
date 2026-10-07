@@ -39,6 +39,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.movtery.zalithlauncher.ui.theme.AerixMetrics
 import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.theme.AerixSurface
+import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
 import com.movtery.zalithlauncher.ui.AndroidStringText
 import com.movtery.zalithlauncher.ui.androidText
 
@@ -78,12 +79,13 @@ fun AerixPillTab(
     enabled: Boolean = true,
     content: @Composable RowScope.() -> Unit
 ) {
+    val activeAccent = MiraiThemeManager.currentAccent()
     val outline by animateColorAsState(
         targetValue = if (selected) AerixSurface.borderHighlight else Color.Transparent,
         animationSpec = tween(durationMillis = 160),
         label = "aerixTabOutline"
     )
-    val contentColor = if (selected) AerixSurface.accent else AerixSurface.textSecondary
+    val contentColor = if (selected) activeAccent else AerixSurface.textSecondary
     val interactionSource = remember { MutableInteractionSource() }
 
     Surface(
@@ -93,7 +95,7 @@ fun AerixPillTab(
                 if (selected) {
                     Modifier.liquidGlass(
                         shape = CircleShape,
-                        tint = AerixSurface.accent,
+                        tint = activeAccent,
                         strength = 0.95f,
                         elevation = AerixMetrics.glassSelectedElevation
                     )

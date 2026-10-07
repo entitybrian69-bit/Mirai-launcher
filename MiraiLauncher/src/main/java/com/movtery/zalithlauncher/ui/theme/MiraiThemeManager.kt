@@ -57,7 +57,7 @@ object MiraiThemeManager {
             biome = "Lush Caves • Complementary Shaders",
             assetPath = "wallpapers/wp_01_lush_caves.jpg",
             themeName = "Lush Teal",
-            accentColor = AerixSurface.accent
+            accentColor = AerixSurface.accentDefault
         ),
         MiraiWallpaperPreset(
             id = "wp_02_cherry_blossom",
@@ -311,7 +311,7 @@ object MiraiThemeManager {
                 .edit()
                 .putString(KEY_SELECTED_WALLPAPER, "none")
                 .apply()
-            AllSettings.launcherCustomColor.save(AerixSurface.accent.toArgb())
+            AllSettings.launcherCustomColor.save(AerixSurface.accentDefault.toArgb())
             AllSettings.launcherColorTheme.save(ColorThemeType.AERIX)
         }
     }
@@ -333,9 +333,9 @@ object MiraiThemeManager {
                     bmp.recycle()
                     c
                 } else {
-                    AerixSurface.accent
+                    AerixSurface.accentDefault
                 }
-            }.getOrDefault(AerixSurface.accent)
+            }.getOrDefault(AerixSurface.accentDefault)
         }
         withContext(Dispatchers.Main) {
             selectedWallpaperId = "custom"
@@ -354,7 +354,7 @@ object MiraiThemeManager {
     private fun extractVibrantAccent(bitmap: Bitmap): Color {
         val width = bitmap.width
         val height = bitmap.height
-        if (width <= 0 || height <= 0) return AerixSurface.accent
+        if (width <= 0 || height <= 0) return AerixSurface.accentDefault
 
         val buckets = FloatArray(12)
         val hueSums = FloatArray(12)
@@ -395,7 +395,7 @@ object MiraiThemeManager {
         }
 
         if (bestBucket == -1 || bestScore <= 0.01f) {
-            return AerixSurface.accent
+            return AerixSurface.accentDefault
         }
 
         val avgHue = (hueSums[bestBucket] / bestScore).coerceIn(0f, 360f)

@@ -37,7 +37,8 @@ import java.io.File
 private val PageBg = AerixSurface.canvas
 private val CardBg = AerixSurface.canvas
 private val Muted = AerixSurface.textMuted
-private val Green = AerixSurface.accent
+private val Green: Color
+    @Composable get() = AerixSurface.accent
 
 @Composable
 fun MiraiInstanceDetail(version: Version, onOpenContent: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {

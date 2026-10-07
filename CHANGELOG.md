@@ -5,6 +5,23 @@ All notable changes to Aerix Launcher are recorded here.
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
 
+## 1.3 - 2026-10-07
+
+### Fixed
+
+- **Landscape instance management now uses the intended split layout on phones.**
+  The selected instance summary and Play action stay in a compact left column with
+  a two-column section grid, while its active manager fills the right pane. The
+  breakpoint now accounts for short landscape screens instead of forcing them
+  into the stacked layout.
+- **Theme colors now follow the selected launcher or wallpaper accent across the
+  whole interface.** Navigation selection, action buttons, enabled switches,
+  selected tabs, highlighted cards, and their foreground colors no longer remain
+  stuck on the default mint palette.
+- **The Overview reset-icon action no longer wraps vertically.** Overview actions
+  flow as complete buttons and keep their labels on one horizontal line in the
+  split pane and other narrow layouts.
+
 ## 1.2 - 2026-10-07
 
 The interface release. Every screen was rebuilt around what a phone can actually

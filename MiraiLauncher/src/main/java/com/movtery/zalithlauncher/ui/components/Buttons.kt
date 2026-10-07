@@ -72,6 +72,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.ui.theme.AerixSpacing
@@ -233,7 +234,9 @@ fun BaseIconTextButton(
                 .align(Alignment.CenterVertically)
                 .padding(end = AerixSpacing.xs),
             text = text,
-            style = style
+            style = style,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

@@ -33,7 +33,8 @@ import com.movtery.zalithlauncher.setting.AllSettings
 private val PageBg = AerixSurface.canvas
 private val CardBg = AerixSurface.canvas
 private val Muted = AerixSurface.textMuted
-private val Green = AerixSurface.accent
+private val Green: Color
+    @Composable get() = AerixSurface.accent
 
 @Composable
 fun MiraiSearchInstallPage(title: String, onInstall: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {

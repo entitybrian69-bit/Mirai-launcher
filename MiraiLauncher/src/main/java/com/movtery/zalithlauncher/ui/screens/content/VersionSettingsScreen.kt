@@ -230,7 +230,9 @@ private data class InstanceTabItem(
 )
 
 /** 宽屏（横屏手机 / 平板）启用左右双栏布局的宽度阈值 */
-private val InstanceTwoPaneMinWidth = 700.dp
+private val InstanceTwoPaneMinWidth = 620.dp
+/** 矮屏横屏手机即使可用宽度较窄，也应优先显示参考设计中的左右管理布局。 */
+private val InstanceCompactTwoPaneMinWidth = 540.dp
 /** 双栏布局下左侧实例侧栏的宽度范围（按可用宽度自适应） */
 private val InstanceSidebarMinWidth = 248.dp
 private val InstanceSidebarMaxWidth = 336.dp
@@ -351,7 +353,8 @@ fun VersionSettingsScreen(
         ) {
             //矮屏（横屏手机）压缩页面留白，把高度全部留给内容列表
             val shortScreen = maxHeight < AERIX_COMPACT_HEIGHT_THRESHOLD_DP.dp
-            val twoPane = maxWidth >= InstanceTwoPaneMinWidth
+            val twoPane = maxWidth >= InstanceTwoPaneMinWidth ||
+                    (shortScreen && maxWidth >= InstanceCompactTwoPaneMinWidth)
             //侧栏尺寸必须在 BoxWithConstraints 的作用域内取好，
             //嵌套 lambda 里无法再隐式访问 maxHeight / maxWidth
             val compactSidebar = maxHeight < InstanceRoomySidebarMinHeight
@@ -637,10 +640,10 @@ private fun InstanceNavGridItem(
     Surface(
         modifier = modifier.height(InstanceNavCellHeight),
         shape = RoundedCornerShape(AerixRadii.control),
-        color = if (selected) AerixSurface.action.copy(alpha = 0.16f) else AerixSurface.panel,
-        contentColor = if (selected) AerixSurface.action else AerixSurface.textPrimary,
+        color = if (selected) activeAccent.copy(alpha = 0.16f) else AerixSurface.panel,
+        contentColor = if (selected) activeAccent else AerixSurface.textPrimary,
         border = if (selected) {
-            BorderStroke(AerixSpacing.hairline, AerixSurface.action)
+            BorderStroke(AerixSpacing.hairline, activeAccent)
         } else {
             BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
         },
@@ -656,14 +659,14 @@ private fun InstanceNavGridItem(
             Icon(
                 painter = painterResource(tab.iconRes),
                 contentDescription = null,
-                tint = if (selected) AerixSurface.action else AerixSurface.textSecondary,
+                tint = if (selected) activeAccent else AerixSurface.textSecondary,
                 modifier = Modifier.size(18.dp)
             )
             Text(
                 text = tab.shortLabel,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
-                color = if (selected) AerixSurface.action else AerixSurface.textPrimary,
+                color = if (selected) activeAccent else AerixSurface.textPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -1067,7 +1070,7 @@ private fun InstanceNavPanel(
                         .fillMaxWidth()
                         .height(InstanceNavItemHeight),
                     shape = RoundedCornerShape(AerixRadii.control),
-                    color = if (selected) AerixSurface.accentContainer else Color.Transparent,
+                    color = if (selected) activeAccent.copy(alpha = 0.18f) else Color.Transparent,
                     contentColor = if (selected) activeAccent else AerixSurface.textPrimary,
                     border = if (selected) {
                         BorderStroke(AerixSpacing.hairline, activeAccent)

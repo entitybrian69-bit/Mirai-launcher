@@ -41,6 +41,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -135,10 +136,10 @@ fun MiraiNavigationRail(
                         modifier = Modifier
                             .size(if (compactRail) 32.dp else 38.dp)
                             .clip(RoundedCornerShape(AerixRadii.control))
-                            .background(AerixSurface.accent.copy(alpha = 0.12f))
+                            .background(activeAccent.copy(alpha = 0.12f))
                             .liquidGlass(
                                 shape = RoundedCornerShape(AerixRadii.control),
-                                tint = AerixSurface.glassBlue,
+                                tint = activeAccent,
                                 strength = 0.82f,
                                 elevation = AerixMetrics.glassSubtleElevation
                             ),
@@ -253,14 +254,15 @@ private fun RailIconItem(
     compact: Boolean = false,
     onClick: () -> Unit
 ) {
-    //选中项：实心主操作色方块 + 深色图标；未选中：半透明玻璃方块（对齐设计稿）
+    //选中项使用当前主题的强调色；切换主题时图标、底色与描边一起更新。
+    val selectedContentColor = MaterialTheme.colorScheme.onPrimary
     val containerColor by animateColorAsState(
-        targetValue = if (selected) AerixSurface.action else AerixSurface.panel,
+        targetValue = if (selected) accentColor else AerixSurface.panel,
         animationSpec = tween(140),
         label = "railContainerColor"
     )
     val iconTint by animateColorAsState(
-        targetValue = if (selected) AerixSurface.onAction else AerixSurface.textSecondary,
+        targetValue = if (selected) selectedContentColor else AerixSurface.textSecondary,
         animationSpec = tween(140),
         label = "railIconTint"
     )
@@ -285,7 +287,7 @@ private fun RailIconItem(
             .border(
                 BorderStroke(
                     AerixSpacing.hairline,
-                    if (selected) AerixSurface.action else AerixSurface.borderSoft
+                    if (selected) accentColor else AerixSurface.borderSoft
                 ),
                 itemShape
             )
