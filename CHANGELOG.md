@@ -22,8 +22,8 @@ Versions follow the `launcher_version_code` / `launcher_version_name` pair in
   flow as complete buttons and keep their labels on one horizontal line in the
   split pane and other narrow layouts.
 - **Microsoft device-code login now uses the minimal Xbox sign-in scopes and the
-  matching consumers v2 refresh endpoint.** OAuth rejection codes and descriptions
-  are surfaced instead of collapsing to a generic HTTP status.
+  matching consumers v2 refresh endpoint.** Unset CI secrets no longer override the
+  configured public client ID with an empty value, and OAuth errors are surfaced.
 - **Java 21/25 launches now select native/runtime files for the app process ABI,**
   including 32-bit APKs running on 64-bit phones. Auto-pick rejects incompatible
   runtimes; ZGC flags match JDK 25 and fall back to G1GC on 32-bit runtimes.

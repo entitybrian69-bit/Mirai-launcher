@@ -31,14 +31,21 @@ val defaultCurseForgeApiKey = project.findProperty("curseforge_api_key") as? Str
 val projectArch: String = System.getProperty("arch", "all")
 
 fun getKeyFromLocal(envKey: String, fileName: String? = null, default: String? = null): String {
-    val key = System.getenv(envKey)
+    // GitHub Actions exposes unset secrets as an empty environment variable. Treat that as
+    // absent so project defaults (such as the public Microsoft client ID) remain in effect.
+    val key = System.getenv(envKey)?.takeIf { it.isNotBlank() }
     return key ?: fileName?.let {
         val file = File(rootDir, fileName)
-        if (file.canRead() && file.isFile) file.readText() else null
-    } ?: default ?: run {
+        if (file.canRead() && file.isFile) file.readText().takeIf { it.isNotBlank() } else null
+    } ?: default?.takeIf { it.isNotBlank() } ?: run {
         logger.warn("BUILD: $envKey not set; related features may throw exceptions.")
         ""
     }
+}
+
+val oauthClientId = getKeyFromLocal("OAUTH_CLIENT_ID", ".oauth_client_id.txt", defaultOAuthClientID)
+check(oauthClientId.isNotBlank()) {
+    "OAUTH_CLIENT_ID is required. Set the OAUTH_CLIENT_ID secret, .oauth_client_id.txt, or oauth_client_id property."
 }
 
 android {
@@ -211,7 +218,7 @@ kotlin {
 }
 
 buildKeys {
-    string("OAUTH_CLIENT_ID", getKeyFromLocal("OAUTH_CLIENT_ID", ".oauth_client_id.txt", defaultOAuthClientID), true)
+    string("OAUTH_CLIENT_ID", oauthClientId, true)
     string("LAUNCHER_NAME", launcherAPPName, true)
     string("LAUNCHER_IDENTIFIER", launcherName, true)
     string("LAUNCHER_SHORT_NAME", launcherShortName, true)
