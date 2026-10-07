@@ -118,7 +118,7 @@ Your worlds are yours. Your accounts are yours. Aerix does not take a cut of eit
 - Touch control editor, including custom layouts
 - Gamepad support and remapping
 - File manager inside the launcher — configs, mods, worlds, backups
-- Multiplayer screen
+- Server list per instance, with quick connect
 - Log viewer when something goes wrong
 - Modpack import
 - License and credits screens kept reachable — nothing useful is stripped out to look “simpler”
