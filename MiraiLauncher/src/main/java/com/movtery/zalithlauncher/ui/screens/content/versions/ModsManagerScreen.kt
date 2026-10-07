@@ -678,7 +678,7 @@ fun ModsManagerScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = AerixSpacing.md)
+                .padding(all = AerixSpacing.lg)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -854,161 +854,183 @@ private fun ModsActionsHeader(
     inputFieldContentColor: Color = onItemColor()
 ) {
     CardTitleLayout(modifier = modifier) {
-        // Use one compact toolbar when it fits; FlowRow only adds height on genuinely narrow screens.
-        FlowRow(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.smCompact),
-            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
-            verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
         ) {
-            SimpleTextInputField(
-                modifier = Modifier
-                    .weight(1f)
-                    .widthIn(min = 180.dp, max = 380.dp),
-                value = nameFilter,
-                onValueChange = onNameFilterChange,
-                hint = {
-                    Text(
-                        text = "Search $allModsCount installed mods...",
-                        style = TextStyle(color = LocalContentColor.current).copy(fontSize = 12.sp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                color = inputFieldColor,
-                contentColor = inputFieldContentColor,
-                singleLine = true
-            )
-
-            IconButton(
-                onClick = refresh,
-                modifier = Modifier.size(32.dp)
+            //搜索与主要操作
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_refresh),
-                    contentDescription = stringResource(R.string.generic_refresh),
-                    modifier = Modifier.size(17.dp)
+                SimpleTextInputField(
+                    modifier = Modifier.weight(1f),
+                    value = nameFilter,
+                    onValueChange = onNameFilterChange,
+                    hint = {
+                        Text(
+                            text = "Search $allModsCount installed mods...",
+                            style = TextStyle(color = LocalContentColor.current).copy(fontSize = 12.sp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    color = inputFieldColor,
+                    contentColor = inputFieldContentColor,
+                    contextPadding = PaddingValues(
+                        horizontal = AerixSpacing.md,
+                        vertical = AerixSpacing.smPlus
+                    ),
+                    singleLine = true
                 )
+
+                IconButton(
+                    onClick = refresh,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_refresh),
+                        contentDescription = stringResource(R.string.generic_refresh),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                Button(
+                    onClick = swapToDownload,
+                    shape = RoundedCornerShape(AerixRadii.control),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MiraiThemeManager.currentAccent(),
+                        contentColor = AerixSurface.onAccent
+                    ),
+                    contentPadding = PaddingValues(
+                        horizontal = AerixSpacing.lg,
+                        vertical = AerixSpacing.sm
+                    ),
+                    modifier = Modifier.height(40.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_add),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(Modifier.width(AerixSpacing.sm))
+                    Text(
+                        text = "Add Content",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
             }
 
-            ModStateFilter.entries.forEach { filter ->
-                val selected = stateFilter == filter
-                val count = when (filter) {
-                    ModStateFilter.Enabled -> enabledModsCount?.takeIf { it >= 0 }
-                    ModStateFilter.Disabled -> disabledModsCount?.takeIf { it >= 0 }
-                    else -> allModsCount
+            //过滤、诊断与批量操作
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+            ) {
+                ModStateFilter.entries.forEach { filter ->
+                    val selected = stateFilter == filter
+                    val count = when (filter) {
+                        ModStateFilter.Enabled -> enabledModsCount?.takeIf { it >= 0 }
+                        ModStateFilter.Disabled -> disabledModsCount?.takeIf { it >= 0 }
+                        else -> allModsCount
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(AerixRadii.pill),
+                        color = if (selected) AerixSurface.accentContainer else AerixSurface.panel,
+                        border = BorderStroke(
+                            AerixSpacing.hairline,
+                            if (selected) MiraiThemeManager.currentAccent() else AerixSurface.border
+                        ),
+                        onClick = { onStateFilterChange(filter) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .height(36.dp)
+                                .padding(horizontal = AerixSpacing.md),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
+                        ) {
+                            Text(
+                                text = stringResource(filter.textRes),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textPrimary
+                            )
+                            if (count != null) {
+                                Text(
+                                    text = count.toString(),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary
+                                )
+                            }
+                        }
+                    }
                 }
+
+                val hasIssues = detectedIssuesCount > 0
                 Surface(
-                    shape = RoundedCornerShape(AerixRadii.card),
-                    color = if (selected) AerixSurface.accentContainer else AerixSurface.panel,
+                    shape = RoundedCornerShape(AerixRadii.pill),
+                    color = if (hasIssues) AerixSurface.dangerContainer else AerixSurface.panel,
                     border = BorderStroke(
                         AerixSpacing.hairline,
-                        if (selected) MiraiThemeManager.currentAccent() else AerixSurface.border
+                        if (hasIssues) AerixSurface.danger else AerixSurface.border
                     ),
-                    onClick = { onStateFilterChange(filter) }
+                    onClick = onOpenModResolver
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs),
+                        modifier = Modifier
+                            .height(36.dp)
+                            .padding(horizontal = AerixSpacing.md),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
+                    ) {
+                        Text(
+                            text = if (hasIssues) "🛡️ $detectedIssuesCount Issues" else "🛡️ Check Mods",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (hasIssues) AerixSurface.danger else AerixSurface.textPrimary
+                        )
+                    }
+                }
+
+                AnimatedVisibility(visible = isModsSelected) {
+                    Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
                     ) {
-                        Text(
-                            text = stringResource(filter.textRes),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textPrimary
-                        )
-                        if (count != null) {
-                            Text(
-                                text = count.toString(),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary
-                            )
+                        if (hasModLoader && canUpdate) {
+                            IconButton(onClick = onUpdateMods, modifier = Modifier.size(36.dp)) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_update),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
-                    }
-                }
-            }
-
-            AnimatedVisibility(visible = isModsSelected) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (hasModLoader && canUpdate) {
-                        IconButton(onClick = onUpdateMods, modifier = Modifier.size(32.dp)) {
+                        IconButton(onClick = onDeleteAll, modifier = Modifier.size(36.dp)) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_update),
+                                painter = painterResource(R.drawable.ic_delete_outlined),
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = { if (isModsSelected) onClearModsSelected() },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_deselect),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }
-                    IconButton(onClick = onDeleteAll, modifier = Modifier.size(32.dp)) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_delete_outlined),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = { if (isModsSelected) onClearModsSelected() },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_deselect),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
                 }
-            }
-
-            val hasIssues = detectedIssuesCount > 0
-            Surface(
-                shape = RoundedCornerShape(AerixRadii.controlSmall),
-                color = if (hasIssues) AerixSurface.dangerContainer else AerixSurface.panel,
-                border = BorderStroke(
-                    AerixSpacing.hairline,
-                    if (hasIssues) AerixSurface.danger else AerixSurface.border
-                ),
-                onClick = onOpenModResolver
-            ) {
-                Row(
-                    modifier = Modifier
-                        .height(32.dp)
-                        .padding(horizontal = AerixSpacing.sm),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
-                ) {
-                    Text(
-                        text = if (hasIssues) "🛡️ $detectedIssuesCount Issues" else "🛡️ Check Mods",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = if (hasIssues) AerixSurface.danger else AerixSurface.textPrimary
-                    )
-                }
-            }
-
-            Button(
-                onClick = swapToDownload,
-                shape = RoundedCornerShape(AerixRadii.controlSmall),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MiraiThemeManager.currentAccent(),
-                    contentColor = AerixSurface.onAccent
-                ),
-                contentPadding = PaddingValues(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xs),
-                modifier = Modifier.height(34.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = null,
-                    modifier = Modifier.size(15.dp)
-                )
-                Spacer(Modifier.width(AerixSpacing.xs))
-                Text(
-                    text = "Add Content",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.ExtraBold
-                )
             }
         }
     }
@@ -1041,8 +1063,13 @@ private fun ModsList(
                     state = scrollState.scrollIndicatorState!!,
                     orientation = Orientation.Vertical,
                 ),
-            contentPadding = PaddingValues(all = AerixSpacing.md),
-            verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+            contentPadding = PaddingValues(
+                start = AerixSpacing.mdPlus,
+                end = AerixSpacing.mdPlus,
+                top = AerixSpacing.mdPlus,
+                bottom = AerixSpacing.lg
+            ),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus),
             state = scrollState,
         ) {
             if (!hasModLoader) {
@@ -1153,14 +1180,14 @@ private fun ModItemLayout(
         contentColor = itemContentColor,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.mdTight),
-            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus),
+            modifier = Modifier.padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.mdPlus),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ModIcon(
                 modifier = Modifier.clip(shape = RoundedCornerShape(AerixRadii.control)),
                 mod = mod,
-                iconSize = 44.dp
+                iconSize = 48.dp
             )
 
             Column(
@@ -1225,7 +1252,7 @@ private fun ModItemLayout(
             }
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (mod.isLoading) {
@@ -1254,7 +1281,7 @@ private fun ModItemLayout(
 
                 if (projectInfo != null) {
                     IconButton(
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(36.dp),
                         onClick = {
                             onSwapMoreInfo(projectInfo.id, projectInfo.platform)
                         }
@@ -1263,20 +1290,20 @@ private fun ModItemLayout(
                             painter = painterResource(R.drawable.ic_info_outlined),
                             contentDescription = stringResource(R.string.mods_manage_info),
                             tint = AerixSurface.textSecondary,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
                 IconButton(
-                    modifier = Modifier.size(32.dp),
+                    modifier = Modifier.size(36.dp),
                     onClick = onDelete
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_delete_outlined),
                         contentDescription = stringResource(R.string.generic_delete),
                         tint = AerixSurface.textSecondary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }

@@ -136,7 +136,7 @@ fun VersionOverViewScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScrollWithBar(state = rememberScrollState())
-                .padding(all = AerixSpacing.md),
+                .padding(all = AerixSpacing.lg),
             isVisible = isVisible
         ) { scope ->
             AnimatedItem(scope) { yOffset ->
