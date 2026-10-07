@@ -227,7 +227,8 @@ class GameLauncher(
         JvmGcAutoTuner.sanitizeAndInjectGcArgs(
             args = args,
             javaMajor = runtime.javaVersion,
-            ramAllocationMb = allocMb
+            ramAllocationMb = allocMb,
+            is64BitRuntime = Architecture.is64BitsProcess
         )
         if (Renderers.isCurrentRendererValid()) {
             args.add("-Dorg.lwjgl.opengl.libname=${getRendererLibrary()}")
@@ -326,7 +327,9 @@ class GameLauncher(
      */
     private fun getRuntime(): String {
         val versionRuntime = version.getJavaRuntime().takeIf { it.isNotEmpty() } ?: ""
-        if (versionRuntime.isNotEmpty()) return versionRuntime
+        if (versionRuntime.isNotEmpty()) {
+            return requireCompatibleRuntime(versionRuntime).name
+        }
 
         val runtime = AllSettings.javaRuntime.getValue()
         val pickedRuntime = RuntimesManager.loadRuntime(runtime)
@@ -348,16 +351,27 @@ class GameLauncher(
                 }
                 else -> gameManifest.javaVersion?.majorVersion ?: 8
             }
-            if (pickedRuntime.javaVersion == 0 || pickedRuntime.javaVersion < targetJavaVersion) {
+            if (!pickedRuntime.isCompatible() || pickedRuntime.javaVersion == 0 || pickedRuntime.javaVersion < targetJavaVersion) {
                 val runtime0 = RuntimesManager.getNearestJreName(targetJavaVersion)
                 if (runtime0 != null) {
                     return runtime0
-                } else {
+                } else if (pickedRuntime.isCompatible()) {
                     activity.runOnUiThread {
                         Toast.makeText(activity, activity.getString(R.string.game_auto_pick_runtime_failed), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
+        }
+        return requireCompatibleRuntime(runtime).name
+    }
+
+    private fun requireCompatibleRuntime(runtimeName: String): Runtime {
+        val runtime = RuntimesManager.loadRuntime(runtimeName)
+        if (!runtime.isCompatible()) {
+            val expectedArch = Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)
+            val error = "Java runtime '${runtime.name}' is incompatible with this $expectedArch process."
+            Logger.error(TAG, error)
+            throw IllegalStateException(error)
         }
         return runtime
     }

@@ -33,6 +33,7 @@ import com.movtery.zalithlauncher.game.account.auth_server.getAuthServeInfo
 import com.movtery.zalithlauncher.game.account.microsoft.AsyncStatus
 import com.movtery.zalithlauncher.game.account.microsoft.AuthType
 import com.movtery.zalithlauncher.game.account.microsoft.MinecraftProfileException
+import com.movtery.zalithlauncher.game.account.microsoft.MicrosoftOAuthException
 import com.movtery.zalithlauncher.game.account.microsoft.NotPurchasedMinecraftException
 import com.movtery.zalithlauncher.game.account.microsoft.XboxLoginException
 import com.movtery.zalithlauncher.game.account.microsoft.fetchDeviceCodeResponse
@@ -168,6 +169,7 @@ fun microsoftLogin(
                 is XboxLoginException -> th.toLocal()
                 is UnknownHostException, is UnresolvedAddressException -> androidText(R.string.error_network_unreachable)
                 is ConnectException -> androidText(R.string.error_connection_failed)
+                is MicrosoftOAuthException -> androidText(th.message ?: "Microsoft sign-in failed")
                 is KtorResponseException -> th.toLocal()
                 is CancellationException -> { null }
                 else -> {

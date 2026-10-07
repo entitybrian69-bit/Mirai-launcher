@@ -44,7 +44,7 @@ import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.unit.getOrMin
 import com.movtery.zalithlauncher.utils.device.Architecture
 import com.movtery.zalithlauncher.utils.device.Architecture.ARCH_X86
-import com.movtery.zalithlauncher.utils.device.Architecture.is64BitsDevice
+import com.movtery.zalithlauncher.utils.device.Architecture.is64BitsProcess
 import com.movtery.zalithlauncher.utils.logging.Logger
 import com.movtery.zalithlauncher.utils.network.getSystemDnsServerAddresses
 import com.movtery.zalithlauncher.utils.string.getMessageOrToString
@@ -400,7 +400,7 @@ abstract class Launcher(
         val javaLibDir = getJavaLibDir()
         val jvmLibDir = getJvmLibDir()
 
-        val libName = if (is64BitsDevice) "lib64" else "lib"
+        val libName = if (is64BitsProcess) "lib64" else "lib"
         val paths = buildList {
             FFmpegPluginManager.takeIf { it.isAvailable }?.libraryPath?.let { add(it) }
             RendererPluginManager.selectedRendererPlugin?.path?.let { add(it) }
@@ -424,7 +424,7 @@ abstract class Launcher(
     }
 
     protected fun getLibraryPath(): String {
-        val libDirName = if (is64BitsDevice) "lib64" else "lib"
+        val libDirName = if (is64BitsProcess) "lib64" else "lib"
         val path = listOfNotNull(
             // per-version LWJGL natives 优先，避免 APK 内旧版 native 抢占
             lwjglNativesDir,

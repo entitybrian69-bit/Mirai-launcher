@@ -68,6 +68,7 @@ import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.versioninfo.models.GameManifest
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.theme.MiraiThemeManager
+import com.movtery.zalithlauncher.utils.device.Architecture
 import com.movtery.zalithlauncher.utils.platform.bytesToMB
 import com.movtery.zalithlauncher.utils.platform.getMaxMemoryForSettings
 import com.movtery.zalithlauncher.utils.platform.getTotalMemory
@@ -85,8 +86,8 @@ enum class GcTuningPreset(
         badge = "Zero Stutter"
     ),
     GENERATIONAL_ZGC_TURBO(
-        title = "Generational ZGC (8GB+ RAM & Java 21)",
-        subtitle = "Sub-1ms concurrent GC pauses on Java 21 • Safe G1GC fallback on Java 8/17",
+        title = "Generational ZGC (8GB+ RAM & 64-bit Java 21+)",
+        subtitle = "Sub-1ms concurrent GC pauses • Safe G1GC fallback on older or 32-bit runtimes",
         badge = "<1ms Pause"
     ),
     COMPACT_LOW_RAM_G1GC(
@@ -165,7 +166,8 @@ object JvmGcAutoTuner {
      */
     fun analyzeDeviceAndInstance(
         context: Context,
-        version: Version?
+        version: Version?,
+        is64BitRuntime: Boolean = Architecture.is64BitsProcess
     ): JreGcRecommendation {
         val totalDeviceRamMb = runCatching {
             getTotalMemory(context).bytesToMB(decimals = 0, roundDown = true).toInt()
@@ -208,7 +210,7 @@ object JvmGcAutoTuner {
 
         val recommendedPreset = when {
             totalDeviceRamMb <= 4200 -> GcTuningPreset.COMPACT_LOW_RAM_G1GC
-            targetJavaMajor >= 21 && totalDeviceRamMb >= 7500 -> GcTuningPreset.GENERATIONAL_ZGC_TURBO
+            is64BitRuntime && targetJavaMajor >= 21 && totalDeviceRamMb >= 7500 -> GcTuningPreset.GENERATIONAL_ZGC_TURBO
             else -> GcTuningPreset.MOBILE_LOW_PAUSE_G1GC
         }
 
@@ -225,28 +227,40 @@ object JvmGcAutoTuner {
         )
     }
 
+    private fun resolveEffectivePreset(
+        preset: GcTuningPreset,
+        javaMajor: Int,
+        is64BitRuntime: Boolean
+    ): GcTuningPreset = if (
+        preset == GcTuningPreset.GENERATIONAL_ZGC_TURBO &&
+        (javaMajor < 21 || !is64BitRuntime)
+    ) {
+        GcTuningPreset.MOBILE_LOW_PAUSE_G1GC
+    } else {
+        preset
+    }
+
     /**
      * Generates JVM GC flags for a given [preset], [javaMajor], and [ramAllocationMb].
      */
     fun buildJvmFlags(
         preset: GcTuningPreset,
         javaMajor: Int,
-        ramAllocationMb: Int
+        ramAllocationMb: Int,
+        is64BitRuntime: Boolean
     ): List<String> {
-        val effectivePreset = if (preset == GcTuningPreset.GENERATIONAL_ZGC_TURBO && javaMajor < 21) {
-            GcTuningPreset.MOBILE_LOW_PAUSE_G1GC
-        } else {
-            preset
-        }
+        val effectivePreset = resolveEffectivePreset(preset, javaMajor, is64BitRuntime)
 
         return when (effectivePreset) {
-            GcTuningPreset.GENERATIONAL_ZGC_TURBO -> listOf(
-                "-XX:+UnlockExperimentalVMOptions",
-                "-XX:+UseZGC",
-                "-XX:+ZGenerational",
-                "-XX:+DisableExplicitGC",
-                "-XX:+AlwaysActAsServerClassMachine"
-            )
+            GcTuningPreset.GENERATIONAL_ZGC_TURBO -> buildList {
+                add("-XX:+UnlockExperimentalVMOptions")
+                add("-XX:+UseZGC")
+                // JDK 24+ makes ZGC generational by default and deprecates/removes this
+                // selector. Keep it only for JDK 21-23, where it is still required.
+                if (javaMajor in 21..23) add("-XX:+ZGenerational")
+                add("-XX:+DisableExplicitGC")
+                add("-XX:+AlwaysActAsServerClassMachine")
+            }
             GcTuningPreset.COMPACT_LOW_RAM_G1GC -> listOf(
                 "-XX:+UnlockExperimentalVMOptions",
                 "-XX:+UseG1GC",
@@ -278,13 +292,14 @@ object JvmGcAutoTuner {
 
     /**
      * Sanitizes incompatible GC flags before JVM launch and injects mobile-tuned G1GC flags if
-     * no GC algorithm is present. Guarantees that switching between Java 8, 17, and 21 never fails
-     * with `Unrecognized VM option`.
+     * no GC algorithm is present. Removes incompatible flags for Java 8/17, 21/23, 24+, and
+     * 32-bit runtimes to avoid `Unrecognized VM option` or unsupported-collector failures.
      */
     fun sanitizeAndInjectGcArgs(
         args: MutableList<String>,
         javaMajor: Int,
-        ramAllocationMb: Int
+        ramAllocationMb: Int,
+        is64BitRuntime: Boolean
     ) {
         val effectiveJava = if (javaMajor > 0) javaMajor else 8
 
@@ -299,9 +314,11 @@ object JvmGcAutoTuner {
             }
         }
 
-        // 2. Strip Java 21 Generational ZGC flags if running on Java 8 or Java 17
-        if (effectiveJava < 21) {
-            val hadZgc = args.any { it == "-XX:+UseZGC" || it == "-XX:+ZGenerational" }
+        // ZGC is unavailable on 32-bit runtimes and before Java 21.
+        if (!is64BitRuntime || effectiveJava < 21) {
+            val hadZgc = args.any {
+                it == "-XX:+UseZGC" || it == "-XX:+ZGenerational" || it == "-XX:-ZGenerational"
+            }
             if (hadZgc) {
                 args.removeIf { arg ->
                     arg == "-XX:+UseZGC" ||
@@ -309,6 +326,9 @@ object JvmGcAutoTuner {
                         arg == "-XX:-ZGenerational"
                 }
             }
+        } else if (effectiveJava >= 24) {
+            // Generational ZGC is the default in JDK 24+. The old toggle is obsolete there.
+            args.removeIf { it == "-XX:+ZGenerational" || it == "-XX:-ZGenerational" }
         }
 
         // 3. If no GC algorithm flag is present, inject tuned Low-Pause G1GC flags automatically
@@ -325,7 +345,8 @@ object JvmGcAutoTuner {
             val defaultFlags = buildJvmFlags(
                 preset = GcTuningPreset.MOBILE_LOW_PAUSE_G1GC,
                 javaMajor = effectiveJava,
-                ramAllocationMb = ramAllocationMb
+                ramAllocationMb = ramAllocationMb,
+                is64BitRuntime = is64BitRuntime
             )
             defaultFlags.forEach { flag ->
                 val prefix = flag.substringBefore('=')
@@ -346,11 +367,14 @@ object JvmGcAutoTuner {
         autoMatchJre: Boolean,
         applyOptimalRam: Boolean
     ): String {
-        val recommendation = analyzeDeviceAndInstance(context, version)
+        val is64BitRuntime = Architecture.is64BitsProcess
+        val recommendation = analyzeDeviceAndInstance(context, version, is64BitRuntime)
+        val appliedPreset = resolveEffectivePreset(preset, recommendation.targetJavaMajor, is64BitRuntime)
         val flagsString = buildJvmFlags(
-            preset = preset,
+            preset = appliedPreset,
             javaMajor = recommendation.targetJavaMajor,
-            ramAllocationMb = recommendation.recommendedRamMb
+            ramAllocationMb = recommendation.recommendedRamMb,
+            is64BitRuntime = is64BitRuntime
         ).joinToString(" ")
 
         AllSettings.autoPickJavaRuntime.save(true)
@@ -383,7 +407,12 @@ object JvmGcAutoTuner {
         }
 
         val jreLabel = recommendation.matchedRuntimeName ?: "Auto (JRE ${recommendation.targetJavaMajor})"
-        return "Applied ${preset.title} • Runtime: $jreLabel • Heap: ${recommendation.recommendedRamMb} MB"
+        val fallbackNotice = if (appliedPreset != preset) {
+            " • ZGC requires Java 21+ on a 64-bit runtime; using G1GC"
+        } else {
+            ""
+        }
+        return "Applied ${appliedPreset.title} • Runtime: $jreLabel • Heap: ${recommendation.recommendedRamMb} MB$fallbackNotice"
     }
 
     private fun compareMcVersionSafe(v1: String, v2: String): Int {

@@ -77,7 +77,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "MicrosoftAuth"
 
-private val SCOPES = listOf("XboxLive.signin", "offline_access", "openid", "profile", "email")
+// The Xbox/Minecraft device-code flow only uses these scopes; OpenID profile claims
+// are not needed by the launcher.
+private val SCOPES = listOf("XboxLive.signin", "offline_access")
 private const val TENANT = "/consumers"
 
 /**
@@ -87,7 +89,6 @@ private const val TENANT = "/consumers"
 private const val MAX_CONSECUTIVE_POLL_FAILURES = 5
 
 const val MICROSOFT_AUTH_URL = "https://login.microsoftonline.com"
-const val LIVE_AUTH_URL = "https://login.live.com"
 const val XBL_AUTH_URL = "https://user.auth.xboxlive.com"
 const val XSTS_AUTH_URL = "https://xsts.auth.xboxlive.com"
 const val MINECRAFT_SERVICES_URL = "https://api.minecraftservices.com"
@@ -98,14 +99,20 @@ const val MINECRAFT_SERVICES_URL = "https://api.minecraftservices.com"
  */
 suspend fun fetchDeviceCodeResponse(context: CoroutineContext): DeviceCodeResponse = coroutineScope {
     withRetry {
-        submitForm(
-            url = "$MICROSOFT_AUTH_URL$TENANT/oauth2/v2.0/devicecode",
-            parameters = Parameters.build {
-                append("client_id", BuildKeys.OAUTH_CLIENT_ID)
-                append("scope", SCOPES.joinToString(" "))
-            },
-            context = context
-        )
+        try {
+            submitForm(
+                url = "$MICROSOFT_AUTH_URL$TENANT/oauth2/v2.0/devicecode",
+                parameters = Parameters.build {
+                    append("client_id", BuildKeys.OAUTH_CLIENT_ID)
+                    append("scope", SCOPES.joinToString(" "))
+                },
+                context = context
+            )
+        } catch (e: ClientRequestException) {
+            val oauthError = e.toMicrosoftOAuthException()
+            Logger.error(TAG, "Microsoft device-code request failed: ${oauthError.message}", e)
+            throw oauthError
+        }
     }
 }
 
@@ -142,7 +149,6 @@ suspend fun getTokenResponse(
                     append("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
                     append("device_code", codeResponse.deviceCode)
                     append("client_id", BuildKeys.OAUTH_CLIENT_ID)
-                    append("tenant", TENANT)
                 },
                 context = context
             )
@@ -158,7 +164,8 @@ suspend fun getTokenResponse(
             }
             Logger.warning(TAG, "Token endpoint responded without a Bearer token, continuing to poll")
         } catch (e: ClientRequestException) {
-            when (val error = e.errorCode()) {
+            val oauthError = e.toMicrosoftOAuthException()
+            when (oauthError.errorCode) {
                 // 服务器正常响应，说明网络可用
                 "authorization_pending" -> consecutiveFailures = 0 // 正常情况，继续轮询
                 "slow_down" -> {
@@ -167,8 +174,8 @@ suspend fun getTokenResponse(
                     Logger.debug(TAG, "Slowing down polling to ${pollingInterval}ms")
                 }
                 else -> {
-                    Logger.error(TAG, "Token endpoint rejected the polling request: error = $error", e)
-                    throw e
+                    Logger.error(TAG, "Token endpoint rejected the polling request: ${oauthError.message}", e)
+                    throw oauthError
                 }
             }
         } catch (e: CancellationException) {
@@ -200,13 +207,23 @@ suspend fun getTokenResponse(
     throw HttpRequestTimeoutException("Authentication timed out!", expireTime)
 }
 
-/**
- * 从 OAuth 错误响应中解析 error 字段
- */
-private suspend fun ClientRequestException.errorCode(): String? {
-    return runCatching {
-        response.safeBodyAsJson<JsonObject>()["error"]?.jsonPrimitive?.content
-    }.getOrNull()
+/** Extract Microsoft's OAuth error payload before handing the failure to the UI. */
+private suspend fun ClientRequestException.toMicrosoftOAuthException(): MicrosoftOAuthException {
+    val errorBody = try {
+        response.safeBodyAsJson<JsonObject>()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        null
+    }
+    return MicrosoftOAuthException(
+        httpStatus = response.status.value,
+        errorCode = runCatching { errorBody?.get("error")?.jsonPrimitive?.content }.getOrNull(),
+        errorDescription = runCatching {
+            errorBody?.get("error_description")?.jsonPrimitive?.content
+        }.getOrNull(),
+        cause = this
+    )
 }
 
 /**
@@ -269,11 +286,14 @@ private suspend fun refreshAccessToken(
     return withRetry {
         try {
             val response = submitForm<JsonObject>(
-                url = "$LIVE_AUTH_URL/oauth20_token.srf",
+                // Refresh tokens issued by the v2 device-code flow must be refreshed
+                // against the same consumers/v2 endpoint (not the legacy Live v1 API).
+                url = "$MICROSOFT_AUTH_URL$TENANT/oauth2/v2.0/token",
                 parameters = Parameters.build {
                     append("client_id", BuildKeys.OAUTH_CLIENT_ID)
-                    append("refresh_token", refreshToken)
                     append("grant_type", "refresh_token")
+                    append("refresh_token", refreshToken)
+                    append("scope", SCOPES.joinToString(" "))
                 },
                 context = context
             )
@@ -282,9 +302,11 @@ private suspend fun refreshAccessToken(
                 response["refresh_token"]?.jsonPrimitive?.content ?: refreshToken
             )
         } catch (e: ClientRequestException) {
-            //刷新令牌已被撤销或失效，无法自动恢复
-            if (e.errorCode() == "invalid_grant") throw CredentialsExpiredException()
-            throw e
+            val oauthError = e.toMicrosoftOAuthException()
+            // 刷新令牌已被撤销或失效，无法自动恢复
+            if (oauthError.errorCode == "invalid_grant") throw CredentialsExpiredException()
+            Logger.error(TAG, "Microsoft refresh-token request failed: ${oauthError.message}", e)
+            throw oauthError
         }
     }
 }

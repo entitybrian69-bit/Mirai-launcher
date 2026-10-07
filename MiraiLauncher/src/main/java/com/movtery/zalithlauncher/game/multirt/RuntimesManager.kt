@@ -71,11 +71,14 @@ object RuntimesManager {
     }
 
     fun getExactJreName(majorVersion: Int): String? {
-        return getRuntimes().firstOrNull { it.javaVersion == majorVersion }?.name
+        return getRuntimes().firstOrNull {
+            it.javaVersion == majorVersion && it.isCompatible()
+        }?.name
     }
 
     fun getNearestJreName(majorVersion: Int): String? {
-        return findNearestPositive(majorVersion, getRuntimes()) { it.javaVersion }?.value?.name
+        val compatibleRuntimes = getRuntimes().filter { it.isCompatible() }
+        return findNearestPositive(majorVersion, compatibleRuntimes) { it.javaVersion }?.value?.name
     }
 
     fun forceReload(name: String): Runtime {
