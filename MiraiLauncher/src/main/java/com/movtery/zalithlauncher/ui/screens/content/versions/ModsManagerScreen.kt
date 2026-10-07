@@ -93,6 +93,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -106,6 +107,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.movtery.zalithlauncher.ui.theme.AERIX_COMPACT_HEIGHT_THRESHOLD_DP
 import com.movtery.zalithlauncher.ui.theme.AerixRadii
 import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.theme.AerixSurface
@@ -674,11 +676,14 @@ fun ModsManagerScreen(
             targetValue = (-40).dp,
             swapIn = isVisible
         )
+        //横屏手机等矮屏：工具栏压成一行，选项收进下拉菜单
+        val compactToolbar =
+            LocalConfiguration.current.screenHeightDp < AERIX_COMPACT_HEIGHT_THRESHOLD_DP
 
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = AerixSpacing.lg)
+                .padding(all = AerixSpacing.sm)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -710,6 +715,7 @@ fun ModsManagerScreen(
                     Column {
                         ModsActionsHeader(
                             modifier = Modifier.fillMaxWidth(),
+                            compact = compactToolbar,
                             nameFilter = viewModel.nameFilter,
                             onNameFilterChange = { viewModel.updateFilter(it, context) },
                             stateFilter = viewModel.stateFilter,
@@ -822,9 +828,254 @@ fun ModsManagerScreen(
     }
 }
 
+/**
+ * 横屏手机上的单行工具栏：搜索、筛选下拉、模组诊断、刷新与添加内容。
+ * 目标是只占一行高度，把垂直空间让给模组列表。
+ */
+@Composable
+private fun ModsCompactToolbar(
+    nameFilter: String,
+    onNameFilterChange: (String) -> Unit,
+    stateFilter: ModStateFilter,
+    onStateFilterChange: (ModStateFilter) -> Unit,
+    allModsCount: Int,
+    enabledModsCount: Int?,
+    disabledModsCount: Int?,
+    hasModLoader: Boolean,
+    onUpdateMods: () -> Unit,
+    onDeleteAll: () -> Unit,
+    isModsSelected: Boolean,
+    canUpdate: Boolean,
+    onClearModsSelected: () -> Unit,
+    swapToDownload: () -> Unit,
+    onOpenModResolver: () -> Unit,
+    detectedIssuesCount: Int,
+    refresh: () -> Unit,
+    inputFieldColor: Color,
+    inputFieldContentColor: Color
+) {
+    val hasIssues = detectedIssuesCount > 0
+
+    fun countOf(filter: ModStateFilter): Int? = when (filter) {
+        ModStateFilter.Enabled -> enabledModsCount?.takeIf { it >= 0 }
+        ModStateFilter.Disabled -> disabledModsCount?.takeIf { it >= 0 }
+        else -> allModsCount
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+    ) {
+        SimpleTextInputField(
+            modifier = Modifier.weight(1f),
+            value = nameFilter,
+            onValueChange = onNameFilterChange,
+            hint = {
+                Text(
+                    text = "Search $allModsCount mods...",
+                    style = TextStyle(color = LocalContentColor.current).copy(fontSize = 12.sp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            color = inputFieldColor,
+            contentColor = inputFieldContentColor,
+            contextPadding = PaddingValues(
+                horizontal = AerixSpacing.md,
+                vertical = AerixSpacing.smCompact
+            ),
+            singleLine = true
+        )
+
+        //筛选收进下拉菜单，选中项与数量一目了然，又不占一整行
+        if (!isModsSelected) {
+            Box {
+                var expanded by remember { mutableStateOf(false) }
+                val currentCount = countOf(stateFilter)
+                val selectedFilter = stateFilter != ModStateFilter.All
+                Surface(
+                    shape = RoundedCornerShape(AerixRadii.control),
+                    color = if (selectedFilter) AerixSurface.accentContainer else AerixSurface.panel,
+                    border = BorderStroke(
+                        AerixSpacing.hairline,
+                        if (selectedFilter) MiraiThemeManager.currentAccent() else AerixSurface.border
+                    ),
+                    onClick = { expanded = true }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .height(36.dp)
+                            .padding(horizontal = AerixSpacing.smPlus),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                    ) {
+                        Text(
+                            text = stringResource(stateFilter.textRes),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (selectedFilter) {
+                                MiraiThemeManager.currentAccent()
+                            } else {
+                                AerixSurface.textPrimary
+                            }
+                        )
+                        if (currentCount != null) {
+                            Text(
+                                text = currentCount.toString(),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = if (selectedFilter) {
+                                    MiraiThemeManager.currentAccent()
+                                } else {
+                                    AerixSurface.textSecondary
+                                }
+                            )
+                        }
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_drop_down_rounded),
+                            contentDescription = null,
+                            tint = AerixSurface.textSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    ModStateFilter.entries.forEach { filter ->
+                        val count = countOf(filter)
+                        val label = stringResource(filter.textRes)
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = if (count != null) "$label  ($count)" else label
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                onStateFilterChange(filter)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        //模组诊断入口
+        Surface(
+            shape = RoundedCornerShape(AerixRadii.control),
+            color = if (hasIssues) AerixSurface.dangerContainer else AerixSurface.panel,
+            border = BorderStroke(
+                AerixSpacing.hairline,
+                if (hasIssues) AerixSurface.danger else AerixSurface.border
+            ),
+            onClick = onOpenModResolver
+        ) {
+            Row(
+                modifier = Modifier
+                    .height(36.dp)
+                    .padding(horizontal = AerixSpacing.smPlus),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+            ) {
+                Icon(
+                    painter = painterResource(
+                        if (hasIssues) R.drawable.ic_warning_filled else R.drawable.ic_warning_outlined
+                    ),
+                    contentDescription = null,
+                    tint = if (hasIssues) AerixSurface.danger else AerixSurface.textSecondary,
+                    modifier = Modifier.size(16.dp)
+                )
+                if (hasIssues) {
+                    Text(
+                        text = detectedIssuesCount.toString(),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = AerixSurface.danger
+                    )
+                }
+            }
+        }
+
+        IconButton(
+            onClick = refresh,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_refresh),
+                contentDescription = stringResource(R.string.generic_refresh),
+                modifier = Modifier.size(18.dp)
+            )
+        }
+
+        //选中模组时才出现的批量操作
+        AnimatedVisibility(visible = isModsSelected) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+            ) {
+                if (hasModLoader && canUpdate) {
+                    IconButton(onClick = onUpdateMods, modifier = Modifier.size(36.dp)) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_update),
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+                IconButton(onClick = onDeleteAll, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_delete_outlined),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                IconButton(
+                    onClick = { if (isModsSelected) onClearModsSelected() },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_deselect),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        }
+
+        Button(
+            onClick = swapToDownload,
+            shape = RoundedCornerShape(AerixRadii.control),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MiraiThemeManager.currentAccent(),
+                contentColor = AerixSurface.onAccent
+            ),
+            contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.xs),
+            modifier = Modifier.height(36.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_add),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(Modifier.width(AerixSpacing.smCompact))
+            Text(
+                text = "Add",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+    }
+}
+
 @Composable
 private fun ModsActionsHeader(
     modifier: Modifier,
+    compact: Boolean = false,
     nameFilter: String,
     onNameFilterChange: (String) -> Unit,
     stateFilter: ModStateFilter,
@@ -854,98 +1105,156 @@ private fun ModsActionsHeader(
     inputFieldContentColor: Color = onItemColor()
 ) {
     CardTitleLayout(modifier = modifier) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.md),
-            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
-        ) {
-            //搜索与主要操作
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+        if (compact) {
+            ModsCompactToolbar(
+                nameFilter = nameFilter,
+                onNameFilterChange = onNameFilterChange,
+                stateFilter = stateFilter,
+                onStateFilterChange = onStateFilterChange,
+                allModsCount = allModsCount,
+                enabledModsCount = enabledModsCount,
+                disabledModsCount = disabledModsCount,
+                hasModLoader = hasModLoader,
+                onUpdateMods = onUpdateMods,
+                onDeleteAll = onDeleteAll,
+                isModsSelected = isModsSelected,
+                canUpdate = canUpdate,
+                onClearModsSelected = onClearModsSelected,
+                swapToDownload = swapToDownload,
+                onOpenModResolver = onOpenModResolver,
+                detectedIssuesCount = detectedIssuesCount,
+                refresh = refresh,
+                inputFieldColor = inputFieldColor,
+                inputFieldContentColor = inputFieldContentColor
+            )
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
             ) {
-                SimpleTextInputField(
-                    modifier = Modifier.weight(1f),
-                    value = nameFilter,
-                    onValueChange = onNameFilterChange,
-                    hint = {
-                        Text(
-                            text = "Search $allModsCount installed mods...",
-                            style = TextStyle(color = LocalContentColor.current).copy(fontSize = 12.sp),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                //搜索与主要操作
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smPlus)
+                ) {
+                    SimpleTextInputField(
+                        modifier = Modifier.weight(1f),
+                        value = nameFilter,
+                        onValueChange = onNameFilterChange,
+                        hint = {
+                            Text(
+                                text = "Search $allModsCount installed mods...",
+                                style = TextStyle(color = LocalContentColor.current).copy(fontSize = 12.sp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        color = inputFieldColor,
+                        contentColor = inputFieldContentColor,
+                        contextPadding = PaddingValues(
+                            horizontal = AerixSpacing.md,
+                            vertical = AerixSpacing.smPlus
+                        ),
+                        singleLine = true
+                    )
+
+                    IconButton(
+                        onClick = refresh,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_refresh),
+                            contentDescription = stringResource(R.string.generic_refresh),
+                            modifier = Modifier.size(18.dp)
                         )
-                    },
-                    color = inputFieldColor,
-                    contentColor = inputFieldContentColor,
-                    contextPadding = PaddingValues(
-                        horizontal = AerixSpacing.md,
-                        vertical = AerixSpacing.smPlus
-                    ),
-                    singleLine = true
-                )
-
-                IconButton(
-                    onClick = refresh,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_refresh),
-                        contentDescription = stringResource(R.string.generic_refresh),
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-
-                Button(
-                    onClick = swapToDownload,
-                    shape = RoundedCornerShape(AerixRadii.control),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MiraiThemeManager.currentAccent(),
-                        contentColor = AerixSurface.onAccent
-                    ),
-                    contentPadding = PaddingValues(
-                        horizontal = AerixSpacing.lg,
-                        vertical = AerixSpacing.sm
-                    ),
-                    modifier = Modifier.height(40.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_add),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(Modifier.width(AerixSpacing.sm))
-                    Text(
-                        text = "Add Content",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                }
-            }
-
-            //过滤、诊断与批量操作
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
-                verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
-            ) {
-                ModStateFilter.entries.forEach { filter ->
-                    val selected = stateFilter == filter
-                    val count = when (filter) {
-                        ModStateFilter.Enabled -> enabledModsCount?.takeIf { it >= 0 }
-                        ModStateFilter.Disabled -> disabledModsCount?.takeIf { it >= 0 }
-                        else -> allModsCount
                     }
+
+                    Button(
+                        onClick = swapToDownload,
+                        shape = RoundedCornerShape(AerixRadii.control),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MiraiThemeManager.currentAccent(),
+                            contentColor = AerixSurface.onAccent
+                        ),
+                        contentPadding = PaddingValues(
+                            horizontal = AerixSpacing.lg,
+                            vertical = AerixSpacing.sm
+                        ),
+                        modifier = Modifier.height(40.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_add),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(AerixSpacing.sm))
+                        Text(
+                            text = "Add Content",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+                }
+
+                //过滤、诊断与批量操作
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                ) {
+                    ModStateFilter.entries.forEach { filter ->
+                        val selected = stateFilter == filter
+                        val count = when (filter) {
+                            ModStateFilter.Enabled -> enabledModsCount?.takeIf { it >= 0 }
+                            ModStateFilter.Disabled -> disabledModsCount?.takeIf { it >= 0 }
+                            else -> allModsCount
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(AerixRadii.pill),
+                            color = if (selected) AerixSurface.accentContainer else AerixSurface.panel,
+                            border = BorderStroke(
+                                AerixSpacing.hairline,
+                                if (selected) MiraiThemeManager.currentAccent() else AerixSurface.border
+                            ),
+                            onClick = { onStateFilterChange(filter) }
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .height(36.dp)
+                                    .padding(horizontal = AerixSpacing.md),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
+                            ) {
+                                Text(
+                                    text = stringResource(filter.textRes),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textPrimary
+                                )
+                                if (count != null) {
+                                    Text(
+                                        text = count.toString(),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    val hasIssues = detectedIssuesCount > 0
                     Surface(
                         shape = RoundedCornerShape(AerixRadii.pill),
-                        color = if (selected) AerixSurface.accentContainer else AerixSurface.panel,
+                        color = if (hasIssues) AerixSurface.dangerContainer else AerixSurface.panel,
                         border = BorderStroke(
                             AerixSpacing.hairline,
-                            if (selected) MiraiThemeManager.currentAccent() else AerixSurface.border
+                            if (hasIssues) AerixSurface.danger else AerixSurface.border
                         ),
-                        onClick = { onStateFilterChange(filter) }
+                        onClick = onOpenModResolver
                     ) {
                         Row(
                             modifier = Modifier
@@ -955,79 +1264,45 @@ private fun ModsActionsHeader(
                             horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                         ) {
                             Text(
-                                text = stringResource(filter.textRes),
+                                text = if (hasIssues) "🛡️ $detectedIssuesCount Issues" else "🛡️ Check Mods",
                                 style = MaterialTheme.typography.labelMedium,
-                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textPrimary
+                                fontWeight = FontWeight.Bold,
+                                color = if (hasIssues) AerixSurface.danger else AerixSurface.textPrimary
                             )
-                            if (count != null) {
-                                Text(
-                                    text = count.toString(),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (selected) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary
-                                )
-                            }
                         }
                     }
-                }
 
-                val hasIssues = detectedIssuesCount > 0
-                Surface(
-                    shape = RoundedCornerShape(AerixRadii.pill),
-                    color = if (hasIssues) AerixSurface.dangerContainer else AerixSurface.panel,
-                    border = BorderStroke(
-                        AerixSpacing.hairline,
-                        if (hasIssues) AerixSurface.danger else AerixSurface.border
-                    ),
-                    onClick = onOpenModResolver
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .height(36.dp)
-                            .padding(horizontal = AerixSpacing.md),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
-                    ) {
-                        Text(
-                            text = if (hasIssues) "🛡️ $detectedIssuesCount Issues" else "🛡️ Check Mods",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = if (hasIssues) AerixSurface.danger else AerixSurface.textPrimary
-                        )
-                    }
-                }
-
-                AnimatedVisibility(visible = isModsSelected) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
-                    ) {
-                        if (hasModLoader && canUpdate) {
-                            IconButton(onClick = onUpdateMods, modifier = Modifier.size(36.dp)) {
+                    AnimatedVisibility(visible = isModsSelected) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
+                        ) {
+                            if (hasModLoader && canUpdate) {
+                                IconButton(onClick = onUpdateMods, modifier = Modifier.size(36.dp)) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_update),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                            IconButton(onClick = onDeleteAll, modifier = Modifier.size(36.dp)) {
                                 Icon(
-                                    painter = painterResource(R.drawable.ic_update),
+                                    painter = painterResource(R.drawable.ic_delete_outlined),
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
-                        }
-                        IconButton(onClick = onDeleteAll, modifier = Modifier.size(36.dp)) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_delete_outlined),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                        IconButton(
-                            onClick = { if (isModsSelected) onClearModsSelected() },
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_deselect),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
+                            IconButton(
+                                onClick = { if (isModsSelected) onClearModsSelected() },
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_deselect),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -1064,12 +1339,12 @@ private fun ModsList(
                     orientation = Orientation.Vertical,
                 ),
             contentPadding = PaddingValues(
-                start = AerixSpacing.mdPlus,
-                end = AerixSpacing.mdPlus,
-                top = AerixSpacing.mdPlus,
-                bottom = AerixSpacing.lg
+                start = AerixSpacing.sm,
+                end = AerixSpacing.sm,
+                top = AerixSpacing.sm,
+                bottom = AerixSpacing.md
             ),
-            verticalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
             state = scrollState,
         ) {
             if (!hasModLoader) {
@@ -1180,14 +1455,14 @@ private fun ModItemLayout(
         contentColor = itemContentColor,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.mdPlus),
-            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg),
+            modifier = Modifier.padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smCompact),
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ModIcon(
                 modifier = Modifier.clip(shape = RoundedCornerShape(AerixRadii.control)),
                 mod = mod,
-                iconSize = 48.dp
+                iconSize = 38.dp
             )
 
             Column(

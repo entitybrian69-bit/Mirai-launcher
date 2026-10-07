@@ -89,6 +89,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.JsonSyntaxException
+import com.movtery.zalithlauncher.ui.theme.AERIX_COMPACT_HEIGHT_THRESHOLD_DP
 import com.movtery.zalithlauncher.ui.theme.AerixMetrics
 import com.movtery.zalithlauncher.ui.theme.AerixRadii
 import com.movtery.zalithlauncher.ui.theme.AerixSpacing
@@ -230,7 +231,11 @@ private data class InstanceTabItem(
 private val InstanceTwoPaneMinWidth = 700.dp
 /** 双栏布局下左侧实例侧栏的宽度范围（按可用宽度自适应） */
 private val InstanceSidebarMinWidth = 248.dp
-private val InstanceSidebarMaxWidth = 320.dp
+private val InstanceSidebarMaxWidth = 336.dp
+/** 侧栏高度低于该阈值时（横屏手机），改用紧凑摘要卡与导航网格 */
+private val InstanceRoomySidebarMinHeight = 620.dp
+/** 导航网格单元格高度 */
+private val InstanceNavCellHeight = 40.dp
 /** 侧栏导航项的高度 */
 private val InstanceNavItemHeight = 46.dp
 /** 单栏布局下实例图标尺寸 */
@@ -340,98 +345,334 @@ fun VersionSettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) }
-                .padding(horizontal = AerixSpacing.lg, vertical = AerixSpacing.md)
         ) {
-            if (maxWidth >= InstanceTwoPaneMinWidth) {
-                //横屏 / 平板：左侧固定的实例信息与功能导航，右侧完整的内容区域
-                val sidebarWidth = (maxWidth * 0.32f).coerceIn(
-                    minimumValue = InstanceSidebarMinWidth,
-                    maximumValue = InstanceSidebarMaxWidth
-                )
+            //矮屏（横屏手机）压缩页面留白，把高度全部留给内容列表
+            val shortScreen = maxHeight < AERIX_COMPACT_HEIGHT_THRESHOLD_DP.dp
+            val twoPane = maxWidth >= InstanceTwoPaneMinWidth
+            //侧栏尺寸必须在 BoxWithConstraints 的作用域内取好，
+            //嵌套 lambda 里无法再隐式访问 maxHeight / maxWidth
+            val compactSidebar = maxHeight < InstanceRoomySidebarMinHeight
+            val sidebarWidth = (
+                maxWidth * if (compactSidebar) 0.34f else 0.32f
+            ).coerceIn(
+                minimumValue = InstanceSidebarMinWidth,
+                maximumValue = InstanceSidebarMaxWidth
+            )
 
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.spacedBy(AerixSpacing.lg)
-                ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        horizontal = if (shortScreen) AerixSpacing.md else AerixSpacing.lg,
+                        vertical = if (shortScreen) AerixSpacing.sm else AerixSpacing.md
+                    )
+            ) {
+                if (twoPane) {
+                    //横屏 / 平板：左侧实例信息与功能导航，右侧完整的内容区域
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            if (shortScreen) AerixSpacing.md else AerixSpacing.lg
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .width(sidebarWidth)
+                                .fillMaxHeight(),
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                        ) {
+                            if (compactSidebar) {
+                                //横屏手机：一行摘要 + 双列功能网格，所有入口都看得见
+                                InstanceSidebarCard(
+                                    version = key.version,
+                                    onBack = backToMainScreen,
+                                    onPlay = launchGame,
+                                    onOpenFolder = openInstanceFolder
+                                )
+
+                                InstanceNavGrid(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f, fill = false),
+                                    tabs = tabs,
+                                    currentKey = selectedTabKey,
+                                    onSelectTab = selectTab
+                                )
+                            } else {
+                                InstanceIdentityCard(
+                                    version = key.version,
+                                    onBack = backToMainScreen,
+                                    onPlay = launchGame,
+                                    onOpenFolder = openInstanceFolder
+                                )
+
+                                InstanceNavPanel(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f),
+                                    tabs = tabs,
+                                    currentKey = selectedTabKey,
+                                    onSelectTab = selectTab
+                                )
+                            }
+                        }
+
+                        NavigationUI(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            key = key,
+                            viewModel = viewModel,
+                            backScreenViewModel = backScreenViewModel,
+                            versionsScreenKey = key.currentKey,
+                            onCurrentKeyChange = { newKey ->
+                                key.currentKey = newKey
+                            },
+                            backToMainScreen = backToMainScreen,
+                            onExport = onExportModpack,
+                            version = key.version,
+                            eventViewModel = eventViewModel,
+                            submitError = submitError
+                        )
+                    }
+                } else {
+                    //手机竖屏：实例信息、功能标签、内容从上到下依次排布
                     Column(
-                        modifier = Modifier
-                            .width(sidebarWidth)
-                            .fillMaxHeight(),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
-                        InstanceIdentityCard(
+                        InstanceHeroCard(
                             version = key.version,
                             onBack = backToMainScreen,
                             onPlay = launchGame,
                             onOpenFolder = openInstanceFolder
                         )
 
-                        InstanceNavPanel(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
+                        InstanceTabStrip(
                             tabs = tabs,
                             currentKey = selectedTabKey,
                             onSelectTab = selectTab
                         )
+
+                        NavigationUI(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            key = key,
+                            viewModel = viewModel,
+                            backScreenViewModel = backScreenViewModel,
+                            versionsScreenKey = key.currentKey,
+                            onCurrentKeyChange = { newKey ->
+                                key.currentKey = newKey
+                            },
+                            backToMainScreen = backToMainScreen,
+                            onExport = onExportModpack,
+                            version = key.version,
+                            eventViewModel = eventViewModel,
+                            submitError = submitError
+                        )
                     }
-
-                    NavigationUI(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
-                        key = key,
-                        viewModel = viewModel,
-                        backScreenViewModel = backScreenViewModel,
-                        versionsScreenKey = key.currentKey,
-                        onCurrentKeyChange = { newKey ->
-                            key.currentKey = newKey
-                        },
-                        backToMainScreen = backToMainScreen,
-                        onExport = onExportModpack,
-                        version = key.version,
-                        eventViewModel = eventViewModel,
-                        submitError = submitError
-                    )
-                }
-            } else {
-                //手机竖屏：实例信息、功能标签、内容从上到下依次排布
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.md)
-                ) {
-                    InstanceHeroCard(
-                        version = key.version,
-                        onBack = backToMainScreen,
-                        onPlay = launchGame,
-                        onOpenFolder = openInstanceFolder
-                    )
-
-                    InstanceTabStrip(
-                        tabs = tabs,
-                        currentKey = selectedTabKey,
-                        onSelectTab = selectTab
-                    )
-
-                    NavigationUI(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        key = key,
-                        viewModel = viewModel,
-                        backScreenViewModel = backScreenViewModel,
-                        versionsScreenKey = key.currentKey,
-                        onCurrentKeyChange = { newKey ->
-                            key.currentKey = newKey
-                        },
-                        backToMainScreen = backToMainScreen,
-                        onExport = onExportModpack,
-                        version = key.version,
-                        eventViewModel = eventViewModel,
-                        submitError = submitError
-                    )
                 }
             }
+        }
+    }
+}
+
+/**
+ * 横屏手机上的紧凑实例摘要：一行信息 + 整行启动按钮。
+ */
+@Composable
+private fun InstanceSidebarCard(
+    version: Version,
+    onBack: () -> Unit,
+    onPlay: () -> Unit,
+    onOpenFolder: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val activeAccent = MiraiThemeManager.currentAccent()
+    val info = version.getVersionInfo()
+    val mcVer = info?.minecraftVersion ?: "Unknown"
+    val loaderName = info?.loaderInfo?.loader?.displayName ?: "Vanilla"
+    val ramMb = remember(version) { version.getRamAllocation(context) }
+
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AerixRadii.panelSmall),
+        color = AerixSurface.panel,
+        border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AerixSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+            ) {
+                InstanceIconButton(
+                    iconRes = R.drawable.ic_arrow_back,
+                    description = stringResource(R.string.generic_back),
+                    onClick = onBack,
+                    buttonSize = 34.dp,
+                    iconSize = 17.dp
+                )
+
+                Surface(
+                    shape = RoundedCornerShape(AerixRadii.control),
+                    color = AerixSurface.panelRaised,
+                    border = BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+                ) {
+                    VersionIconImage(
+                        version = version,
+                        modifier = Modifier
+                            .padding(AerixSpacing.xxs)
+                            .size(34.dp)
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(AerixSpacing.xxs)
+                ) {
+                    Text(
+                        text = version.getVersionName(),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = AerixSurface.textPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = "$loaderName · $mcVer · $ramMb MB",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AerixSurface.textSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                InstanceOverflowAction(
+                    version = version,
+                    onOpenFolder = onOpenFolder,
+                    buttonSize = 34.dp,
+                    iconSize = 18.dp
+                )
+            }
+
+            Button(
+                onClick = onPlay,
+                shape = RoundedCornerShape(AerixRadii.control),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = activeAccent,
+                    contentColor = AerixSurface.onAccent
+                ),
+                contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.xs),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(38.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_play_arrow_filled),
+                    contentDescription = stringResource(R.string.main_launch_game),
+                    modifier = Modifier.size(17.dp)
+                )
+                Spacer(Modifier.width(AerixSpacing.sm))
+                Text(
+                    text = "Play",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 横屏手机上的紧凑功能导航：双列网格，所有入口一屏可见。
+ */
+@Composable
+private fun InstanceNavGrid(
+    tabs: List<InstanceTabItem>,
+    currentKey: TitledNavKey?,
+    onSelectTab: (InstanceTabItem) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val activeAccent = MiraiThemeManager.currentAccent()
+    val scrollState = rememberScrollState()
+    val rows = remember(tabs) { tabs.chunked(2) }
+
+    Column(
+        modifier = modifier.verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
+    ) {
+        rows.forEach { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
+            ) {
+                row.forEach { tab ->
+                    InstanceNavGridItem(
+                        modifier = Modifier.weight(1f),
+                        tab = tab,
+                        selected = currentKey === tab.key,
+                        activeAccent = activeAccent,
+                        onClick = { onSelectTab(tab) }
+                    )
+                }
+                //补齐最后一行，保证两列宽度一致
+                repeat(2 - row.size) {
+                    Spacer(Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InstanceNavGridItem(
+    tab: InstanceTabItem,
+    selected: Boolean,
+    activeAccent: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.height(InstanceNavCellHeight),
+        shape = RoundedCornerShape(AerixRadii.control),
+        color = if (selected) AerixSurface.accentContainer else AerixSurface.panel,
+        contentColor = if (selected) activeAccent else AerixSurface.textPrimary,
+        border = if (selected) {
+            BorderStroke(AerixSpacing.hairline, activeAccent)
+        } else {
+            BorderStroke(AerixSpacing.hairline, AerixSurface.borderSoft)
+        },
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = AerixSpacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
+        ) {
+            Icon(
+                painter = painterResource(tab.iconRes),
+                contentDescription = null,
+                tint = if (selected) activeAccent else AerixSurface.textSecondary,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = tab.label,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
+                color = if (selected) activeAccent else AerixSurface.textPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

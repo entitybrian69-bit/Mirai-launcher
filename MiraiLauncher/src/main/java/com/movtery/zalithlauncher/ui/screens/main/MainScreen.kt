@@ -63,6 +63,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -73,6 +74,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import com.movtery.zalithlauncher.ui.theme.AERIX_COMPACT_HEIGHT_THRESHOLD_DP
 import com.movtery.zalithlauncher.ui.theme.AerixRadii
 import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.theme.AerixSurface
@@ -158,6 +160,8 @@ fun MainScreen(
 
     val mainScreenKey = screenBackStackModel.mainScreen.currentKey
     val inLauncherScreen = mainScreenKey == null || mainScreenKey is NormalNavKey.LauncherMain
+    //横屏手机等矮屏：外壳顶栏收窄，把高度让给页面内容
+    val compactShell = LocalConfiguration.current.screenHeightDp < AERIX_COMPACT_HEIGHT_THRESHOLD_DP
 
     val isBackgroundValid = LocalBackgroundViewModel.current?.isValid == true
     val launcherBackgroundOpacity = AllSettings.launcherBackgroundOpacity.state.toFloat() / 100f
@@ -243,9 +247,13 @@ fun MainScreen(
                     mainScreenKey = mainScreenKey,
                     inLauncherScreen = inLauncherScreen,
                     activeTasksCount = tasks.size,
+                    compactHeight = compactShell,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.sm),
+                        .padding(
+                            horizontal = AerixSpacing.smPlus,
+                            vertical = if (compactShell) AerixSpacing.xs else AerixSpacing.sm
+                        ),
                     onBack = { onBack(screenBackStackModel.mainScreen.backStack) },
                     onHome = toMainScreen,
                     onTasks = {
@@ -333,6 +341,7 @@ private fun <E : TitledNavKey> MainShellHeader(
     mainScreenKey: E?,
     inLauncherScreen: Boolean,
     activeTasksCount: Int,
+    compactHeight: Boolean,
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
     onHome: () -> Unit,
@@ -366,19 +375,23 @@ private fun <E : TitledNavKey> MainShellHeader(
         border = BorderStroke(1.dp, AerixSurface.borderSoft)
     ) {
         BoxWithConstraints {
-            val compactActions = maxWidth < 610.dp
+            val compactActions = maxWidth < 610.dp || compactHeight
             val showAccountAction = maxWidth >= 460.dp
-            val showSearch = maxWidth >= 650.dp
+            val showSearch = maxWidth >= 650.dp && !compactHeight
             val routeWidth = when {
                 maxWidth < 430.dp -> 76.dp
+                compactHeight -> 150.dp
                 compactActions -> 126.dp
                 else -> 210.dp
             }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(AerixMetrics.shellHeaderHeight)
-                    .padding(horizontal = AerixSpacing.md),
+                    .height(
+                        if (compactHeight) AerixMetrics.shellHeaderHeightCompact
+                        else AerixMetrics.shellHeaderHeight
+                    )
+                    .padding(horizontal = if (compactHeight) AerixSpacing.smPlus else AerixSpacing.md),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
             ) {
@@ -386,12 +399,13 @@ private fun <E : TitledNavKey> MainShellHeader(
                     HeaderIconButton(
                         iconRes = R.drawable.ic_arrow_back,
                         description = stringResource(R.string.generic_back),
+                        compact = compactHeight,
                         onClick = onBack
                     )
                 }
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(if (compactHeight) 30.dp else 36.dp)
                         .clip(RoundedCornerShape(AerixRadii.control))
                         .background(AerixSurface.accent.copy(alpha = 0.16f))
                         .liquidGlass(
@@ -406,7 +420,7 @@ private fun <E : TitledNavKey> MainShellHeader(
                         painter = painterResource(R.drawable.ic_aerix_mark),
                         contentDescription = "Aerix",
                         tint = Color.Unspecified,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(if (compactHeight) 19.dp else 22.dp)
                     )
                 }
                 Column(
@@ -455,6 +469,7 @@ private fun <E : TitledNavKey> MainShellHeader(
                         iconRes = R.drawable.ic_home_filled,
                         description = stringResource(R.string.generic_main_menu),
                         tint = AerixSurface.accent,
+                        compact = compactHeight,
                         onClick = onHome
                     )
                 }
@@ -542,11 +557,12 @@ private fun HeaderIconButton(
     iconRes: Int,
     description: String,
     tint: Color = AerixSurface.textPrimary,
+    compact: Boolean = false,
     onClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
-            .size(38.dp)
+            .size(if (compact) 32.dp else 38.dp)
             .liquidGlass(
                 shape = CircleShape,
                 tint = AerixSurface.glassTint,
@@ -564,7 +580,7 @@ private fun HeaderIconButton(
                 painter = painterResource(iconRes),
                 contentDescription = description,
                 tint = tint,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(if (compact) 16.dp else 18.dp)
             )
         }
     }
@@ -582,7 +598,7 @@ private fun HeaderActionPill(
     val actionShape = RoundedCornerShape(AerixRadii.control)
     Surface(
         modifier = modifier
-            .height(AerixMetrics.shellActionHeight)
+            .height(if (compact) AerixMetrics.shellActionHeightCompact else AerixMetrics.shellActionHeight)
             .liquidGlass(
                 shape = actionShape,
                 tint = if (selected) AerixSurface.accent else AerixSurface.glassTint,

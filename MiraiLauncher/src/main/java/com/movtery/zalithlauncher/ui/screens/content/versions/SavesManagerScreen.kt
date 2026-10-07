@@ -302,7 +302,7 @@ fun SavesManagerScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = AerixSpacing.lg)
+                .padding(all = AerixSpacing.sm)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
