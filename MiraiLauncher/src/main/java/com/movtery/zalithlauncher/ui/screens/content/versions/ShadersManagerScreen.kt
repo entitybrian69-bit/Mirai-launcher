@@ -314,7 +314,7 @@ fun ShadersManagerScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = AerixSpacing.md)
+                .padding(all = AerixSpacing.sm)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -430,8 +430,8 @@ private fun ShadersActionsHeader(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AerixSpacing.sm)
-                .padding(top = AerixSpacing.xs)
+                .padding(horizontal = AerixSpacing.mdPlus)
+                .padding(vertical = AerixSpacing.sm)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box {
@@ -587,7 +587,7 @@ private fun ShadersList(
                     state = scrollState.scrollIndicatorState!!,
                     orientation = Orientation.Vertical,
                 ),
-                contentPadding = PaddingValues(horizontal = AerixSpacing.md, vertical = AerixSpacing.smCompact),
+                contentPadding = PaddingValues(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.md),
                 state = scrollState,
             ) {
                 items(list) { info ->

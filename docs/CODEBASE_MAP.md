@@ -1,7 +1,9 @@
 # Aerix Launcher — Codebase Map
 
 A full technical map of `entitybrian69-bit/Mirai-launcher`, written from a complete pass over
-the tree at commit `71feb68` (branch `Mirai-launcher`, release 1.0.0 / version code 200043).
+the tree at commit `71feb68` (branch `Mirai-launcher`). Version numbers move on: see
+`MiraiLauncher/gradle.properties` and `CHANGELOG.md` for the current release (1.2 at the
+time of the 1.2 documentation pass).
 
 ---
 
@@ -16,7 +18,7 @@ the tree at commit `71feb68` (branch `Mirai-launcher`, release 1.0.0 / version c
 | **Debug application ID** | `com.entitybrian69.mirailauncher.v2.debug` |
 | **License** | GPL-3.0 (upstream MIT/other licenses preserved in `third_party/`) |
 | **Default branch** | `Mirai-launcher` |
-| **Releases** | 1.0.0, published 2026-10-04 |
+| **Releases** | 1.2, published 2026-10-07 (previous: 1.0.0, 2026-10-04) |
 | **Git history** | A single squashed commit — the fork's full history is not carried in this repo |
 
 The namespace staying as `com.movtery.zalithlauncher` while the application ID changed is
@@ -123,8 +125,8 @@ launcher_name=Aerix Launcher
 launcher_app_name=Aerix Launcher
 launcher_short_name=Aerix
 url_home=https://github.com/entitybrian69-bit/Mirai-launcher
-launcher_version_code=200043
-launcher_version_name=1.0.0
+launcher_version_code=200045
+launcher_version_name=1.2
 ```
 
 These are surfaced into the app as `BuildKeys` constants (`LAUNCHER_NAME`,
@@ -534,9 +536,9 @@ is normal and harmless for a debug key.
 
 ### Version numbering
 
-`launcher_version_code = 200043` while `launcher_version_name = 1.0.0`. The CHANGELOG explains
-this is deliberate — kept monotonic with pre-release builds so existing installs see the update.
-Anyone bumping the version must not "fix" the code down to `10000`.
+`launcher_version_code = 200045` while `launcher_version_name = 1.2`. The code is kept
+monotonic with pre-release builds so existing installs see the update; the name is free to
+move independently. Anyone bumping the version must not "fix" the code down to `10000`.
 
 ### Prebuilt blobs that remain
 

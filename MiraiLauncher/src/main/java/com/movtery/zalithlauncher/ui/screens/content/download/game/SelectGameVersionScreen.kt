@@ -295,15 +295,15 @@ fun SelectGameVersionScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = AerixSpacing.xs, vertical = AerixSpacing.xxs),
-                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus)
+                            .padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xs),
+                        horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
                     ) {
                         // LEFT PANE: Instance Info & Minecraft Version List (Mockup #5)
                         Column(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight(),
-                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
+                            verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -312,7 +312,7 @@ fun SelectGameVersionScreen(
                             ) {
                                 Text(
                                     text = "Create New Instance",
-                                    fontSize = 17.sp,
+                                    fontSize = 18.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color.White
                                 )
@@ -462,8 +462,8 @@ fun SelectGameVersionScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact),
-                                contentPadding = PaddingValues(bottom = AerixSpacing.sm)
+                                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs),
+                                contentPadding = PaddingValues(bottom = AerixSpacing.smCompact)
                             ) {
                                 items(
                                     items = versions,
@@ -472,13 +472,14 @@ fun SelectGameVersionScreen(
                                     val verId = ver.version.id
                                     val isSelected = verId == selectedVersionId
 
+                                    //选中项：主操作色描边 + 勾选标记（对齐设计稿）
                                     Surface(
                                         modifier = Modifier.fillMaxWidth(),
                                         shape = RoundedCornerShape(AerixRadii.controlSmall),
-                                        color = if (isSelected) AerixSurface.accentContainer else AerixSurface.panelRaised,
+                                        color = if (isSelected) AerixSurface.action.copy(alpha = 0.14f) else AerixSurface.panelRaised,
                                         border = BorderStroke(
                                             width = if (isSelected) 1.5.dp else AerixSpacing.hairline,
-                                            color = if (isSelected) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised
+                                            color = if (isSelected) AerixSurface.action else AerixSurface.borderSoft
                                         ),
                                         onClick = {
                                             selectedVersionId = verId
@@ -487,7 +488,7 @@ fun SelectGameVersionScreen(
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(horizontal = AerixSpacing.md, vertical = AerixSpacing.smNarrow),
+                                                .padding(horizontal = AerixSpacing.smPlus, vertical = AerixSpacing.xsPlus),
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
@@ -495,24 +496,18 @@ fun SelectGameVersionScreen(
                                                 text = "Minecraft $verId",
                                                 fontSize = 13.sp,
                                                 fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold,
-                                                color = Color.White,
+                                                color = if (isSelected) AerixSurface.action else Color.White,
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis
                                             )
 
                                             if (isSelected) {
-                                                Surface(
-                                                    shape = RoundedCornerShape(AerixRadii.controlSmall),
-                                                    color = AerixSurface.accentContainer
-                                                ) {
-                                                    Text(
-                                                        text = "Selected",
-                                                        modifier = Modifier.padding(horizontal = AerixSpacing.sm, vertical = AerixSpacing.xxs),
-                                                        fontSize = 10.sp,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = AerixSurface.success
-                                                    )
-                                                }
+                                                Icon(
+                                                    painter = painterResource(R.drawable.ic_check),
+                                                    contentDescription = null,
+                                                    tint = AerixSurface.action,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
                                             }
                                         }
                                     }
@@ -550,12 +545,12 @@ fun SelectGameVersionScreen(
                                             Surface(
                                                 modifier = Modifier
                                                     .weight(1f)
-                                                    .height(74.dp),
+                                                    .height(68.dp),
                                                 shape = RoundedCornerShape(AerixRadii.control),
-                                                color = if (isSelected) AerixSurface.accentContainer else AerixSurface.panelRaised,
+                                                color = if (isSelected) AerixSurface.action.copy(alpha = 0.14f) else AerixSurface.panelRaised,
                                                 border = BorderStroke(
                                                     width = if (isSelected) 1.5.dp else AerixSpacing.hairline,
-                                                    color = if (isSelected) MiraiThemeManager.currentAccent() else AerixSurface.panelRaised
+                                                    color = if (isSelected) AerixSurface.action else AerixSurface.borderSoft
                                                 ),
                                                 onClick = { selectedLoader = loaderName }
                                             ) {
@@ -570,13 +565,13 @@ fun SelectGameVersionScreen(
                                                         text = loaderName,
                                                         fontSize = 13.sp,
                                                         fontWeight = FontWeight.ExtraBold,
-                                                        color = Color.White
+                                                        color = if (isSelected) AerixSurface.action else Color.White
                                                     )
                                                     if (subLabel.isNotEmpty()) {
                                                         Text(
                                                             text = subLabel,
                                                             fontSize = 11.sp,
-                                                            color = if (isSelected) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary
+                                                            color = if (isSelected) AerixSurface.action else AerixSurface.textSecondary
                                                         )
                                                     }
                                                 }
@@ -590,13 +585,19 @@ fun SelectGameVersionScreen(
                                 onClick = { onVersionSelect(selectedVersionId) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(44.dp),
-                                shape = RoundedCornerShape(AerixRadii.panel),
+                                    .height(46.dp),
+                                shape = RoundedCornerShape(AerixRadii.control),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MiraiThemeManager.currentAccent(),
                                     contentColor = AerixSurface.onAccent
                                 )
                             ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_download),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(17.dp)
+                                )
+                                Spacer(Modifier.width(AerixSpacing.sm))
                                 Text(
                                     text = "Create & Install Instance",
                                     fontSize = 14.sp,

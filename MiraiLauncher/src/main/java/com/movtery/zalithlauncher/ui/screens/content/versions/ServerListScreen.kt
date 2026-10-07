@@ -539,7 +539,7 @@ fun ServerListScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = AerixSpacing.md)
+                .padding(all = AerixSpacing.sm)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -612,8 +612,8 @@ private fun ServerListHeader(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AerixSpacing.sm)
-                .padding(top = AerixSpacing.xs)
+                .padding(horizontal = AerixSpacing.mdPlus)
+                .padding(vertical = AerixSpacing.sm)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 SimpleTextInputField(
@@ -691,8 +691,13 @@ private fun ServerListBody(
                     state = scrollState.scrollIndicatorState!!,
                     orientation = Orientation.Vertical,
                 ),
-                contentPadding = PaddingValues(all = AerixSpacing.md),
-                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+                contentPadding = PaddingValues(
+                    start = AerixSpacing.mdPlus,
+                    end = AerixSpacing.mdPlus,
+                    top = AerixSpacing.mdPlus,
+                    bottom = AerixSpacing.lg
+                ),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus),
                 state = scrollState,
             ) {
                 items(list) { server ->

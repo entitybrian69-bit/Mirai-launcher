@@ -9,7 +9,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Android%208.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/entitybrian69-bit/Mirai-launcher/releases)
 [![Human Made](https://img.shields.io/badge/100%25-Human%20Made-7C3AED?style=for-the-badge)](https://github.com/entitybrian69-bit/Mirai-launcher)
-[![Team](https://img.shields.io/badge/Maintained%20by-entitybrian%20%26%20fireplayz-F59E0B?style=for-the-badge)](https://github.com/entitybrian69-bit)
+[![Team](https://img.shields.io/badge/Maintained%20by-entitybrian-F59E0B?style=for-the-badge)](https://github.com/entitybrian69-bit)
 [![Privacy](https://img.shields.io/badge/Privacy-No%20Trackers-111827?style=for-the-badge)](https://github.com/entitybrian69-bit/Mirai-launcher)
 [![License](https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Community%20%26%20suggestions-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/RS7q9KaCm6)
@@ -22,20 +22,23 @@
 
 ## 📸 Screenshots
 
-**Home dashboard** — quick actions (Boost FPS, JRE & GC, Crash Doctor), account status and PLAY at a glance.
-![Home dashboard](assets/screenshots/shot-home.jpg)
+**Home** — no top bar: the page starts at the top of the screen, with Create a World, Open Library and PLAY one touch away.
+![Home](assets/screenshots/shot-home.jpg)
 
-**Instances** — search, filter (All / Modpacks / Vanilla / Pinned) and create new instances.
-![Instances](assets/screenshots/shot-instances.jpg)
+**Create New Instance** — the Minecraft version list owns the left column, the selected version is outlined with a check mark, and the modloader grid sits beside it.
+![Create New Instance](assets/screenshots/shot-instances.jpg)
 
-**Discover** — browse and install mods, modpacks, shaders and more.
+**Discover** — browse and install mods, modpacks, shaders and resource packs, with filters for platform, category, game version and loader.
 ![Discover](assets/screenshots/shot-discover.jpg)
 
-**Wallpapers** — 20 built-in HD Minecraft wallpapers with dim control and custom imports.
+**Wallpapers** — 25 built-in HD Minecraft wallpapers, each with its own accent theme, plus dim control and custom imports.
 ![Wallpapers](assets/screenshots/shot-wallpapers.jpg)
 
-**Renderer settings** — renderer, Vulkan driver and graphics API per version.
-![Renderer settings](assets/screenshots/shot-renderer.jpg)
+**Renderers** — renderer, Vulkan driver and graphics API, chosen per version with a recommended default.
+![Renderers](assets/screenshots/shot-renderer.jpg)
+
+**Accounts & skins** — add Microsoft, offline or auth-server accounts, then browse a searchable three-column skin library and install a skin in one tap.
+![Accounts and skins](assets/screenshots/shot-accounts.jpg)
 
 ---
 
@@ -115,7 +118,7 @@ Your worlds are yours. Your accounts are yours. Aerix does not take a cut of eit
 - Touch control editor, including custom layouts
 - Gamepad support and remapping
 - File manager inside the launcher — configs, mods, worlds, backups
-- Multiplayer screen
+- Server list per instance, with quick connect
 - Log viewer when something goes wrong
 - Modpack import
 - License and credits screens kept reachable — nothing useful is stripped out to look “simpler”
@@ -143,15 +146,10 @@ Aerix brings Minecraft version and instance management, renderer options, accoun
       <strong>entitybrian</strong><br>
       <sub>Owner</sub>
     </td>
-    <td align="center" width="50%">
-      <img src="assets/team/fireplayz.jpg" width="140" alt="fire playz"><br>
-      <strong>fire playz</strong><br>
-      <sub>Owner</sub>
-    </td>
   </tr>
 </table>
 
-Both owners design, write, test, and ship Aerix Launcher.
+entitybrian designs, writes, tests, and ships Aerix Launcher.
 
 No studio. No outsourced UI. No AI pass that “fills in the screens.”
 

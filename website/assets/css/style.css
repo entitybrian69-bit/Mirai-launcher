@@ -812,19 +812,9 @@ tbody td code { font-size: .82em; }
 }
 .person[data-person="entitybrian"]:hover { border-color: rgba(200, 30, 30, .4); }
 
-.person[data-person="fireplayz"] {
-  --person-color: #101010;
-  --person-rgb: 16, 16, 16;
-}
-.person[data-person="fireplayz"]:hover { border-color: rgba(120, 120, 120, .45); }
-
 [data-theme="dark"] .person[data-person="entitybrian"] {
   --person-color: #F26D6D;
   --person-rgb: 242, 109, 109;
-}
-[data-theme="dark"] .person[data-person="fireplayz"] {
-  --person-color: #E9E9E9;
-  --person-rgb: 233, 233, 233;
 }
 
 @media (max-width: 520px) {

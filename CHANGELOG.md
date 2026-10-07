@@ -5,6 +5,43 @@ All notable changes to Aerix Launcher are recorded here.
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
 
+## 1.2 - 2026-10-07
+
+The interface release. Every screen was rebuilt around what a phone can actually
+show, and the launcher is now a single-owner project.
+
+### Changed
+- **No more global top bar.** The shell header (logo, page title, search box,
+  Tasks, Files, account) is gone from every screen. Pages start at the very top
+  of the display and use the full height. Navigation is handled by a slim back
+  button on the left that appears only when there is a page to go back to, and
+  a small floating badge in the top-right that only shows while a download runs.
+- **Instance page rebuilt for short screens.** On a landscape phone the sidebar
+  is a one-line instance summary plus a full-width Play button and a 2x4 grid of
+  every section entry, so all eight tabs are visible at once. The Mods tab gets a
+  single-row toolbar (search, filter with counts, diagnostics, refresh, add) and
+  denser rows, so about four mods are readable where one and a half were before.
+- **Create New Instance** now uses the full left column for the Minecraft version
+  list, so several versions are readable at once; the selected version shows an
+  accent outline and a check mark, and the modloader tiles follow the same style.
+- **Accounts** centres the + Microsoft / + Offline / + Auth Server buttons at the
+  top, caps the account list so it cannot push content away, and adds a skin
+  library underneath: a search field plus a scrollable three-column grid of
+  skins with a preview dialog whose Install button applies the skin to the
+  current account.
+- **Wallpapers** grow from 20 to 25 built-in HD Minecraft wallpapers, each with
+  its own accent theme, including a full crimson red Nether forest plus amethyst
+  geode, bamboo sunrise, badlands canyon and Deep Dark sculk presets.
+- Version name no longer carries a `-debug` suffix; the About page shows a clean
+  version number.
+- Removed the second name from the app, the README and the website. entitybrian
+  is the sole owner and maintainer.
+
+### Removed
+- The Multiplayer page and its navigation entry.
+- The standalone MC Skin screen, replaced by the skin library on the Accounts
+  page.
+
 ## 1.0.0 - 2026-10-04
 
 First public release.

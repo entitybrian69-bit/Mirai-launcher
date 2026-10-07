@@ -480,7 +480,7 @@ fun ScreenshotsManagerScreen(
         VersionChunkBackground(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = AerixSpacing.md)
+                .padding(all = AerixSpacing.sm)
                 .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
             paddingValues = PaddingValues()
         ) {
@@ -608,8 +608,8 @@ private fun ScreenshotHeader(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AerixSpacing.sm)
-                .padding(top = AerixSpacing.xs)
+                .padding(horizontal = AerixSpacing.mdPlus)
+                .padding(vertical = AerixSpacing.sm)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box {
@@ -717,8 +717,13 @@ private fun ScreenshotGrid(
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 160.dp),
                 modifier = modifier,
-                contentPadding = PaddingValues(AerixSpacing.md),
-                verticalArrangement = Arrangement.spacedBy(AerixSpacing.md),
+                contentPadding = PaddingValues(
+                    start = AerixSpacing.mdPlus,
+                    end = AerixSpacing.mdPlus,
+                    top = AerixSpacing.mdPlus,
+                    bottom = AerixSpacing.lg
+                ),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.mdPlus),
                 horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md)
             ) {
                 items(items) { info ->

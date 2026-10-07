@@ -56,6 +56,7 @@ import com.movtery.zalithlauncher.game.account.yggdrasil.executeWithAuthorizatio
 import com.movtery.zalithlauncher.game.account.yggdrasil.getFile
 import com.movtery.zalithlauncher.game.account.yggdrasil.getPlayerProfile
 import com.movtery.zalithlauncher.game.account.yggdrasil.uploadSkin
+import com.movtery.zalithlauncher.path.GLOBAL_CLIENT
 import com.movtery.zalithlauncher.path.PathManager
 import com.movtery.zalithlauncher.ui.AndroidStringText
 import com.movtery.zalithlauncher.ui.androidText
@@ -90,7 +91,12 @@ import java.io.File
 import java.nio.file.Files
 import java.util.UUID
 import io.ktor.client.plugins.ResponseException as KtorResponseException
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsBytes
 import kotlinx.coroutines.flow.combine as kotlinxCombine
+
+/** 皮肤库的皮肤文件下载地址前缀 */
+private const val LIBRARY_SKIN_URL = "https://minotar.net/skin/"
 
 /**
  * 账号管理界面用户意图 (MVI Intent)
@@ -127,6 +133,13 @@ sealed interface AccountManageIntent {
 
     /** 应用选中的皮肤 */
     data class ApplySkin(val account: Account, val file: File, val model: SkinModelType) : AccountManageIntent
+
+    /** 从皮肤库下载并应用一款皮肤 */
+    data class InstallLibrarySkin(
+        val account: Account,
+        val owner: String,
+        val slim: Boolean
+    ) : AccountManageIntent
 
     /** 内部使用的 Intent，用于在文件导入后上传皮肤 */
     data class UploadMicrosoftSkin(
@@ -355,6 +368,8 @@ class AccountManageViewModel @AssistedInject constructor(
             is AccountManageIntent.ApplySkin ->
                 applySkin(intent.account, intent.file, intent.model)
 
+            is AccountManageIntent.InstallLibrarySkin -> installLibrarySkin(intent)
+
             is AccountManageIntent.UploadMicrosoftSkin -> uploadMicrosoftSkin(intent)
             is AccountManageIntent.FetchMicrosoftCapes -> fetchMicrosoftCapes(intent.account)
             is AccountManageIntent.ApplyMicrosoftCape -> applyMicrosoftCape(intent)
@@ -531,6 +546,38 @@ class AccountManageViewModel @AssistedInject constructor(
     }
 
     /** 应用选中的皮肤 */
+    /**
+     * 从皮肤库下载指定名字的皮肤文件，然后按普通换肤流程应用
+     */
+    private fun installLibrarySkin(intent: AccountManageIntent.InstallLibrarySkin) {
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                val bytes = GLOBAL_CLIENT.get(LIBRARY_SKIN_URL + intent.owner).bodyAsBytes()
+                require(bytes.size > 32) { "Skin download was empty" }
+                val file = File(
+                    PathManager.DIR_IMAGE_CACHE,
+                    "skin_library_${UUID.randomUUID()}.png"
+                )
+                FileUtils.forceMkdir(file.parentFile)
+                file.writeBytes(bytes)
+                file
+            }.onSuccess { file ->
+                onIntent(
+                    AccountManageIntent.ApplySkin(
+                        account = intent.account,
+                        file = file,
+                        model = if (intent.slim) SkinModelType.ALEX else SkinModelType.STEVE
+                    )
+                )
+            }.onFailure { th ->
+                emitError(
+                    androidText(R.string.account_change_skin_failed_to_import),
+                    androidText(th.getMessageOrToString())
+                )
+            }
+        }
+    }
+
     private fun applySkin(account: Account, file: File, model: SkinModelType) {
         releasePendingSkinFile(file)
         when {

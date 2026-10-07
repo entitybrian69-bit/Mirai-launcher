@@ -6,7 +6,10 @@
  */
 package com.movtery.zalithlauncher.ui.theme
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -29,6 +32,9 @@ object AerixSurface {
     val auroraViolet = Color(0xFF7A71F5)
     val glassShadow = Color(0x66000610)
     val accent = Color(0xFF8DEFE0)
+    /** 主操作色：启动、开关、选中态等（对齐界面设计稿的薄荷绿） */
+    val action = Color(0xFF2FD9A5)
+    val onAction = Color(0xFF06231A)
     val accentSecondary = Color(0xFFC1B5FF)
     val accentGlow = Color(0x668DEFE0)
     val accentContainer = Color(0x5539C8C1)
@@ -72,6 +78,12 @@ object AerixSurface {
     const val sharpGlassTintAlpha = 0.12f
 }
 
+/**
+ * 屏幕高度低于该阈值时（横屏手机），外壳与页面切换为紧凑排版，
+ * 把垂直空间留给内容，而不是让导航与工具栏占满屏幕。
+ */
+const val AERIX_COMPACT_HEIGHT_THRESHOLD_DP = 520
+
 object AerixSpacing {
     val zero: Dp = 0.dp
     val hairline: Dp = 1.dp
@@ -96,6 +108,23 @@ object AerixSpacing {
     val section: Dp = 40.dp
 }
 
+object AerixLayoutDefaults {
+    /**
+     * 页面内容区留白。矮屏（横屏手机）自动收紧，把高度留给内容本身。
+     */
+    @Composable
+    fun pagePadding(
+        horizontal: Dp = AerixSpacing.lg,
+        vertical: Dp = AerixSpacing.lg
+    ): PaddingValues {
+        val compact = LocalConfiguration.current.screenHeightDp < AERIX_COMPACT_HEIGHT_THRESHOLD_DP
+        return PaddingValues(
+            horizontal = if (compact) AerixSpacing.md else horizontal,
+            vertical = if (compact) AerixSpacing.sm else vertical
+        )
+    }
+}
+
 object AerixRadii {
     val square: Dp = 0.dp
     val tiny: Dp = 4.dp
@@ -118,6 +147,10 @@ object AerixMetrics {
     val pageHeaderHeight: Dp = 44.dp
     val shellHeaderHeight: Dp = 60.dp
     val shellActionHeight: Dp = 40.dp
+    /** 横屏手机等矮屏使用的外壳顶栏高度 */
+    val shellHeaderHeightCompact: Dp = 48.dp
+    /** 横屏手机等矮屏使用的顶栏按钮高度 */
+    val shellActionHeightCompact: Dp = 36.dp
     val navigationRailWidth: Dp = 68.dp
     val expandedNavigationRailWidth: Dp = 78.dp
     val favoritesEmptyStateTopInset: Dp = 80.dp
