@@ -1,18 +1,16 @@
 name: Deploy website
 
-# Publishes website/ to GitHub Pages.
+# Publishes website/ to GitHub Pages when the current default branch changes.
 #
 # One-time setup: in the repository settings open
 #   Settings -> Pages -> Build and deployment -> Source
-# and choose "GitHub Actions". Set the custom domain on the same page; GitHub
-# writes the CNAME record into the published site itself, so there is no CNAME
-# file to keep in step with it.
+# and choose "GitHub Actions". The github-pages environment must allow the
+# Aerix-launcher branch to deploy.
 
 on:
   push:
     branches:
-      - Mirai-launcher
-      - arena/01a10ce6-mirai-launcher
+      - Aerix-launcher
     paths:
       - "website/**"
       - ".github/workflows/deploy_pages.yml"
@@ -44,6 +42,9 @@ jobs:
           path: website
 
   deploy:
+    # GitHub's Pages environment is protected to the site's default branch.
+    # Manual dispatches from other refs should never attempt a deployment.
+    if: github.ref == 'refs/heads/Aerix-launcher'
     needs: build
     runs-on: ubuntu-latest
     environment:
