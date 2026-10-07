@@ -1186,6 +1186,7 @@ private data class VersionManagementTab(
 @Composable
 private fun VersionManagementDetailPane(
     modifier: Modifier = Modifier,
+    compactLayout: Boolean = false,
     version: Version?,
     isCurrent: Boolean,
     onInstall: () -> Unit,
