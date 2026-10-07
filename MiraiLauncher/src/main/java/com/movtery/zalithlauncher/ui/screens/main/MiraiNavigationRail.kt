@@ -74,7 +74,6 @@ enum class LauncherSection {
     LIBRARY,
     DISCOVER,
     WALLPAPERS,
-    MULTIPLAYER,
     SETTINGS,
     ACCOUNTS
 }
@@ -203,16 +202,6 @@ fun MiraiNavigationRail(
                     expanded = expandedRail,
                     compact = compactRail,
                     onClick = { onNavigate(LauncherSection.DISCOVER) }
-                )
-
-                RailIconItem(
-                    iconRes = R.drawable.ic_group_filled,
-                    label = "Multiplayer",
-                    selected = selectedSection == LauncherSection.MULTIPLAYER,
-                    accentColor = activeAccent,
-                    expanded = expandedRail,
-                    compact = compactRail,
-                    onClick = { onNavigate(LauncherSection.MULTIPLAYER) }
                 )
 
                 RailIconItem(

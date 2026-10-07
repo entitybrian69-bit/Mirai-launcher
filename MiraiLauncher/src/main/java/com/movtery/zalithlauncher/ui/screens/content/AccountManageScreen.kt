@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -71,6 +72,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.zalithlauncher.ui.screens.content.elements.LibrarySkin
+import com.movtery.zalithlauncher.ui.screens.content.elements.SkinLibraryPanel
+import com.movtery.zalithlauncher.ui.theme.AerixLayoutDefaults
 import com.movtery.zalithlauncher.ui.theme.AerixRadii
 import com.movtery.zalithlauncher.ui.theme.AerixSpacing
 import com.movtery.zalithlauncher.ui.theme.AerixSurface
@@ -248,7 +252,7 @@ private fun AccountManageContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = AerixSpacing.mdPlus, vertical = AerixSpacing.smPlus)
+            .padding(AerixLayoutDefaults.pagePadding())
     ) {
         AccountsLayout(
             isVisible = isVisible,
@@ -797,19 +801,12 @@ private fun AccountsLayout(
         modifier = modifier.offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
         verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
     ) {
-        // Unified Single-Row Header + Quick Add Pills (Mockup #6)
+        //三个添加账号的入口：居中放在最上方
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Accounts",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AerixSpacing.smCompact)
@@ -877,7 +874,7 @@ private fun AccountsLayout(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .heightIn(max = 128.dp)
                         .nonInteractiveScrollbar(
                             state = scrollState.scrollIndicatorState!!,
                             orientation = Orientation.Vertical,
@@ -929,7 +926,7 @@ private fun AccountsLayout(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
+                        .padding(vertical = AerixSpacing.xs),
                     contentAlignment = Alignment.Center
                 ) {
                     ScalingLabel(
@@ -937,6 +934,24 @@ private fun AccountsLayout(
                     )
                 }
             }
+
+        //皮肤库：搜索框 + 三列皮肤网格，向下滚动可以看到更多皮肤
+        SkinLibraryPanel(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            onInstall = { skin: LibrarySkin ->
+                currentAccount?.let { account ->
+                    actions.onIntent(
+                        AccountManageIntent.InstallLibrarySkin(
+                            account = account,
+                            owner = skin.owner,
+                            slim = skin.slim
+                        )
+                    )
+                }
+            }
+        )
     }
 }
 
