@@ -41,45 +41,21 @@ it is disabled under `prefers-reduced-motion: reduce`.
 
 ## The address
 
-The site lives at:
+The site’s custom domain is:
 
-**<https://entitybrian69-bit.github.io/Aerix-launcher/>**
+**<https://aerix-launcher.gt.tc/>**
 
-That is free, permanent, served over HTTPS, and needs no purchase or renewal. Every page's
-`<link rel="canonical">` and Open Graph tags already point at it, so link previews on Discord,
-Twitter and the rest resolve correctly.
+The GitHub Pages fallback remains **<https://entitybrian69-bit.github.io/Aerix-launcher/>**.
+All six pages use the custom domain in their canonical and Open Graph metadata; local navigation,
+styles, scripts, and images stay relative so the complete site works at either Pages address.
 
-### If you ever want a shorter address
+## Custom domain setup
 
-A custom domain is optional and can be attached at any time without touching the HTML content —
-only the canonical and OG tags need updating (see below). Free routes that actually work:
-
-| Route | How | Notes |
-| --- | --- | --- |
-| **`<name>.is-a.dev`** | Open a PR adding a JSON file to the [is-a.dev](https://github.com/is-a-dev/register) repo | Free subdomain for developers. Points straight at GitHub Pages. Days, not weeks. |
-| **`<name>.js.org`** | PR to [js.org](https://github.com/js-org/js.org) | Free and well known, but **only for JavaScript projects**. This launcher is Kotlin and Java, so it would be a dishonest fit. |
-| **`<name>.eu.org`** | Application form | Free, but approval is slow and unreliable — often weeks, sometimes never. |
-
-One warning if you go the subdomain route: you are renting the name from someone else's
-repository. If that project ever changes its rules, the address goes away. The
-`github.io` URL above cannot be taken from you, which is why it is the default here.
-
-### Attaching a domain later
-
-1. **Settings → Pages → Custom domain**, enter it and save. GitHub writes the CNAME into the
-   published site itself, so there is no CNAME file in this directory to drift out of sync.
-2. Point DNS at GitHub:
-   - apex domain (`example.com`) → four `A` records to `185.199.108.153`, `185.199.109.153`,
-     `185.199.110.153`, `185.199.111.153`
-   - `www`, or any subdomain → one `CNAME` record to `entitybrian69-bit.github.io`
-3. Wait for the certificate, then tick **Enforce HTTPS**.
-4. Update the URLs baked into the HTML:
-
-```sh
-cd website
-BASE='https://your.actual.domain'
-sed -i "s|https://entitybrian69-bit.github.io/Aerix-launcher|$BASE|g" *.html
-```
+`website/CNAME` contains `aerix-launcher.gt.tc` and is included in every GitHub Pages artifact.
+For the subdomain to resolve, its DNS CNAME should point to `entitybrian69-bit.github.io`, and
+**Settings → Pages** should show `aerix-launcher.gt.tc` as the custom domain. Once GitHub issues
+the TLS certificate, enable **Enforce HTTPS**. The HTML canonical and Open Graph URLs already use
+`https://aerix-launcher.gt.tc/`.
 
 ## Community
 
