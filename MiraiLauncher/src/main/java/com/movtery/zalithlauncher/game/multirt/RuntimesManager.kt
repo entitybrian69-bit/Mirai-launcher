@@ -44,6 +44,15 @@ import java.util.concurrent.ConcurrentHashMap
 
 private const val TAG = "RuntimesManager"
 
+/** Select the lowest installed runtime that meets the requested Java major and process ABI. */
+internal fun selectRuntimeAtLeast(
+    majorVersion: Int,
+    runtimes: Iterable<Runtime>,
+    isCompatible: (Runtime) -> Boolean
+): Runtime? = runtimes.asSequence()
+    .filter { it.javaVersion >= majorVersion && isCompatible(it) }
+    .minByOrNull { it.javaVersion }
+
 /**
  * [Modified from PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher/blob/v3_openjdk/app_pojavlauncher/src/main/java/net/kdt/pojavlaunch/multirt/MultiRTUtils.java)
  */
@@ -75,6 +84,10 @@ object RuntimesManager {
             it.javaVersion == majorVersion && it.isCompatible()
         }?.name
     }
+
+    /** Return the lowest ABI-compatible Java runtime whose major version satisfies [majorVersion]. */
+    fun getAtLeastJreName(majorVersion: Int): String? =
+        selectRuntimeAtLeast(majorVersion, getRuntimes()) { it.isCompatible() }?.name
 
     fun getNearestJreName(majorVersion: Int): String? {
         val compatibleRuntimes = getRuntimes().filter { it.isCompatible() }

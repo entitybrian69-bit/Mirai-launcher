@@ -39,30 +39,30 @@ class MinecraftPlatformCompatibilityTest {
     }
 
     @Test
-    fun requiresBoth64BitAndroidAndA64BitLauncherProcessForNewReleases() {
-        assertTrue(
-            MinecraftPlatformCompatibility.isSupportedOnPlatform(
+    fun onlyWarnsWhenA64BitOnlyReleaseIsAttemptedFromA32BitPlatform() {
+        assertFalse(
+            MinecraftPlatformCompatibility.needsBestEffort32BitWarning(
                 minecraftVersion = "1.21.1",
                 supports64BitOperatingSystem = true,
                 is64BitProcess = true
             )
         )
-        assertFalse(
-            MinecraftPlatformCompatibility.isSupportedOnPlatform(
+        assertTrue(
+            MinecraftPlatformCompatibility.needsBestEffort32BitWarning(
                 minecraftVersion = "1.21.1",
                 supports64BitOperatingSystem = true,
                 is64BitProcess = false
             )
         )
-        assertFalse(
-            MinecraftPlatformCompatibility.isSupportedOnPlatform(
+        assertTrue(
+            MinecraftPlatformCompatibility.needsBestEffort32BitWarning(
                 minecraftVersion = "1.21.1",
                 supports64BitOperatingSystem = false,
                 is64BitProcess = false
             )
         )
-        assertTrue(
-            MinecraftPlatformCompatibility.isSupportedOnPlatform(
+        assertFalse(
+            MinecraftPlatformCompatibility.needsBestEffort32BitWarning(
                 minecraftVersion = "1.20.4",
                 supports64BitOperatingSystem = false,
                 is64BitProcess = false

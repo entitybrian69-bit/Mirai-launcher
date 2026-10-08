@@ -454,8 +454,6 @@
     <!-- Game Launch -->
     <string name="game_launch_no_version">No game version selected!</string>
     <string name="game_launch_no_account">No account logged in!</string>
-    <string name="minecraft_64bit_os_required_title">Minecraft requires a 64-bit system</string>
-    <string name="minecraft_64bit_os_required_message">Minecraft versions %1$s and newer require Java 21 and a 64-bit operating system according to Mojang. Aerix is running with a 32-bit ABI and cannot provide the required 64-bit game process. Use a 64-bit Aerix build on 64-bit Android for Minecraft 1.20.5 and newer, or select Minecraft 1.20.4 or earlier.</string>
     <string name="game_auto_pick_runtime_failed">No compatible runtime found. Using selected version\'s runtime.</string>
     <string name="game_button_input">Input Method</string>
     <string name="game_button_force_close">Force Close</string>

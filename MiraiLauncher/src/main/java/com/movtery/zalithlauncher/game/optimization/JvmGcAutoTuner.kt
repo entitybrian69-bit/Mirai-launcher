@@ -137,8 +137,8 @@ object JvmGcAutoTuner {
 
     /**
      * Selects the best installed runtime name for launching [version], preferring an exact major
-     * version match (e.g. JRE 8 for 1.16.5/1.12.2, JRE 17 for 1.17-1.20.4, JRE 21 for 1.20.5+)
-     * before falling back to nearest compatible runtime.
+     * version match (e.g. JRE 8 for 1.16.5/1.12.2, JRE 17 for 1.17-1.20.4, JRE 21 for 1.20.5+).
+     * A fallback must be a compatible runtime at least as new as the game's minimum Java major.
      */
     fun resolveOptimalRuntimeForLaunch(
         version: Version,
@@ -158,8 +158,9 @@ object JvmGcAutoTuner {
         // old Forge/mod reflection crashes and uses less native heap than Java 17/21).
         RuntimesManager.getExactJreName(targetMajor)?.let { return it }
 
-        // Special case: Fabric 1.16.5 can also run cleanly on JRE 17 if JRE 8 is missing.
-        return RuntimesManager.getNearestJreName(targetMajor)
+        // Do not let "nearest" select an older JVM (e.g. Java 17 for Minecraft 1.20.5).
+        // On the rare case the exact release is absent, select the smallest newer compatible JVM.
+        return RuntimesManager.getAtLeastJreName(targetMajor)
     }
 
     /**
@@ -191,7 +192,7 @@ object JvmGcAutoTuner {
 
         val matchedRuntime = runCatching {
             RuntimesManager.getExactJreName(targetJavaMajor)
-                ?: RuntimesManager.getNearestJreName(targetJavaMajor)
+                ?: RuntimesManager.getAtLeastJreName(targetJavaMajor)
         }.getOrNull()
 
         val modsCount = runCatching {

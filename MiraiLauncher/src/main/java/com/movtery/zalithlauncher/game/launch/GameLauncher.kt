@@ -21,7 +21,6 @@ package com.movtery.zalithlauncher.game.launch
 import android.app.Activity
 import android.os.Build
 import android.os.Parcelable
-import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.compose.ui.unit.IntSize
 import com.movtery.zalithlauncher.BuildConfig
@@ -63,7 +62,6 @@ import com.movtery.zalithlauncher.utils.file.child
 import com.movtery.zalithlauncher.utils.file.ensureDirectorySilently
 import com.movtery.zalithlauncher.utils.logging.Logger
 import com.movtery.zalithlauncher.utils.platform.getMaxMemoryForLaunch
-import com.movtery.zalithlauncher.utils.string.isBiggerTo
 import com.movtery.zalithlauncher.utils.string.isEqualTo
 import kotlinx.parcelize.Parcelize
 import org.lwjgl.glfw.CallbackBridge
@@ -328,7 +326,30 @@ class GameLauncher(
         appendInfo("Minecraft Info: $mcInfo")
         appendInfo("Game Path: ${version.getGameDir().absolutePath} (Isolation: ${version.isIsolation()})")
         appendInfo("Custom Java arguments: $javaArguments")
-        appendInfo("Java Runtime: $javaRuntime")
+        val selectedRuntime = RuntimesManager.loadRuntime(javaRuntime)
+        val processBits = if (Architecture.is64BitsProcess) 64 else 32
+        appendInfo(
+            "Process ABI: ${Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)} " +
+                    "(${processBits}-bit process; 64-bit device ABI available=${Architecture.is64BitsDevice})"
+        )
+        appendInfo(
+            "Java Runtime: $javaRuntime (Java ${selectedRuntime.versionString ?: "unknown"}, " +
+                    "OS_ARCH=${selectedRuntime.arch ?: "unknown"})"
+        )
+        val minecraftVersion = version.getVersionInfo()?.minecraftVersion ?: version.getVersionName()
+        if (MinecraftPlatformCompatibility.needsBestEffort32BitWarning(
+                minecraftVersion = minecraftVersion,
+                supports64BitOperatingSystem = Architecture.is64BitsDevice,
+                is64BitProcess = Architecture.is64BitsProcess
+            )
+        ) {
+            val warning = "Best-effort 32-bit compatibility attempt for Minecraft $minecraftVersion: " +
+                    "using ${Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)} Java " +
+                    "${selectedRuntime.javaVersion}. Mojang documents this version as requiring a " +
+                    "64-bit OS; this community path is not upstream-supported or device-verified."
+            appendInfo("WARNING: $warning")
+            Logger.warning(TAG, warning)
+        }
         appendInfo("Account: ${usingAccount.username} (${usingAccount.accountType})")
     }
 
@@ -338,50 +359,49 @@ class GameLauncher(
      * 如果版本未设置，则根据全局设置或自动选择
      */
     private fun getRuntime(): String {
-        val versionRuntime = version.getJavaRuntime().takeIf { it.isNotEmpty() } ?: ""
-        if (versionRuntime.isNotEmpty()) {
-            return requireCompatibleRuntime(versionRuntime).name
+        val versionInfo = version.getVersionInfo()
+        val minecraftVersion = versionInfo?.minecraftVersion ?: version.getVersionName()
+        val loaderInfo = versionInfo?.loaderInfo
+        val minimumJavaVersion = JvmGcAutoTuner.recommendJavaMajorVersion(
+            minecraftVersion = minecraftVersion,
+            loader = loaderInfo?.loader,
+            loaderVersion = loaderInfo?.version,
+            manifestJavaMajor = gameManifest.javaVersion?.majorVersion
+        )
+
+        val versionRuntime = version.getJavaRuntime().takeIf { it.isNotEmpty() }
+        if (versionRuntime != null) {
+            return requireCompatibleRuntime(versionRuntime, minimumJavaVersion).name
         }
 
-        val runtime = AllSettings.javaRuntime.getValue()
-        val pickedRuntime = RuntimesManager.loadRuntime(runtime)
-
-        if (AllSettings.autoPickJavaRuntime.getValue()) {
-            JvmGcAutoTuner.resolveOptimalRuntimeForLaunch(version, gameManifest)?.let { optimalRuntime ->
-                return optimalRuntime
-            }
-            val loaderInfo = version.getVersionInfo()?.loaderInfo
-            //开启了自动选择，根据游戏需求的版本做选择
-            val targetJavaVersion = when (loaderInfo?.loader) {
-                ModLoader.BABRIC -> 17 //Babric 推荐使用 17
-                ModLoader.CLEANROOM -> {
-                    if (loaderInfo.version.isBiggerTo("0.4.4-alpha")) {
-                        25 //0.5.0-alpha 及以上要求使用 25
-                    } else {
-                        21 //0.4.4-alpha 及以下要求使用 21
-                    }
-                }
-                else -> gameManifest.javaVersion?.majorVersion ?: 8
-            }
-            if (!pickedRuntime.isCompatible() || pickedRuntime.javaVersion == 0 || pickedRuntime.javaVersion < targetJavaVersion) {
-                val runtime0 = RuntimesManager.getNearestJreName(targetJavaVersion)
-                if (runtime0 != null) {
-                    return runtime0
-                } else if (pickedRuntime.isCompatible()) {
-                    activity.runOnUiThread {
-                        Toast.makeText(activity, activity.getString(R.string.game_auto_pick_runtime_failed), Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
+        if (!AllSettings.autoPickJavaRuntime.getValue()) {
+            return requireCompatibleRuntime(
+                AllSettings.javaRuntime.getValue(),
+                minimumJavaVersion
+            ).name
         }
-        return requireCompatibleRuntime(runtime).name
+
+        return JvmGcAutoTuner.resolveOptimalRuntimeForLaunch(version, gameManifest)
+            ?.let { requireCompatibleRuntime(it, minimumJavaVersion).name }
+            ?: throw IllegalStateException(
+                "Minecraft $minecraftVersion requires Java $minimumJavaVersion or newer, but " +
+                        "no compatible runtime is installed for the " +
+                        "${Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)} process. " +
+                        "Install a matching Internal-$minimumJavaVersion runtime or select a compatible Java runtime."
+            )
     }
 
-    private fun requireCompatibleRuntime(runtimeName: String): Runtime {
+    private fun requireCompatibleRuntime(runtimeName: String, minimumJavaVersion: Int): Runtime {
         val runtime = RuntimesManager.loadRuntime(runtimeName)
         if (!runtime.isCompatible()) {
             val expectedArch = Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)
             val error = "Java runtime '${runtime.name}' is incompatible with this $expectedArch process."
+            Logger.error(TAG, error)
+            throw IllegalStateException(error)
+        }
+        if (runtime.javaVersion < minimumJavaVersion) {
+            val error = "Java runtime '${runtime.name}' is Java ${runtime.javaVersion}, but " +
+                    "Minecraft ${version.getVersionName()} requires Java $minimumJavaVersion or newer."
             Logger.error(TAG, error)
             throw IllegalStateException(error)
         }

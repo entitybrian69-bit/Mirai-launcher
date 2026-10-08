@@ -19,8 +19,9 @@
 package com.movtery.zalithlauncher.game.launch
 
 /**
- * Minecraft 1.20.5 and newer require a 64-bit operating system.
- * Unknown/non-release version identifiers are left unclassified rather than blocked.
+ * Minecraft 1.20.5 and newer are officially documented as requiring a 64-bit operating system.
+ * Aerix also ships matching 32-bit Java and native artifacts, so this is a warning condition, not
+ * a hard launch gate: let the runtime/ABI checks decide whether this best-effort path can start.
  */
 internal object MinecraftPlatformCompatibility {
     private const val FIRST_64_BIT_ONLY_PATCH = 5
@@ -38,12 +39,17 @@ internal object MinecraftPlatformCompatibility {
         return patch >= FIRST_64_BIT_ONLY_PATCH
     }
 
-    fun isSupportedOnPlatform(
+    /**
+     * Whether a warning is warranted before attempting the community 32-bit compatibility path.
+     * This deliberately does not block launch; Java and native ABI compatibility are validated
+     * later using the actual selected runtime.
+     */
+    fun needsBestEffort32BitWarning(
         minecraftVersion: String,
         supports64BitOperatingSystem: Boolean,
         is64BitProcess: Boolean
     ): Boolean {
-        if (!requires64BitOperatingSystem(minecraftVersion)) return true
-        return supports64BitOperatingSystem && is64BitProcess
+        return requires64BitOperatingSystem(minecraftVersion) &&
+                (!supports64BitOperatingSystem || !is64BitProcess)
     }
 }
