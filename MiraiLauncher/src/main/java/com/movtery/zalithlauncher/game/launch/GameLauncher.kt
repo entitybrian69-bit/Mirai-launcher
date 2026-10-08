@@ -195,11 +195,18 @@ class GameLauncher(
             put("sort.patch", "true")
         }
 
-        //Jna
-        jnaDir?.let { dir ->
-            val dirPath = dir.absolutePath
-            put("jna.boot.library.path", dirPath) //覆盖父类添加的jna路径
-        }
+        // JNA jars contain desktop Linux natives. Prefer a version-matched Android
+        // dispatch library when the launcher unpacked one; otherwise use the
+        // ABI-specific Android library packaged in the APK. Pointing at a JNA jar
+        // directory without an Android .so makes JNA extract libc.so.6-dependent
+        // Linux code, which cannot load on Android's bionic libc.
+        val jnaBootLibraryPath = JnaBootLibraryPath.resolve(
+            gameJnaVersionDirectory = jnaDir,
+            appNativeLibraryDirectory = PathManager.DIR_NATIVE_LIB,
+            processArchitecture = Architecture.getDeviceArchitecture(),
+        )
+        put("jna.boot.library.path", jnaBootLibraryPath)
+        Logger.info(TAG, "JNA native dispatch library directory: $jnaBootLibraryPath")
     }
 
     override fun chdir(): String {
