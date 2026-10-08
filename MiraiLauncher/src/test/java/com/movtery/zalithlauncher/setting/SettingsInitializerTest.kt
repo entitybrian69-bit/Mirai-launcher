@@ -30,6 +30,7 @@ class SettingsInitializerTest {
     @Test
     fun keeps64BitDefaultsAndPhysicalMemoryTiers() {
         assertEquals(2048, defaultRamAllocation(deviceRamMb = 8192.0, is64BitProcess = true))
-        assertEquals(1144, defaultRamAllocation(deviceRamMb = 4096.0, is64BitProcess = true))
+        assertEquals(1536, defaultRamAllocation(deviceRamMb = 4096.0, is64BitProcess = true))
+        assertEquals(1144, defaultRamAllocation(deviceRamMb = 3500.0, is64BitProcess = true))
     }
 }
