@@ -102,6 +102,31 @@
     <div class="wrap wrap-narrow">
       <div class="release reveal">
         <div class="release-head">
+          <span class="release-version">1.4</span>
+          <span class="badge">Microsoft login &amp; Java compatibility</span>
+          <span class="small muted">2026-10-08</span>
+        </div>
+        <div class="release-list">
+          <div>
+            <h4>Fixed</h4>
+            <ul>
+              <li><strong>Microsoft device-code sign-in</strong> now selects the OAuth endpoints for the configured client: the built-in Minecraft Java client uses Live endpoints, while custom client IDs continue to use Entra consumers v2. Refreshes stay on the matching flow, Xbox RPS tickets use its matching prefix, and both verification URL field names are accepted.</li>
+              <li><strong>Authentication errors retain their details.</strong> HTTP status and OAuth error information are surfaced, and blank CI client-ID values fall back to the configured default rather than producing an empty client ID.</li>
+              <li><strong>Java runtime and native selection now follows the app process ABI</strong>, including 32-bit APKs on 64-bit phones. Incompatible runtimes are filtered, and Java 21–25 GC flags avoid unsupported ZGC options with a G1GC fallback where needed.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Added</h4>
+            <ul>
+              <li>Regression tests for OAuth client routing and response fields, Android process architecture, and GC compatibility; OAuth configuration tests now run in CI.</li>
+              <li>Updated repository links and GitHub Pages deployment workflow after the repository rename, plus a CNAME and canonical/social metadata prepared for <code>aerix-launcher.gt.tc</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="release reveal">
+        <div class="release-head">
           <span class="release-version">1.3</span>
           <span class="badge">Instance &amp; theme fixes</span>
           <span class="small muted">2026-10-07</span>
@@ -240,7 +265,7 @@
   <section>
     <div class="wrap">
       <div class="cta-band reveal">
-        <h2>Get 1.3</h2>
+        <h2>Get 1.4</h2>
         <p>Download the universal APK or choose the build for your device's ABI.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="https://github.com/entitybrian69-bit/Aerix-launcher/releases/latest">Download the latest release</a>

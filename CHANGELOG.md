@@ -5,6 +5,34 @@ All notable changes to Aerix Launcher are recorded here.
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
 
+## 1.4 - 2026-10-08
+
+### Fixed
+
+- **Microsoft device-code sign-in now selects the OAuth flow for the client ID.**
+  The built-in Minecraft Java client uses its Live device-code/token endpoints;
+  custom client IDs continue to use the Entra consumers v2 flow. Token refreshes
+  stay on the issuing flow, Xbox RPS tickets use the matching prefix, and both
+  Microsoft device-code verification URL fields are accepted.
+- **Microsoft OAuth failures are surfaced with useful details** (HTTP status,
+  error code, and description) instead of losing the server response behind a
+  generic error. Blank CI client-ID values now fall back to the configured
+  default; an actually empty final configuration fails during build.
+- **Runtime and native-library selection follows the app process ABI**, not just
+  the phone's hardware capabilities. This covers 32-bit APKs on 64-bit phones,
+  filters out incompatible Java runtimes, and applies safe GC flags across Java
+  21–25: ZGC is limited to compatible 64-bit runtimes, obsolete JDK 24+ ZGC
+  switches are omitted, and unsupported cases fall back to G1GC.
+
+### Added
+
+- Regression tests for Microsoft OAuth routing and response variations, Android
+  process-ABI selection, and Java GC flags. The Microsoft OAuth configuration
+  tests now run in CI.
+- A `website/CNAME` and custom-domain canonical/Open Graph metadata for
+  `aerix-launcher.gt.tc`, alongside repository-renamed links and a GitHub Pages
+  deployment workflow targeting the `Aerix-launcher` default branch.
+
 ## 1.3 - 2026-10-07
 
 ### Fixed
@@ -21,12 +49,6 @@ Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 - **The Overview reset-icon action no longer wraps vertically.** Overview actions
   flow as complete buttons and keep their labels on one horizontal line in the
   split pane and other narrow layouts.
-- **Microsoft device-code login now uses the minimal Xbox sign-in scopes and the
-  matching consumers v2 refresh endpoint.** Unset CI secrets no longer override the
-  configured public client ID with an empty value, and OAuth errors are surfaced.
-- **Java 21/25 launches now select native/runtime files for the app process ABI,**
-  including 32-bit APKs running on 64-bit phones. Auto-pick rejects incompatible
-  runtimes; ZGC flags match JDK 25 and fall back to G1GC on 32-bit runtimes.
 
 ## 1.2 - 2026-10-07
 
