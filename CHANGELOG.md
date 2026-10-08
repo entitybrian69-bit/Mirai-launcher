@@ -5,6 +5,31 @@ All notable changes to Aerix Launcher are recorded here.
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
 
+## 1.6 - 2026-10-08
+
+### Changed
+
+- **Updated the bundled ARM32 Java 21 runtime.** The rebuilt runtime disables
+  `InlineIntrinsics` to avoid a known ARM32 `java.lang.Math` regression, and its
+  bundle marker now identifies the patched build. The runtime was checked for
+  Java metadata and ARM32 ELF architecture, but was not tested on a physical
+  device; Minecraft 1.20.5+ on 32-bit Android remains experimental and unverified.
+- **LTW renderer selection now considers device capability and library
+  availability.** When GLES is detected, devices below GLES 3 are not offered
+  LTW; the ABI-specific native library must also be present. Incompatible
+  selections fall back where a compatible renderer is available.
+- **LTW's GLES/GLSL compatibility configuration is more complete**, and the
+  shader optimizer now preserves linked shader-stage inputs and outputs through
+  post-link optimization. This is a source-level compatibility change, not a
+  claim that all device-specific rendering issues are fixed.
+
+### Added
+
+- **An automated ARM32 Java 21 build, repack, and verification workflow**, with
+  checks for the runtime metadata, ARM32 ELF binaries, and the Math workaround.
+- Regression tests for LTW environment settings, GLES-aware renderer selection,
+  and fallback behavior.
+
 ## 1.5 - 2026-10-08
 
 ### Changed

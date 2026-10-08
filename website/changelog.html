@@ -102,6 +102,32 @@
     <div class="wrap wrap-narrow">
       <div class="release reveal">
         <div class="release-head">
+          <span class="release-version">1.6</span>
+          <span class="badge">ARM32 runtime &amp; renderer compatibility</span>
+          <span class="small muted">2026-10-08</span>
+        </div>
+        <div class="release-list">
+          <div>
+            <h4>Changed</h4>
+            <ul>
+              <li><strong>Updated the bundled ARM32 Java 21 runtime.</strong> The rebuilt runtime disables <code>InlineIntrinsics</code> to avoid a known ARM32 <code>java.lang.Math</code> regression, and its marker identifies the patched bundle. It passed source and ELF architecture checks, but was not tested on a physical device; Minecraft 1.20.5+ on 32-bit Android remains experimental and unverified.</li>
+              <li><strong>LTW renderer selection now considers GLES support and library availability.</strong> When GLES is detected, LTW is not selected below GLES 3; its ABI-specific native library must also be present. Incompatible selections fall back where a compatible renderer is available.</li>
+              <li><strong>LTW shader optimization preserves linked shader-stage inputs and outputs</strong> through post-link optimization. This source-level compatibility change does not claim to fix every device-specific rendering issue.</li>
+              <li><strong>LTW's GLES/GLSL compatibility environment</strong> now includes the renderer's required GLES and extension flags.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Added</h4>
+            <ul>
+              <li>An automated ARM32 Java 21 build, repack and verification workflow, including runtime metadata, ARM32 ELF and Math-workaround checks.</li>
+              <li>Regression tests for LTW environment settings, GLES-aware renderer selection and fallback behavior.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="release reveal">
+        <div class="release-head">
           <span class="release-version">1.5</span>
           <span class="badge">32-bit diagnostics &amp; mobile tuning</span>
           <span class="small muted">2026-10-08</span>
@@ -296,7 +322,7 @@
   <section>
     <div class="wrap">
       <div class="cta-band reveal">
-        <h2>Get 1.5</h2>
+        <h2>Get 1.6</h2>
         <p>Download the universal APK or choose the build for your device's ABI.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="https://github.com/entitybrian69-bit/Aerix-launcher/releases/latest">Download the latest release</a>
