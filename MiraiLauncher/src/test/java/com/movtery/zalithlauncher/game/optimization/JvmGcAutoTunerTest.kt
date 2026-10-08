@@ -47,6 +47,55 @@ class JvmGcAutoTunerTest {
     }
 
     @Test
+    fun automaticallyUsesSerialGcAndSmallCodeCacheForLowHeap() {
+        val args = mutableListOf<String>()
+        JvmGcAutoTuner.sanitizeAndInjectGcArgs(
+            args, javaMajor = 21, ramAllocationMb = 1024, is64BitRuntime = false
+        )
+
+        assertTrue(args.contains("-XX:+UseSerialGC"))
+        assertTrue(args.contains("-XX:ReservedCodeCacheSize=48M"))
+        assertFalse(args.contains("-XX:+UseG1GC"))
+    }
+
+    @Test
+    fun keepsExplicitCollectorAndCodeCacheChoicesOnLowHeap() {
+        val args = mutableListOf("-XX:+UseG1GC", "-XX:ReservedCodeCacheSize=96M")
+        JvmGcAutoTuner.sanitizeAndInjectGcArgs(
+            args, javaMajor = 21, ramAllocationMb = 1024, is64BitRuntime = true
+        )
+
+        assertTrue(args.contains("-XX:+UseG1GC"))
+        assertFalse(args.contains("-XX:+UseSerialGC"))
+        assertTrue(args.contains("-XX:ReservedCodeCacheSize=96M"))
+        assertFalse(args.contains("-XX:ReservedCodeCacheSize=48M"))
+    }
+
+    @Test
+    fun keepsCustomCodeCacheSizeWhileSelectingLowHeapGcAutomatically() {
+        val args = mutableListOf("-XX:ReservedCodeCacheSize=96M")
+        JvmGcAutoTuner.sanitizeAndInjectGcArgs(
+            args, javaMajor = 17, ramAllocationMb = 1024, is64BitRuntime = true
+        )
+
+        assertTrue(args.contains("-XX:+UseSerialGC"))
+        assertTrue(args.contains("-XX:ReservedCodeCacheSize=96M"))
+        assertFalse(args.contains("-XX:ReservedCodeCacheSize=48M"))
+    }
+
+    @Test
+    fun keepsG1GcAsTheAutomaticChoiceAboveTheLowHeapThreshold() {
+        val args = mutableListOf<String>()
+        JvmGcAutoTuner.sanitizeAndInjectGcArgs(
+            args, javaMajor = 21, ramAllocationMb = 1281, is64BitRuntime = true
+        )
+
+        assertTrue(args.contains("-XX:+UseG1GC"))
+        assertFalse(args.contains("-XX:+UseSerialGC"))
+        assertFalse(args.contains("-XX:ReservedCodeCacheSize=48M"))
+    }
+
+    @Test
     fun sanitizesCmsOnJava17AndInjectsG1Gc() {
         val args = mutableListOf(
             "-XX:+UseConcMarkSweepGC",

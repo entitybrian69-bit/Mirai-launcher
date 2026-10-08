@@ -82,14 +82,15 @@ enum class FpsBoostPreset(
     val optionsMap: Map<String, String>
 ) {
     ULTRA_120FPS(
-        title = "Ultra FPS (120Hz Competitive)",
-        subtitle = "6 chunks • Fast graphics • No shadows/clouds • 75% scale",
-        badge = "+220% FPS",
-        renderScale = 75,
+        title = "High FPS (120 FPS cap)",
+        subtitle = "2 chunks • Fast graphics • No shadows/clouds • 65% scale",
+        badge = "Lowest render load",
+        renderScale = 65,
         optionsMap = mapOf(
-            "renderDistance" to "6",
-            "simulationDistance" to "5",
+            "renderDistance" to "2",
+            "simulationDistance" to "4",
             "graphicsMode" to "0",
+            "fancyGraphics" to "false",
             "ao" to "false",
             "biomeBlendRadius" to "0",
             "cloudStatus" to "\"off\"",
@@ -97,39 +98,41 @@ enum class FpsBoostPreset(
             "entityShadows" to "false",
             "maxFps" to "120",
             "enableVsync" to "false",
-            "mipmapLevels" to "1",
+            "mipmapLevels" to "0",
             "entityDistanceScaling" to "0.75"
         )
     ),
     BALANCED_MOBILE(
         title = "Balanced Mobile (Recommended)",
-        subtitle = "8 chunks • Smooth lighting • Low particles • 85% scale",
-        badge = "+140% FPS",
-        renderScale = 85,
+        subtitle = "4 chunks • Fast graphics • Reduced particles • 75% scale",
+        badge = "Balanced load",
+        renderScale = 75,
         optionsMap = mapOf(
-            "renderDistance" to "8",
-            "simulationDistance" to "6",
-            "graphicsMode" to "1",
-            "ao" to "true",
+            "renderDistance" to "4",
+            "simulationDistance" to "5",
+            "graphicsMode" to "0",
+            "fancyGraphics" to "false",
+            "ao" to "false",
             "biomeBlendRadius" to "1",
             "cloudStatus" to "\"fast\"",
             "particles" to "1",
             "entityShadows" to "false",
             "maxFps" to "120",
             "enableVsync" to "false",
-            "mipmapLevels" to "2",
+            "mipmapLevels" to "1",
             "entityDistanceScaling" to "0.85"
         )
     ),
     BATTERY_SAVER(
-        title = "Cool & Battery Saver (60 FPS Cap)",
-        subtitle = "6 chunks • 60 FPS VSync cap • Prevents thermal throttling",
-        badge = "-8°C Temp",
-        renderScale = 70,
+        title = "Battery Saver (60 FPS cap)",
+        subtitle = "2 chunks • 60 FPS cap • Reduced graphics workload",
+        badge = "Lower workload",
+        renderScale = 60,
         optionsMap = mapOf(
-            "renderDistance" to "6",
-            "simulationDistance" to "5",
+            "renderDistance" to "2",
+            "simulationDistance" to "3",
             "graphicsMode" to "0",
+            "fancyGraphics" to "false",
             "ao" to "false",
             "biomeBlendRadius" to "0",
             "cloudStatus" to "\"off\"",
@@ -137,7 +140,7 @@ enum class FpsBoostPreset(
             "entityShadows" to "false",
             "maxFps" to "60",
             "enableVsync" to "true",
-            "mipmapLevels" to "1",
+            "mipmapLevels" to "0",
             "entityDistanceScaling" to "0.7"
         )
     )

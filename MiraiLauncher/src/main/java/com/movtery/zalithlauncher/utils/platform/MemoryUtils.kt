@@ -22,6 +22,7 @@ import android.app.ActivityManager
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.movtery.zalithlauncher.utils.device.Architecture
+import java.io.File
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.floor
@@ -29,6 +30,9 @@ import kotlin.math.min
 import kotlin.math.round
 
 private const val BYTES_PER_MB = 1024L * 1024
+private const val ADDRESS_SPACE_HEAP_RESERVE_MB = 128
+private const val MINIMUM_JVM_HEAP_MB = 256
+private val MAPS_RANGE_REGEX = Regex("^([0-9a-fA-F]+)-([0-9a-fA-F]+)(?:\\s|$)")
 
 private inline val Context.activityManager: ActivityManager
     get() = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -70,6 +74,30 @@ fun getMaxMemoryForSettings(context: Context): Int = maxMemoryForSettings(
 )
 
 /**
+ * Cap the launch heap against the current 32-bit process's largest free virtual-address range.
+ * The bundled JVM runs in this process, so a fragmented address space can be a tighter limit
+ * than the amount of physical RAM or the nominal 32-bit address-space ceiling.
+ */
+@WorkerThread
+fun getMaxMemoryForLaunch(context: Context): Int {
+    val settingsLimitMb = getMaxMemoryForSettings(context)
+    if (Architecture.is64BitsProcess) return settingsLimitMb
+
+    val maps = runCatching { File("/proc/self/maps").readText() }.getOrNull()
+        ?: return settingsLimitMb
+    val addressSpaceEndExclusive = Architecture.ADDRESS_SPACE_LIMIT_32_BIT + 1L
+    val largestHoleMb = largestAddressSpaceHoleBytes(maps, addressSpaceEndExclusive)
+        ?.div(BYTES_PER_MB)
+        ?.toInt()
+
+    return maxMemoryForLaunch(
+        settingsLimitMb = settingsLimitMb,
+        is64BitProcess = false,
+        largestAddressSpaceHoleMb = largestHoleMb
+    )
+}
+
+/**
  * Keep the heap limit within the address space available to this launcher process.
  * A 32-bit APK can run on 64-bit-capable hardware, so device bitness alone is not enough.
  */
@@ -80,6 +108,64 @@ internal fun maxMemoryForSettings(deviceRamMb: Double, is64BitProcess: Boolean):
         //To have a minimum for the device to breathe
         (deviceRamMb - (if (deviceRamMb < 3064) 800 else 1024)).toInt()
     }
+}
+
+/**
+ * Account for the largest contiguous free mapping available to the embedded JVM on 32-bit
+ * Android. Subtract a 128 MiB margin for non-heap structures, but keep the launcher's 256 MiB
+ * minimum heap setting when the detected range is unusually small. If maps are unreadable, use
+ * the existing physical/process RAM limit instead.
+ */
+internal fun maxMemoryForLaunch(
+    settingsLimitMb: Int,
+    is64BitProcess: Boolean,
+    largestAddressSpaceHoleMb: Int?
+): Int {
+    if (is64BitProcess || largestAddressSpaceHoleMb == null || largestAddressSpaceHoleMb <= 0) {
+        return settingsLimitMb
+    }
+
+    val heapLimitFromAddressSpace =
+        (largestAddressSpaceHoleMb - ADDRESS_SPACE_HEAP_RESERVE_MB).coerceAtLeast(MINIMUM_JVM_HEAP_MB)
+    return min(settingsLimitMb, heapLimitFromAddressSpace)
+}
+
+/** Finds the largest unmapped byte range below [addressSpaceEndExclusive] from /proc maps text. */
+internal fun largestAddressSpaceHoleBytes(
+    mapsContent: String,
+    addressSpaceEndExclusive: Long
+): Long? {
+    if (addressSpaceEndExclusive <= 0) return null
+
+    val mappings = mapsContent.lineSequence()
+        .mapNotNull { line ->
+            val match = MAPS_RANGE_REGEX.find(line.trimStart()) ?: return@mapNotNull null
+            val start = match.groupValues[1].toLongOrNull(16) ?: return@mapNotNull null
+            val end = match.groupValues[2].toLongOrNull(16) ?: return@mapNotNull null
+            (start to end).takeIf { start >= 0 && end > start }
+        }
+        .sortedBy { it.first }
+        .toList()
+    if (mappings.isEmpty()) return null
+
+    var cursor = 0L
+    var largestHole = 0L
+    for ((rawStart, rawEnd) in mappings) {
+        val start = rawStart.coerceAtMost(addressSpaceEndExclusive)
+        val end = rawEnd.coerceAtMost(addressSpaceEndExclusive)
+        if (end <= cursor) continue
+
+        if (start > cursor) {
+            largestHole = maxOf(largestHole, start - cursor)
+        }
+        cursor = maxOf(cursor, end)
+        if (cursor >= addressSpaceEndExclusive) break
+    }
+    if (cursor < addressSpaceEndExclusive) {
+        largestHole = maxOf(largestHole, addressSpaceEndExclusive - cursor)
+    }
+
+    return largestHole.takeIf { it > 0 }
 }
 
 internal fun clampRamAllocation(requestedRamMb: Int, maxRamMb: Int): Int =

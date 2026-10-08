@@ -62,6 +62,7 @@ import com.movtery.zalithlauncher.utils.device.Architecture
 import com.movtery.zalithlauncher.utils.file.child
 import com.movtery.zalithlauncher.utils.file.ensureDirectorySilently
 import com.movtery.zalithlauncher.utils.logging.Logger
+import com.movtery.zalithlauncher.utils.platform.getMaxMemoryForLaunch
 import com.movtery.zalithlauncher.utils.string.isBiggerTo
 import com.movtery.zalithlauncher.utils.string.isEqualTo
 import kotlinx.parcelize.Parcelize
@@ -222,7 +223,18 @@ class GameLauncher(
     }
 
     override fun progressFinalUserArgs(args: MutableList<String>, ramAllocation: Int) {
-        val allocMb = version.getRamAllocation(activity)
+        val requestedRamMb = version.getRamAllocation(activity)
+        val allocMb = if (Architecture.is64BitsProcess) {
+            requestedRamMb
+        } else {
+            minOf(requestedRamMb, getMaxMemoryForLaunch(activity))
+        }
+        if (allocMb < requestedRamMb) {
+            Logger.warning(
+                TAG,
+                "Reduced the requested JVM heap from ${requestedRamMb}MB to ${allocMb}MB for the available 32-bit address space"
+            )
+        }
         super.progressFinalUserArgs(args, allocMb)
         JvmGcAutoTuner.sanitizeAndInjectGcArgs(
             args = args,

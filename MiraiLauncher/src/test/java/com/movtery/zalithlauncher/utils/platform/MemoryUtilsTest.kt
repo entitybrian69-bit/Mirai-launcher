@@ -19,6 +19,7 @@
 package com.movtery.zalithlauncher.utils.platform
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class MemoryUtilsTest {
@@ -31,6 +32,64 @@ class MemoryUtilsTest {
     fun keepsExisting64BitAndLowMemoryLimits() {
         assertEquals(7168, maxMemoryForSettings(deviceRamMb = 8192.0, is64BitProcess = true))
         assertEquals(1024, maxMemoryForSettings(deviceRamMb = 1536.0, is64BitProcess = true))
+    }
+
+    @Test
+    fun clamps32BitLaunchHeapToLargestContiguousAddressSpaceWithHeadroom() {
+        assertEquals(672, maxMemoryForLaunch(
+            settingsLimitMb = 1024,
+            is64BitProcess = false,
+            largestAddressSpaceHoleMb = 800
+        ))
+    }
+
+    @Test
+    fun keepsTheMinimumJvmHeapWhenAddressSpaceIsHighlyFragmented() {
+        assertEquals(256, maxMemoryForLaunch(
+            settingsLimitMb = 1024,
+            is64BitProcess = false,
+            largestAddressSpaceHoleMb = 300
+        ))
+    }
+
+    @Test
+    fun leaves64BitAndUnknownAddressSpaceLimitsUnchanged() {
+        assertEquals(1024, maxMemoryForLaunch(
+            settingsLimitMb = 1024,
+            is64BitProcess = true,
+            largestAddressSpaceHoleMb = 800
+        ))
+        assertEquals(1024, maxMemoryForLaunch(
+            settingsLimitMb = 1024,
+            is64BitProcess = false,
+            largestAddressSpaceHoleMb = null
+        ))
+    }
+
+    @Test
+    fun parsesLargestFreeRangeFromProcMapsBelowThe32BitCeiling() {
+        val maps = """
+            00001000-00002000 r-xp 00000000 00:00 0
+            00005000-00007000 rw-p 00000000 00:00 0
+            00009000-0000a000 r--p 00000000 00:00 0
+        """.trimIndent()
+
+        assertEquals(0x6000L, largestAddressSpaceHoleBytes(maps, 0x10000L))
+    }
+
+    @Test
+    fun ignoresMalformedMappingsAndReturnsUnknownWhenNoneCanBeParsed() {
+        assertNull(largestAddressSpaceHoleBytes("not a proc maps line", 0x10000L))
+    }
+
+    @Test
+    fun clampsMappingsThatCrossTheAddressSpaceLimit() {
+        val maps = """
+            00008000-00012000 rw-p 00000000 00:00 0
+            00001000-00002000 r-xp 00000000 00:00 0
+        """.trimIndent()
+
+        assertEquals(0x6000L, largestAddressSpaceHoleBytes(maps, 0x10000L))
     }
 
     @Test

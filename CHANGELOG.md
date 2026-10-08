@@ -7,8 +7,23 @@ Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 
 ## Unreleased
 
+### Changed
+
+- **Small-heap automatic JVM tuning now selects SerialGC and a 48 MiB code
+  cache at allocations up to 1280 MiB.** Explicit GC and code-cache settings
+  remain in effect; larger heaps keep the existing G1GC default.
+- **First-run graphics defaults and mobile presets now use shorter render
+  distances and reduced render scale.** Removed unsupported FPS/temperature
+  improvement numbers from preset labels; actual device gains still require
+  measurement.
+
 ### Fixed
 
+- **32-bit launches now account for the largest currently free virtual-address
+  range** read from `/proc/self/maps`, subtracting a 128 MiB margin for JVM
+  non-heap allocations while retaining the launcher's 256 MiB minimum heap. If
+  the process map cannot be read, the existing process/RAM cap remains the
+  fallback.
 - **RAM defaults, limits, and launch-time allocation now follow the launcher
   process ABI.** 32-bit APKs running on 64-bit-capable phones no longer receive
   heap settings sized for a 64-bit process, including old saved values.

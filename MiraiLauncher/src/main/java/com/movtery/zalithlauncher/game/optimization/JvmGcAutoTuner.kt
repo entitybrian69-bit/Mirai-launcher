@@ -82,18 +82,18 @@ enum class GcTuningPreset(
 ) {
     MOBILE_LOW_PAUSE_G1GC(
         title = "Low-Pause G1GC (Recommended Mobile)",
-        subtitle = "Eliminates 1s chunk-border lag spikes • 50ms pause target • JRE 8/17/21",
-        badge = "Zero Stutter"
+        subtitle = "G1GC tuned with a 50 ms pause target • Results depend on the device and workload",
+        badge = "Pause target"
     ),
     GENERATIONAL_ZGC_TURBO(
         title = "Generational ZGC (8GB+ RAM & 64-bit Java 21+)",
-        subtitle = "Sub-1ms concurrent GC pauses • Safe G1GC fallback on older or 32-bit runtimes",
-        badge = "<1ms Pause"
+        subtitle = "Concurrent collector for supported 64-bit runtimes • G1GC fallback when unsupported",
+        badge = "Concurrent GC"
     ),
     COMPACT_LOW_RAM_G1GC(
         title = "Compact Memory Saver (3–4 GB Phones)",
-        subtitle = "String deduplication + tight 8MB regions to prevent Android LMK kills",
-        badge = "-25% RAM"
+        subtitle = "Memory-oriented G1GC settings for smaller heaps • Results vary by workload",
+        badge = "Low-heap profile"
     )
 }
 
@@ -107,6 +107,7 @@ data class JreGcRecommendation(
 )
 
 object JvmGcAutoTuner {
+    private const val LOW_MEMORY_HEAP_THRESHOLD_MB = 1280
 
     /**
      * Determines the ideal Java major version (8, 17, 21, or 25) for a given Minecraft version & loader.
@@ -291,9 +292,9 @@ object JvmGcAutoTuner {
     }
 
     /**
-     * Sanitizes incompatible GC flags before JVM launch and injects mobile-tuned G1GC flags if
-     * no GC algorithm is present. Removes incompatible flags for Java 8/17, 21/23, 24+, and
-     * 32-bit runtimes to avoid `Unrecognized VM option` or unsupported-collector failures.
+     * Sanitizes incompatible GC flags before JVM launch. For automatic tuning, use SerialGC with
+     * a smaller code cache on heaps up to 1280 MiB; larger heaps keep the mobile-tuned G1GC flags.
+     * Explicit user collector choices are preserved unless the runtime cannot support them.
      */
     fun sanitizeAndInjectGcArgs(
         args: MutableList<String>,
@@ -331,7 +332,7 @@ object JvmGcAutoTuner {
             args.removeIf { it == "-XX:+ZGenerational" || it == "-XX:-ZGenerational" }
         }
 
-        // 3. If no GC algorithm flag is present, inject tuned Low-Pause G1GC flags automatically
+        // 3. If no collector is selected, reduce native/GC overhead for small heaps.
         val hasGcSelector = args.any { arg ->
             arg == "-XX:+UseG1GC" ||
                 arg == "-XX:+UseZGC" ||
@@ -342,12 +343,18 @@ object JvmGcAutoTuner {
         }
 
         if (!hasGcSelector) {
-            val defaultFlags = buildJvmFlags(
-                preset = GcTuningPreset.MOBILE_LOW_PAUSE_G1GC,
-                javaMajor = effectiveJava,
-                ramAllocationMb = ramAllocationMb,
-                is64BitRuntime = is64BitRuntime
-            )
+            // SerialGC uses fewer concurrent GC resources on small heaps, but may have longer
+            // stop-the-world pauses. Keep it automatic-only and preserve explicit user choices.
+            val defaultFlags = if (ramAllocationMb <= LOW_MEMORY_HEAP_THRESHOLD_MB) {
+                listOf("-XX:+UseSerialGC", "-XX:ReservedCodeCacheSize=48M")
+            } else {
+                buildJvmFlags(
+                    preset = GcTuningPreset.MOBILE_LOW_PAUSE_G1GC,
+                    javaMajor = effectiveJava,
+                    ramAllocationMb = ramAllocationMb,
+                    is64BitRuntime = is64BitRuntime
+                )
+            }
             defaultFlags.forEach { flag ->
                 val prefix = flag.substringBefore('=')
                 if (args.none { it.startsWith(prefix) }) {
