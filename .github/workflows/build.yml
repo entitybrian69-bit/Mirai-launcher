@@ -185,6 +185,7 @@ jobs:
             --tests "com.movtery.zalithlauncher.game.optimization.JvmGcAutoTunerTest" \
             --tests "com.movtery.zalithlauncher.game.addons.mirror.MirrorPreferencesTest" \
             --tests "com.movtery.zalithlauncher.game.account.wardrobe.FileReplacementTest" \
+            --tests "com.movtery.zalithlauncher.game.account.microsoft.MicrosoftOAuthConfigTest" \
             -Darch=all --console=plain 2>&1 | tee "$test_log"
           exit "${PIPESTATUS[0]}"
 
