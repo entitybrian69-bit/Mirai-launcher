@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
 
 package com.movtery.zalithlauncher.game.account.microsoft.models
@@ -28,11 +28,17 @@ data class DeviceCodeResponse(
     @SerialName("device_code")
     val deviceCode: String,
     @SerialName("verification_uri")
-    val verificationUrl: String,
+    val verificationUri: String? = null,
+    @SerialName("verification_url")
+    val verificationUrlFallback: String? = null,
     @SerialName("expires_in")
     val expiresIn: Int,
     @SerialName("interval")
     val interval: Int,
     @SerialName("message")
-    val message: String
-)
+    val message: String = ""
+) {
+    /** Both Microsoft endpoint families have used either spelling for the user-facing URL. */
+    val verificationUrl: String
+        get() = verificationUri ?: verificationUrlFallback ?: "https://www.microsoft.com/link"
+}

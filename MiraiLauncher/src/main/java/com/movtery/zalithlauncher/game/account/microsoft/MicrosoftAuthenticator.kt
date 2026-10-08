@@ -77,10 +77,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "MicrosoftAuth"
 
-// The Xbox/Minecraft device-code flow only uses these scopes; OpenID profile claims
-// are not needed by the launcher.
-private val SCOPES = listOf("XboxLive.signin", "offline_access")
-private const val TENANT = "/consumers"
 
 /**
  * 轮询令牌时允许的最大连续网络失败次数
@@ -88,23 +84,24 @@ private const val TENANT = "/consumers"
  */
 private const val MAX_CONSECUTIVE_POLL_FAILURES = 5
 
-const val MICROSOFT_AUTH_URL = "https://login.microsoftonline.com"
 const val XBL_AUTH_URL = "https://user.auth.xboxlive.com"
 const val XSTS_AUTH_URL = "https://xsts.auth.xboxlive.com"
 const val MINECRAFT_SERVICES_URL = "https://api.minecraftservices.com"
 
 /**
- * 从 Microsoft 身份验证终端节点获取设备代码响应
- * 设备代码用于在单独的设备或浏览器上授权用户
+ * Request a device code using the OAuth endpoint family registered for this client ID.
  */
 suspend fun fetchDeviceCodeResponse(context: CoroutineContext): DeviceCodeResponse = coroutineScope {
+    val oauthConfig = MicrosoftOAuthConfig.forClientId(BuildKeys.OAUTH_CLIENT_ID)
+    Logger.debug(TAG, "Requesting Microsoft device code from ${oauthConfig.deviceCodeUrl}")
     withRetry {
         try {
             submitForm(
-                url = "$MICROSOFT_AUTH_URL$TENANT/oauth2/v2.0/devicecode",
+                url = oauthConfig.deviceCodeUrl,
                 parameters = Parameters.build {
                     append("client_id", BuildKeys.OAUTH_CLIENT_ID)
-                    append("scope", SCOPES.joinToString(" "))
+                    append("scope", oauthConfig.scope)
+                    oauthConfig.deviceCodeResponseType?.let { append("response_type", it) }
                 },
                 context = context
             )
@@ -117,14 +114,14 @@ suspend fun fetchDeviceCodeResponse(context: CoroutineContext): DeviceCodeRespon
 }
 
 /**
- * 使用设备代码流从 Microsoft Azure Active Directory 检索访问令牌和刷新令牌
- * 此函数会定期轮询 Microsoft 令牌端点，直到获取访问令牌或超时
+ * Poll the matching Microsoft OAuth token endpoint until authorization succeeds or expires.
  */
 suspend fun getTokenResponse(
     codeResponse: DeviceCodeResponse,
     context: CoroutineContext,
     checkCancelled: suspend (time: Int) -> Boolean
 ): TokenResponse = coroutineScope {
+    val oauthConfig = MicrosoftOAuthConfig.forClientId(BuildKeys.OAUTH_CLIENT_ID)
     var pollingInterval = codeResponse.interval * 1000L
     val expireTime = System.currentTimeMillis() + codeResponse.expiresIn * 1000L
 
@@ -137,14 +134,14 @@ suspend fun getTokenResponse(
     //连续的网络层失败次数，避免网络长期不可用时无意义地轮询到设备码过期
     var consecutiveFailures = 0
 
-    Logger.debug(TAG, "Polling for token, interval = ${pollingInterval}ms, expires in ${codeResponse.expiresIn}s")
+    Logger.debug(TAG, "Polling ${oauthConfig.tokenUrl} for token, interval = ${pollingInterval}ms, expires in ${codeResponse.expiresIn}s")
 
     while (System.currentTimeMillis() < expireTime) {
         context.ensureActive()
 
         try {
             val response: JsonObject = submitForm(
-                "$MICROSOFT_AUTH_URL$TENANT/oauth2/v2.0/token",
+                oauthConfig.tokenUrl,
                 parameters = Parameters.build {
                     append("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
                     append("device_code", codeResponse.deviceCode)
@@ -154,7 +151,7 @@ suspend fun getTokenResponse(
             )
             consecutiveFailures = 0
 
-            if (response["token_type"]?.jsonPrimitive?.content == "Bearer") {
+            if (response["token_type"]?.jsonPrimitive?.content?.equals("Bearer", ignoreCase = true) == true) {
                 Logger.debug(TAG, "Access token successfully retrieved")
                 return@coroutineScope TokenResponse(
                     accessToken = response["access_token"].text(),
@@ -282,18 +279,18 @@ private suspend fun refreshAccessToken(
     context: CoroutineContext
 ): Pair<String, String> {
     update(AsyncStatus.GETTING_ACCESS_TOKEN)
+    val oauthConfig = MicrosoftOAuthConfig.forClientId(BuildKeys.OAUTH_CLIENT_ID)
 
     return withRetry {
         try {
             val response = submitForm<JsonObject>(
-                // Refresh tokens issued by the v2 device-code flow must be refreshed
-                // against the same consumers/v2 endpoint (not the legacy Live v1 API).
-                url = "$MICROSOFT_AUTH_URL$TENANT/oauth2/v2.0/token",
+                // Keep refreshes on the same OAuth endpoint and scope family that issued the token.
+                url = oauthConfig.tokenUrl,
                 parameters = Parameters.build {
                     append("client_id", BuildKeys.OAUTH_CLIENT_ID)
                     append("grant_type", "refresh_token")
                     append("refresh_token", refreshToken)
-                    append("scope", SCOPES.joinToString(" "))
+                    append("scope", oauthConfig.scope)
                 },
                 context = context
             )
@@ -313,6 +310,7 @@ private suspend fun refreshAccessToken(
 
 private suspend fun authenticateXBL(accessToken: String, update: (AsyncStatus) -> Unit): Pair<String, String> {
     update(AsyncStatus.GETTING_XBL_TOKEN)
+    val rpsTicketPrefix = MicrosoftOAuthConfig.forClientId(BuildKeys.OAUTH_CLIENT_ID).xblRpsTicketPrefix
 
     suspend fun requestXblToken(rpsTicket: String): Pair<String, String> {
         val requestBody = XBLRequest(
@@ -342,12 +340,11 @@ private suspend fun authenticateXBL(accessToken: String, update: (AsyncStatus) -
 
     return withRetry {
         try {
-            requestXblToken("d=$accessToken")
+            requestXblToken("$rpsTicketPrefix$accessToken")
         } catch (e: ClientRequestException) {
-            // 参考 Wiki：RpsTicket 如遇 400 Bad Request，可尝试去掉 "d=" 前缀重新请求
-            // https://zh.minecraft.wiki/w/Tutorial:%E7%BC%96%E5%86%99%E5%90%AF%E5%8A%A8%E5%99%A8#Xbox_Live%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81
+            // Some Xbox endpoints accept a bare ticket when the client-specific prefix is rejected.
             if (e.response.status.value == 400) {
-                Logger.warning(TAG, "XBL authentication rejected the d= prefixed RpsTicket, retrying without the prefix")
+                Logger.warning(TAG, "XBL authentication rejected the prefixed RpsTicket, retrying without the prefix")
                 requestXblToken(accessToken)
             } else throw e
         }
