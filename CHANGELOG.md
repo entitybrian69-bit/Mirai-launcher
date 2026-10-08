@@ -5,6 +5,18 @@ All notable changes to Aerix Launcher are recorded here.
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
 
+## Unreleased
+
+### Fixed
+
+- **RAM defaults, limits, and launch-time allocation now follow the launcher
+  process ABI.** 32-bit APKs running on 64-bit-capable phones no longer receive
+  heap settings sized for a 64-bit process, including old saved values.
+- **Minecraft 1.20.5 and newer are stopped before launch when the Android OS or
+  launcher process is 32-bit**, with Mojang's 64-bit requirement explained.
+  Minecraft 1.20.4 and earlier remain available on the 32-bit path where their
+  individual runtime requirements are met.
+
 ## 1.4 - 2026-10-08
 
 ### Fixed

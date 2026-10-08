@@ -38,6 +38,7 @@ import com.movtery.zalithlauncher.ui.screens.content.elements.QuickPlay
 import com.movtery.zalithlauncher.utils.GSON
 import com.movtery.zalithlauncher.utils.file.readText
 import com.movtery.zalithlauncher.utils.logging.Logger
+import com.movtery.zalithlauncher.utils.platform.clampRamAllocation
 import com.movtery.zalithlauncher.utils.platform.getMaxMemoryForSettings
 import com.movtery.zalithlauncher.utils.string.isNotEmptyOrBlank
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +47,6 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.util.zip.ZipFile
-import kotlin.math.min
 
 private const val TAG = "Version"
 
@@ -225,9 +225,14 @@ class Version(
 
     fun getServerIp(): String? = versionConfig.serverIp.takeIf { it.isNotEmptyOrBlank() }
 
-    fun getRamAllocation(context: Context = GlobalContext): Int = versionConfig.ramAllocation.takeIf { it >= 256 }?.let {
-        min(it, getMaxMemoryForSettings(context))
-    } ?: AllSettings.ramAllocation.getOrMin()
+    fun getRamAllocation(context: Context = GlobalContext): Int {
+        val requestedRamMb = versionConfig.ramAllocation.takeIf { it >= 256 }
+            ?: AllSettings.ramAllocation.getOrMin()
+        return clampRamAllocation(
+            requestedRamMb = requestedRamMb,
+            maxRamMb = getMaxMemoryForSettings(context)
+        )
+    }
 
     fun getTouchVibrateDuration(): Int? = versionConfig.touchVibrateDuration.takeIf { it >= 80 }
 

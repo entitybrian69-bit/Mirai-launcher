@@ -43,8 +43,8 @@ fun loadAllSettings(context: Context, reloadAll: Boolean = false) {
 }
 
 /**
- * This functions aims at finding the best default RAM amount,
- * according to the RAM amount of the physical device.
+ * This function aims to find a safe default RAM amount from physical memory
+ * and the bitness of the launcher process.
  * Put not enough RAM ? Minecraft will lag and crash.
  * Put too much RAM ?
  * The GC will lag, android won't be able to breathe properly.
@@ -52,17 +52,24 @@ fun loadAllSettings(context: Context, reloadAll: Boolean = false) {
  * @param context Context needed to get the total memory of the device.
  * @return The best default value found.
  */
-fun findBestRAMAllocation(context: Context): Int {
-    if (Architecture.is32BitsDevice) return 696
+fun findBestRAMAllocation(context: Context): Int = defaultRamAllocation(
+    deviceRamMb = getTotalMemory(context).bytesToMB(),
+    is64BitProcess = Architecture.is64BitsProcess
+)
 
-    val deviceRam = getTotalMemory(context).bytesToMB()
+/**
+ * Pick a safe default based on the actual app process ABI, not the hardware's maximum ABI.
+ */
+internal fun defaultRamAllocation(deviceRamMb: Double, is64BitProcess: Boolean): Int {
+    if (!is64BitProcess) return 696
+
     return when {
-        deviceRam < 1024 -> 296
-        deviceRam < 1536 -> 448
-        deviceRam < 2048 -> 656
-        deviceRam < 3064 -> 936
-        deviceRam < 4096 -> 1144
-        deviceRam < 6144 -> 1536
+        deviceRamMb < 1024 -> 296
+        deviceRamMb < 1536 -> 448
+        deviceRamMb < 2048 -> 656
+        deviceRamMb < 3064 -> 936
+        deviceRamMb < 4096 -> 1144
+        deviceRamMb < 6144 -> 1536
         else -> 2048 //Default RAM allocation for 64 bits
     }
 }

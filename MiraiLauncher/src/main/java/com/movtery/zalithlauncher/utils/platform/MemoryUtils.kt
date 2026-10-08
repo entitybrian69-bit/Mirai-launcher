@@ -64,16 +64,26 @@ fun getFreeMemory(context: Context) = getMemoryInfo(context).availMem
  * 为设置项获取最大可设置的内存值（为系统预留一些可用内存）
  */
 @WorkerThread
-fun getMaxMemoryForSettings(context: Context): Int {
-    val deviceRam = getTotalMemory(context).bytesToMB()
-    val maxRam: Int = if (Architecture.is32BitsDevice || deviceRam < 2048) {
-        min(1024.0, deviceRam).toInt()
+fun getMaxMemoryForSettings(context: Context): Int = maxMemoryForSettings(
+    deviceRamMb = getTotalMemory(context).bytesToMB(),
+    is64BitProcess = Architecture.is64BitsProcess
+)
+
+/**
+ * Keep the heap limit within the address space available to this launcher process.
+ * A 32-bit APK can run on 64-bit-capable hardware, so device bitness alone is not enough.
+ */
+internal fun maxMemoryForSettings(deviceRamMb: Double, is64BitProcess: Boolean): Int {
+    return if (!is64BitProcess || deviceRamMb < 2048) {
+        min(1024.0, deviceRamMb).toInt()
     } else {
         //To have a minimum for the device to breathe
-        (deviceRam - (if (deviceRam < 3064) 800 else 1024)).toInt()
+        (deviceRamMb - (if (deviceRamMb < 3064) 800 else 1024)).toInt()
     }
-    return maxRam
 }
+
+internal fun clampRamAllocation(requestedRamMb: Int, maxRamMb: Int): Int =
+    min(requestedRamMb, maxRamMb)
 
 /**
  * 转换为 MB 单位

@@ -19,6 +19,8 @@
 package com.movtery.zalithlauncher.game.launch
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.coroutine.Task
 import com.movtery.zalithlauncher.coroutine.TaskFlowExecutor
@@ -47,6 +49,7 @@ import com.movtery.zalithlauncher.game.versioninfo.models.GameManifest
 import com.movtery.zalithlauncher.ui.activities.runGame
 import com.movtery.zalithlauncher.ui.androidText
 import com.movtery.zalithlauncher.utils.GSON
+import com.movtery.zalithlauncher.utils.device.Architecture
 import com.movtery.zalithlauncher.utils.network.isNetworkAvailable
 import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
 import kotlinx.coroutines.CancellationException
@@ -99,6 +102,30 @@ class GameLaunchFlow(scope: CoroutineScope) {
         }
 
         val account = AccountsManager.currentAccountFlow.value ?: return
+        val minecraftVersion = version.getVersionInfo()?.minecraftVersion
+            ?: version.getVersionName()
+        val supportsPlatform = MinecraftPlatformCompatibility.isSupportedOnPlatform(
+            minecraftVersion = minecraftVersion,
+            supports64BitOperatingSystem = Architecture.is64BitsDevice,
+            is64BitProcess = Architecture.is64BitsProcess
+        )
+        if (!supportsPlatform) {
+            // launch() can be called inside a StateFlow update transform. Post callbacks so the
+            // launch view-model has stored this flow before onComplete clears it.
+            Handler(Looper.getMainLooper()).post {
+                submitError(
+                    ErrorViewModel.ThrowableMessage(
+                        title = androidText(R.string.minecraft_64bit_os_required_title),
+                        message = androidText(
+                            R.string.minecraft_64bit_os_required_message,
+                            minecraftVersion
+                        )
+                    )
+                )
+                onComplete()
+            }
+            return
+        }
 
         taskExecutor.executePhasesAsync(
             onStart = {
