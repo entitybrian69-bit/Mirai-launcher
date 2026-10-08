@@ -41,6 +41,7 @@ import com.movtery.zalithlauncher.game.optimization.JvmGcAutoTuner
 import com.movtery.zalithlauncher.game.plugin.Plugin
 import com.movtery.zalithlauncher.game.plugin.driver.DriverPluginManager
 import com.movtery.zalithlauncher.game.plugin.renderer.RendererPluginManager
+import com.movtery.zalithlauncher.game.renderer.RendererPicker
 import com.movtery.zalithlauncher.game.renderer.Renderers
 import com.movtery.zalithlauncher.game.renderer.renderers.GL4ESRenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.LTWLegacyRenderer
@@ -87,6 +88,7 @@ class GameLauncher(
 ) : Launcher(onExit, openPath) {
     private lateinit var gameManifest: GameManifest
     private var jnaDir: File? = null
+    private var detectedGlesVersion: Int = 0
     private val offlineServer = OfflineYggdrasilServer(0)
 
     private val version = config.version
@@ -104,7 +106,37 @@ class GameLauncher(
     }
 
     override suspend fun launch(screenSize: IntSize): Int {
-        if (!Renderers.isCurrentRendererValid()) {
+        detectedGlesVersion = getDetectedVersion()
+        Logger.info(TAG, "GLES version detected: $detectedGlesVersion")
+
+        val pickerVersion = version.getVersionInfo()?.minecraftVersion.orEmpty()
+        val ltwLibraryAvailable = File(
+            PathManager.DIR_NATIVE_LIB,
+            LTWRenderer.getRendererLibrary(),
+        ).isFile
+        if (!ltwLibraryAvailable) {
+            Logger.warning(TAG, "LTW is unavailable: ${LTWRenderer.getRendererLibrary()} is missing from the app's native library directory.")
+        }
+        val availableRenderers = Renderers.getRenderers()
+            .filter { renderer ->
+                renderer.getUniqueIdentifier() != LTWRenderer.getUniqueIdentifier() || ltwLibraryAvailable
+            }
+            .map { it.getUniqueIdentifier() }
+            .toSet()
+        val rendererChoice = if (pickerVersion.isNotBlank()) {
+            RendererPicker.pick(
+                mcVersion = pickerVersion,
+                manualIdentifier = version.getRenderer(),
+                available = availableRenderers,
+                deviceGlesVersion = detectedGlesVersion,
+            )
+        } else {
+            null
+        }
+        if (rendererChoice != null && rendererChoice.identifier.isNotBlank()) {
+            Renderers.setCurrentRenderer(rendererChoice.identifier)
+            Logger.info(TAG, "Renderer selected: ${rendererChoice.identifier}; ${rendererChoice.reason}")
+        } else if (!Renderers.isCurrentRendererValid()) {
             Renderers.setCurrentRenderer(version.getRenderer())
         }
 
@@ -188,7 +220,7 @@ class GameLauncher(
             envMap[loaderKey] = "1"
         }
         if (Renderers.isCurrentRendererValid()) {
-            setRendererEnv(envMap)
+            setRendererEnv(envMap, detectedGlesVersion)
         }
         envMap["ZALITH_VERSION_CODE"] = BuildConfig.VERSION_CODE.toString()
 
@@ -629,7 +661,7 @@ private fun checkAndUsedJSPH(envMap: MutableMap<String, String>, runtime: Runtim
     }
 }
 
-private fun setRendererEnv(envMap: MutableMap<String, String>) {
+private fun setRendererEnv(envMap: MutableMap<String, String>, detectedGlesVersion: Int) {
     val renderer = Renderers.getCurrentRenderer()
     val rendererId = renderer.getRendererId()
 
@@ -680,10 +712,7 @@ private fun setRendererEnv(envMap: MutableMap<String, String>) {
     }
 
     if (!envMap.containsKey("LIBGL_ES")) {
-        val glesMajor = getDetectedVersion()
-        Logger.info(TAG, "GLES version detected: $glesMajor")
-
-        envMap["LIBGL_ES"] = if (glesMajor < 3) {
+        envMap["LIBGL_ES"] = if (detectedGlesVersion < 3) {
             //fallback to 2 since it's the minimum for the entire app
             "2"
         } else if (rendererId.startsWith("opengles")) {

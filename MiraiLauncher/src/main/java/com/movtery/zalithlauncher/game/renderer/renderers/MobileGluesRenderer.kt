@@ -34,6 +34,8 @@ object MobileGluesRenderer : RendererInterface {
 
     override fun getRendererName(): String = "MobileGlues"
 
+    override fun getMinimumGlesVersion(): Int = 3
+
     override fun getMinMCVersion(): String = "1.17"
 
     override fun getMaxMCVersion(): String = "26.3"

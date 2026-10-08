@@ -43,6 +43,12 @@ interface RendererInterface {
     fun getRendererSummary(): String? = null
 
     /**
+     * Minimum OpenGL ES major version required by this renderer, when it has one.
+     * `null` means the renderer does not declare a GLES requirement (for example, a Vulkan path).
+     */
+    fun getMinimumGlesVersion(): Int? = null
+
+    /**
      * 获取渲染器最低兼容版本
      */
     fun getMinMCVersion(): String? = null

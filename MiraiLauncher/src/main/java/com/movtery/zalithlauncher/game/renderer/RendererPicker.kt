@@ -85,43 +85,58 @@ object RendererPicker {
      * that a missing version string keeps behaving exactly as it did before the picker
      * existed, rather than silently changing which wrapper starts.
      */
-    fun resolve(mcVersion: String, manualIdentifier: String): String? {
+    fun resolve(
+        mcVersion: String,
+        manualIdentifier: String,
+        deviceGlesVersion: Int? = null,
+    ): String? {
         if (mcVersion.isBlank()) return null
         val available = Renderers.getRenderers().map { it.getUniqueIdentifier() }.toSet()
         if (available.isEmpty()) return null
-        return pick(mcVersion, manualIdentifier, available).identifier.ifEmpty { null }
+        return pick(mcVersion, manualIdentifier, available, deviceGlesVersion).identifier.ifEmpty { null }
     }
 
     /**
      * @param mcVersion the Minecraft version being launched; blank means unknown.
      * @param manualIdentifier the instance's configured renderer, blank when it has none.
      * @param available identifiers of the renderers that are actually loaded right now.
+     * @param deviceGlesVersion detected GLES major version; null/zero means unavailable.
      */
     fun pick(
         mcVersion: String,
         manualIdentifier: String,
         available: Set<String>,
+        deviceGlesVersion: Int? = null,
     ): Choice {
         val manual = manualIdentifier.trim()
         if (manual.isNotEmpty()) {
-            if (manual in available && supports(manual, mcVersion)) {
+            if (manual in available && supports(manual, mcVersion) && supportsDevice(manual, deviceGlesVersion)) {
                 return Choice(manual, "instance override", automatic = false)
             }
-            val fallback = automatic(mcVersion, available)
-            val reason = if (manual !in available) {
-                "instance override missing, ${fallback.reason}"
-            } else {
-                "instance override unsupported on $mcVersion, ${fallback.reason}"
+            val fallback = automatic(mcVersion, available, deviceGlesVersion)
+            val reason = when {
+                manual !in available -> "instance override missing, ${fallback.reason}"
+                !supports(manual, mcVersion) -> "instance override unsupported on $mcVersion, ${fallback.reason}"
+                else -> {
+                    val required = minimumGlesVersion(manual)
+                    "instance override requires GLES $required, detected GLES $deviceGlesVersion, ${fallback.reason}"
+                }
             }
             return fallback.copy(reason = reason)
         }
-        return automatic(mcVersion, available)
+        return automatic(mcVersion, available, deviceGlesVersion)
     }
 
-    private fun automatic(mcVersion: String, available: Set<String>): Choice {
+    private fun automatic(
+        mcVersion: String,
+        available: Set<String>,
+        deviceGlesVersion: Int?,
+    ): Choice {
         val order = if (usesCoreProfile(mcVersion)) MODERN_ORDER else LEGACY_ORDER
 
-        val compatible = order.filter { it in available && supports(it, mcVersion) }
+        val compatible = order.filter {
+            it in available && supports(it, mcVersion) && supportsDevice(it, deviceGlesVersion)
+        }
         compatible.firstOrNull()?.let { picked ->
             val reason = when {
                 picked != order.first() ->
@@ -134,19 +149,37 @@ object RendererPicker {
             return Choice(picked, reason, automatic = true)
         }
 
-        // Nothing declares support for this version. Offering something is better than
-        // refusing to launch, but say so plainly instead of pretending it is a good match.
-        val anyAvailable = available.firstOrNull()
+        // Nothing in the preferred order is compatible with this version/device. Offering
+        // something is better than refusing to launch, but say so plainly instead of
+        // pretending it is a good match.
+        val anyAvailable = available.firstOrNull { supportsDevice(it, deviceGlesVersion) }
+            ?: available.firstOrNull()
             ?: return Choice("", "no renderer available", automatic = true)
+        val deviceWarning = if (!supportsDevice(anyAvailable, deviceGlesVersion)) {
+            val required = minimumGlesVersion(anyAvailable)
+            "; requires GLES $required but device reports GLES $deviceGlesVersion"
+        } else {
+            ""
+        }
         return Choice(
             anyAvailable,
-            "no renderer declares support for ${describe(mcVersion)}, using ${nameOf(anyAvailable)}",
+            "no preferred wrapper is compatible with ${describe(mcVersion)}$deviceWarning, using ${nameOf(anyAvailable)}",
             automatic = true
         )
     }
 
     private fun usesCoreProfile(mcVersion: String): Boolean =
         mcVersion.isNotBlank() && !mcVersion.isLowerVer(CORE_PROFILE_VERSION)
+
+    private fun minimumGlesVersion(identifier: String): Int? =
+        Renderers.BUILT_IN.firstOrNull { it.getUniqueIdentifier() == identifier }
+            ?.getMinimumGlesVersion()
+
+    private fun supportsDevice(identifier: String, deviceGlesVersion: Int?): Boolean {
+        if (deviceGlesVersion == null || deviceGlesVersion <= 0) return true
+        val minimum = minimumGlesVersion(identifier) ?: return true
+        return deviceGlesVersion >= minimum
+    }
 
     /**
      * Whether [identifier] declares support for [mcVersion].

@@ -34,6 +34,48 @@ class RendererPickerTest {
     }
 
     @Test
+    fun modernPickExcludesGles3RenderersOnGles2Devices() {
+        val available = all + RendererPicker.MOBILEGLUES
+
+        val choice = RendererPicker.pick(
+            mcVersion = "1.21.1",
+            manualIdentifier = "",
+            available = available,
+            deviceGlesVersion = 2,
+        )
+
+        assertEquals(RendererPicker.ZINK, choice.identifier)
+    }
+
+    @Test
+    fun manualLtwOverrideFallsBackWhenDeviceLacksGles3() {
+        val available = all + RendererPicker.MOBILEGLUES
+
+        val choice = RendererPicker.pick(
+            mcVersion = "1.21.1",
+            manualIdentifier = RendererPicker.LTW,
+            available = available,
+            deviceGlesVersion = 2,
+        )
+
+        assertEquals(RendererPicker.ZINK, choice.identifier)
+        assertEquals(true, choice.automatic)
+        assertEquals(true, choice.reason.contains("requires GLES 3"))
+    }
+
+    @Test
+    fun unknownGlesDetectionDoesNotHideLtw() {
+        val choice = RendererPicker.pick(
+            mcVersion = "1.21.1",
+            manualIdentifier = "",
+            available = all,
+            deviceGlesVersion = -3,
+        )
+
+        assertEquals(RendererPicker.LTW, choice.identifier)
+    }
+
+    @Test
     fun modernFallsBackToZink() {
         val choice = RendererPicker.pick("1.17.1", "", setOf(RendererPicker.ZINK))
         assertEquals(RendererPicker.ZINK, choice.identifier)
