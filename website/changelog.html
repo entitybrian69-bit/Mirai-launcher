@@ -102,6 +102,37 @@
     <div class="wrap wrap-narrow">
       <div class="release reveal">
         <div class="release-head">
+          <span class="release-version">1.5</span>
+          <span class="badge">32-bit diagnostics &amp; mobile tuning</span>
+          <span class="small muted">2026-10-08</span>
+        </div>
+        <div class="release-list">
+          <div>
+            <h4>Changed</h4>
+            <ul>
+              <li><strong>Low-heap JVM auto-tuning</strong> selects SerialGC and a 48 MiB code cache for allocations up to 1280 MiB, while preserving explicit GC and code-cache choices.</li>
+              <li><strong>Mobile graphics presets</strong> use shorter render distances and reduced render scales. No FPS or temperature gains are promised without device-specific testing.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Fixed</h4>
+            <ul>
+              <li><strong>Memory sizing follows the launcher process ABI.</strong> On 32-bit, heap allocation accounts for the largest free virtual-address range and reserves space for JVM non-heap memory; old oversized saved values are capped.</li>
+              <li><strong>Minecraft 1.20.5+ is no longer blocked solely because Android or the launcher process is 32-bit.</strong> The launcher makes a best-effort attempt when a compatible Java 21+ runtime is available. Mojang's 64-bit OS requirement remains, so this configuration is unsupported and not confirmed on real devices.</li>
+              <li><strong>Surface startup diagnostics</strong> ignore zero-sized initial measurements and log requested and native buffer sizes plus buffer-geometry errors. This improves diagnosis; it does not claim to fix device-specific renderer failures.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Added</h4>
+            <ul>
+              <li>Regression tests for runtime selection by Java minimum and Android process ABI, included in build CI.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="release reveal">
+        <div class="release-head">
           <span class="release-version">1.4</span>
           <span class="badge">Microsoft login &amp; Java compatibility</span>
           <span class="small muted">2026-10-08</span>
@@ -265,7 +296,7 @@
   <section>
     <div class="wrap">
       <div class="cta-band reveal">
-        <h2>Get 1.4</h2>
+        <h2>Get 1.5</h2>
         <p>Download the universal APK or choose the build for your device's ABI.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="https://github.com/entitybrian69-bit/Aerix-launcher/releases/latest">Download the latest release</a>

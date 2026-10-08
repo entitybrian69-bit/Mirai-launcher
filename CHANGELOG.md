@@ -5,17 +5,17 @@ All notable changes to Aerix Launcher are recorded here.
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
 
-## Unreleased
+## 1.5 - 2026-10-08
 
 ### Changed
 
-- **Small-heap automatic JVM tuning now selects SerialGC and a 48 MiB code
-  cache at allocations up to 1280 MiB.** Explicit GC and code-cache settings
-  remain in effect; larger heaps keep the existing G1GC default.
-- **First-run graphics defaults and mobile presets now use shorter render
-  distances and reduced render scale.** Removed unsupported FPS/temperature
-  improvement numbers from preset labels; actual device gains still require
-  measurement.
+- **Low-heap automatic JVM tuning now selects SerialGC and a 48 MiB code
+  cache at allocations up to 1280 MiB.** Explicit GC and code-cache choices are
+  preserved; larger heaps keep the existing G1GC tuning.
+- **Mobile graphics presets use lighter default workloads**, including shorter
+  render distances and reduced render scales. Preset descriptions avoid
+  unmeasured FPS or temperature promises; real gains depend on the device and
+  game workload.
 
 ### Fixed
 
@@ -24,13 +24,23 @@ Versions follow the `launcher_version_code` / `launcher_version_name` pair in
   non-heap allocations while retaining the launcher's 256 MiB minimum heap. If
   the process map cannot be read, the existing process/RAM cap remains the
   fallback.
-- **RAM defaults, limits, and launch-time allocation now follow the launcher
-  process ABI.** 32-bit APKs running on 64-bit-capable phones no longer receive
-  heap settings sized for a 64-bit process, including old saved values.
-- **Minecraft 1.20.5 and newer are stopped before launch when the Android OS or
-  launcher process is 32-bit**, with Mojang's 64-bit requirement explained.
-  Minecraft 1.20.4 and earlier remain available on the 32-bit path where their
-  individual runtime requirements are met.
+- **RAM defaults, limits, and launch-time allocation follow the launcher
+  process ABI**, not only the phone's maximum supported ABI. This also clamps
+  old saved allocations that exceed 32-bit process limits.
+- **Minecraft 1.20.5+ is no longer rejected solely because Android or the
+  launcher process is 32-bit.** Aerix attempts the bundled, ABI-matched Java 21+
+  runtime/native path when available, logs that this is experimental, and still
+  rejects a selected Java runtime below the Minecraft version's minimum.
+  Mojang's 64-bit OS requirement remains; this does not make 32-bit an
+  officially supported configuration.
+- **The shared game surface ignores zero-sized startup measurements** and logs
+  the requested framebuffer size, native window size, and buffer-geometry
+  errors to help identify device-specific rendering failures.
+
+### Added
+
+- Regression coverage for minimum Java/ABI runtime selection and the 32-bit
+  compatibility warning; the runtime-selection test now runs in build CI.
 
 ## 1.4 - 2026-10-08
 
