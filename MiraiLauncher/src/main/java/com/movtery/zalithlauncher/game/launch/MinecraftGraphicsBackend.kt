@@ -35,10 +35,11 @@ internal fun resolvePreferredGraphicsBackendOption(
     hasVulkanBackend: Boolean,
     existingOption: String?,
 ): String? = when (graphicsApi) {
-    GraphicsApi.DEFAULT -> existingOption ?: graphicsApi.option
-    GraphicsApi.DEFAULT_OPENGL -> {
-        if (hasVulkanBackend) GraphicsApi.OPENGL.option
-        else existingOption ?: graphicsApi.option
+    GraphicsApi.DEFAULT -> if (existingOption == null) graphicsApi.option else null
+    GraphicsApi.DEFAULT_OPENGL -> when {
+        hasVulkanBackend -> GraphicsApi.OPENGL.option
+        existingOption == null -> graphicsApi.option
+        else -> null
     }
     else -> graphicsApi.option
 }
