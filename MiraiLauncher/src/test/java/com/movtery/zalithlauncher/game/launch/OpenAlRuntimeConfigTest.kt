@@ -11,6 +11,7 @@
 package com.movtery.zalithlauncher.game.launch
 
 import java.io.File
+import java.nio.file.Files
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -18,7 +19,7 @@ import org.junit.Test
 class OpenAlRuntimeConfigTest {
     @Test
     fun writesAndPointsToTheOpenSlEsFallbackConfiguration() {
-        val tempDir = createTempDir(prefix = "openal-config-test-")
+        val tempDir = Files.createTempDirectory("openal-config-test-").toFile()
         try {
             val source = """
                 [general]
