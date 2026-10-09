@@ -27,6 +27,8 @@ object NGGL4ESRenderer : RendererInterface {
 
     override fun getRendererName(): String = "Krypton Wrapper"
 
+    override fun getMinimumGlesVersion(): Int = 3
+
     override fun getMaxMCVersion(): String = "26.3-snapshot-3"
 
     override fun getDisplayMaxMCVersion(): String = "26.2"

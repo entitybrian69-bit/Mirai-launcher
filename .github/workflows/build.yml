@@ -182,6 +182,7 @@ jobs:
             --tests "com.movtery.zalithlauncher.game.renderer.LTWLegacyRendererTest" \
             --tests "com.movtery.zalithlauncher.game.renderer.VGPURendererTest" \
             --tests "com.movtery.zalithlauncher.game.renderer.RendererPickerTest" \
+            --tests "com.movtery.zalithlauncher.game.renderer.Gl4esRendererTest" \
             --tests "com.movtery.zalithlauncher.game.optimization.JvmGcAutoTunerTest" \
             --tests "com.movtery.zalithlauncher.game.optimization.MobileFpsBoosterTest" \
             --tests "com.movtery.zalithlauncher.game.addons.mirror.MirrorPreferencesTest" \
@@ -189,6 +190,9 @@ jobs:
             --tests "com.movtery.zalithlauncher.game.account.microsoft.MicrosoftOAuthConfigTest" \
             --tests "com.movtery.zalithlauncher.game.launch.MinecraftPlatformCompatibilityTest" \
             --tests "com.movtery.zalithlauncher.game.launch.JnaBootLibraryPathTest" \
+            --tests "com.movtery.zalithlauncher.game.launch.MinecraftRuntimeFlagsTest" \
+            --tests "com.movtery.zalithlauncher.game.launch.OpenAlRuntimeConfigTest" \
+            --tests "com.movtery.zalithlauncher.game.launch.SdlLibraryPathsTest" \
             --tests "com.movtery.zalithlauncher.game.multirt.RuntimeSelectionTest" \
             --tests "com.movtery.zalithlauncher.utils.platform.MemoryUtilsTest" \
             --tests "com.movtery.zalithlauncher.setting.SettingsInitializerTest" \
