@@ -1,4 +1,3 @@
-import com.android.build.api.variant.FilterConfiguration.FilterType.ABI
 import com.android.build.api.variant.impl.VariantOutputImpl
 import com.android.build.gradle.tasks.MergeSourceSetFolders
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -30,8 +29,9 @@ val defaultCurseForgeApiKey = project.findProperty("curseforge_api_key") as? Str
 
 val projectArch: String = System.getProperty("arch", "all")
 
-// Keep APK/AAB native packaging explicit so dependency AARs (including OpenAL and NG-GL4ES)
-// retain both ARM process ABIs. CI may still request a single-ABI artifact with -Darch=arm, etc.
+// Keep native packaging explicit so dependency AARs (including OpenAL and NG-GL4ES) retain both
+// ARM process ABIs in all-ABI builds. Single-ABI CI builds use these NDK filters directly rather
+// than overlapping ABI splits, which Android Gradle Plugin rejects for the same ABI.
 val packagedAbis: List<String> = when (projectArch) {
     "all" -> listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
     "arm" -> listOf("armeabi-v7a")
@@ -110,20 +110,6 @@ android {
             applicationIdSuffix = ".debug"
             //版本号不再显示 -debug 后缀，调试包与正式包版本号保持一致
             signingConfig = signingConfigs.getByName("debugBuild")
-        }
-    }
-
-    splits {
-        val arch = projectArch.takeIf { it != "all" } ?: return@splits
-        abi {
-            isEnable = true
-            reset()
-            when (arch) {
-                "arm" -> include("armeabi-v7a")
-                "arm64" -> include("arm64-v8a")
-                "x86" -> include("x86")
-                "x86_64" -> include("x86_64")
-            }
         }
     }
 
@@ -212,10 +198,9 @@ androidComponents {
                     }
                 }
 
-                (output.getFilter(ABI)?.identifier ?: "all").let { abi ->
-                    val baseName = "${launcherName.replace(' ', '.')}-${if (variant.buildType == "release") launcherVersionName else "Debug-$launcherVersionName"}"
-                    output.outputFileName = if (abi == "all") "$baseName.apk" else "$baseName-$abi.apk"
-                }
+                val outputAbi = if (projectArch == "all") null else packagedAbis.single()
+                val baseName = "${launcherName.replace(' ', '.')}-${if (variant.buildType == "release") launcherVersionName else "Debug-$launcherVersionName"}"
+                output.outputFileName = outputAbi?.let { "$baseName-$it.apk" } ?: "$baseName.apk"
             }
         }
     }
