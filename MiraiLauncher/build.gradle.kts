@@ -30,6 +30,17 @@ val defaultCurseForgeApiKey = project.findProperty("curseforge_api_key") as? Str
 
 val projectArch: String = System.getProperty("arch", "all")
 
+// Keep APK/AAB native packaging explicit so dependency AARs (including OpenAL and NG-GL4ES)
+// retain both ARM process ABIs. CI may still request a single-ABI artifact with -Darch=arm, etc.
+val packagedAbis: List<String> = when (projectArch) {
+    "all" -> listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+    "arm" -> listOf("armeabi-v7a")
+    "arm64" -> listOf("arm64-v8a")
+    "x86" -> listOf("x86")
+    "x86_64" -> listOf("x86_64")
+    else -> error("Unsupported -Darch=$projectArch (expected all, arm, arm64, x86, or x86_64)")
+}
+
 fun getKeyFromLocal(envKey: String, fileName: String? = null, default: String? = null): String {
     // GitHub Actions exposes unset secrets as an empty environment variable. Treat that as
     // absent so project defaults (such as the public Microsoft client ID) remain in effect.
@@ -79,6 +90,9 @@ android {
         versionCode = launcherVersionCode
         versionName = launcherVersionName
         manifestPlaceholders["launcher_name"] = launcherAPPName
+        ndk {
+            abiFilters += packagedAbis
+        }
     }
 
     buildTypes {

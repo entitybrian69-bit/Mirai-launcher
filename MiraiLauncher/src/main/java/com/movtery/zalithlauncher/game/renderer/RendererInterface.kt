@@ -48,6 +48,9 @@ interface RendererInterface {
      */
     fun getMinimumGlesVersion(): Int? = null
 
+    /** Whether the renderer itself needs a Vulkan implementation (for example, Zink/Kopper). */
+    fun requiresVulkan(): Boolean = false
+
     /**
      * 获取渲染器最低兼容版本
      */

@@ -37,6 +37,7 @@ object NGGL4ESRenderer : RendererInterface {
             put("LIBGL_GL", "31")
             put("LIBGL_ES", "3")
             put("LIBGL_NORMALIZE", "1")
+            put("LIBGL_USEVBO", "1")
             put("LIBGL_NOERROR", "1")
         }
     }

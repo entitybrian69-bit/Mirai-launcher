@@ -78,6 +78,18 @@ class LaunchArgs(
             argsList.add("$pkg/$pkg=ALL-UNNAMED")
         }
 
+        val compatibilityFlags = MinecraftRuntimeFlags.forMinecraft(
+            javaMajor = runtime.javaVersion,
+            minecraftVersion = version.getVersionInfo()?.minecraftVersion ?: version.getVersionName(),
+            sharedLibraryExtractPath = PathManager.DIR_CACHE.absolutePath,
+        )
+        argsList.addAll(compatibilityFlags.filterNot { it in argsList })
+
+        // The manifest or a loader may provide its own OpenAL name. Replace it after all
+        // manifest/plugin JVM arguments so the Android process-ABI library always wins.
+        argsList.removeAll { it.startsWith("-Dorg.lwjgl.openal.libname=") }
+        argsList.add(OpenAlRuntimeConfig.lwjglOpenAlProperty(PathManager.DIR_NATIVE_LIB))
+
         argsList.add("mio.Wrapper")
         argsList.add(gameManifest.mainClass)
         argsList.addAll(getMinecraftClientArgs())

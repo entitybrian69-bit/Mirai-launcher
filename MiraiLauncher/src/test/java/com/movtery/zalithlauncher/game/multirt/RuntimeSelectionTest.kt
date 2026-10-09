@@ -29,6 +29,19 @@ class RuntimeSelectionTest {
     }
 
     @Test
+    fun arm32ProcessSelectsThe32BitRuntimeEvenOnAnArm64CapableDevice() {
+        val runtimes = listOf(
+            runtime("Internal-17-arm64", 17, "aarch64"),
+            runtime("Internal-17-arm", 17, "arm"),
+            runtime("Internal-21-arm", 21, "arm"),
+        )
+
+        val selected = selectRuntimeAtLeast(17, runtimes) { it.arch == "arm" }
+
+        assertEquals("Internal-17-arm", selected?.name)
+    }
+
+    @Test
     fun neverFallsBackToAnOlderJavaWhenTheMinimumIsUnavailable() {
         val runtimes = listOf(runtime("Internal-17", 17, "arm"))
 

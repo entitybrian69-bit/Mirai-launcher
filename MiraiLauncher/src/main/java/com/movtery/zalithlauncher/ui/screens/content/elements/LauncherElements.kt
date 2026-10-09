@@ -313,25 +313,43 @@ fun LaunchGameOperation(
                 Renderers.setCurrentRenderer(
                     RendererPicker.resolve(pickerVersion, manualRenderer) ?: manualRenderer
                 )
-                val currentRenderer = Renderers.getCurrentRenderer()
+                var currentRenderer = Renderers.getCurrentRenderer()
 
                 val mcVer = version.getVersionInfo()!!.minecraftVersion
 
-                // Versions 26.0+ can run on any backend/renderer without requiring Vulkan.
-                // Vulkan compatibility check is only run if Vulkan backend is actually targeted.
+                // Versions 26.0+ can run on any backend/renderer without requiring Vulkan. Probe
+                // only when the game backend or the selected wrapper actually depends on Vulkan.
                 val graphicsApi = version.getGraphicsApi()
                 val isVulkanTargeted = graphicsApi == GraphicsApi.VULKAN ||
                         (graphicsApi == GraphicsApi.DEFAULT && version.hasVulkanBackend())
+                val needsVulkan = isVulkanTargeted || currentRenderer.requiresVulkan()
 
-                if (isVulkanTargeted && !ensureVulkanSupported(version)) {
-                    val isRendererUnsupported =
-                        (currentRenderer.getMinMCVersion()?.let { mcVer.isLowerVer(it) } ?: false) ||
-                                (currentRenderer.getMaxMCVersion()?.let { mcVer.isBiggerVer(it) } ?: false)
-
-                    if (isRendererUnsupported) {
-                        launchGameViewModel.updateOperation(LaunchGameOperation.UnsupportedRenderer(currentRenderer, version, quickPlay))
+                if (needsVulkan && !ensureVulkanSupported(version)) {
+                    val fallback = RendererPicker.pick(
+                        mcVersion = mcVer,
+                        manualIdentifier = manualRenderer,
+                        available = Renderers.getRenderers()
+                            .map { it.getUniqueIdentifier() }
+                            .toSet(),
+                        vulkanAvailable = false,
+                    )
+                    if (fallback.identifier.isBlank()) {
+                        eventViewModel.sendToast(
+                            androidText("Vulkan is unavailable for Minecraft $mcVer, and no compatible OpenGL renderer is available.")
+                        )
+                        launchGameViewModel.updateOperation(LaunchGameOperation.None)
                         return@LaunchedEffect
                     }
+
+                    Renderers.setCurrentRenderer(fallback.identifier)
+                    currentRenderer = Renderers.getCurrentRenderer()
+                    version.setRendererAndGraphicsApiAndSave(
+                        renderer = fallback.identifier,
+                        graphicsApi = GraphicsApi.OPENGL,
+                    )
+                    eventViewModel.sendToast(
+                        androidText("Vulkan is unavailable for Minecraft $mcVer; switching this instance to OpenGL with ${currentRenderer.getRendererName()}.")
+                    )
                 }
 
                 val unsupportedPlugins = NativePluginManager.getCheckedPlugins().filter { plugin ->

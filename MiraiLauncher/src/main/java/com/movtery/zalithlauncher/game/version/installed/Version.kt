@@ -205,6 +205,13 @@ class Version(
 
     fun getRenderer(): String = versionConfig.renderer.getValueOrDefault(AllSettings.renderer.getValue())
 
+    /** Persist a launch-time renderer/backend fallback for this instance in one config write. */
+    fun setRendererAndGraphicsApiAndSave(renderer: String, graphicsApi: GraphicsApi) {
+        versionConfig.renderer = renderer
+        versionConfig.graphicsApi = graphicsApi
+        versionConfig.save()
+    }
+
     fun getDriver(): String = versionConfig.driver.getValueOrDefault(AllSettings.vulkanDriver.getValue())
 
     fun getGraphicsApi(): GraphicsApi = versionConfig.graphicsApi ?: AllSettings.graphicsApi.getValue()

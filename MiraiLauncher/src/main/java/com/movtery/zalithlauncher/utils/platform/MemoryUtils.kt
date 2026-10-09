@@ -102,12 +102,21 @@ fun getMaxMemoryForLaunch(context: Context): Int {
  * A 32-bit APK can run on 64-bit-capable hardware, so device bitness alone is not enough.
  */
 internal fun maxMemoryForSettings(deviceRamMb: Double, is64BitProcess: Boolean): Int {
-    return if (!is64BitProcess || deviceRamMb < 2048) {
-        min(1024.0, deviceRamMb).toInt()
-    } else {
-        //To have a minimum for the device to breathe
-        (deviceRamMb - (if (deviceRamMb < 3064) 800 else 1024)).toInt()
+    if (!is64BitProcess) {
+        // A 32-bit process has a much smaller and fragmented virtual address space. Allow up to
+        // 1536 MiB on high-memory devices, while leaving physical-RAM headroom on smaller phones;
+        // getMaxMemoryForLaunch() applies a second cap based on the largest free /proc/maps range.
+        val reserveMb = if (deviceRamMb < 3064) LOW_MEMORY_RESERVE_MB else HIGH_MEMORY_RESERVE_MB
+        return min(
+            MAX_32_BIT_JVM_HEAP_MB.toDouble(),
+            (deviceRamMb - reserveMb).coerceAtLeast(MINIMUM_JVM_HEAP_MB.toDouble())
+        ).toInt()
     }
+
+    if (deviceRamMb < 2048) return min(1024.0, deviceRamMb).toInt()
+    // To have a minimum for the device to breathe.
+    val reserveMb = if (deviceRamMb < 3064) LOW_MEMORY_RESERVE_MB else HIGH_MEMORY_RESERVE_MB
+    return (deviceRamMb - reserveMb).toInt()
 }
 
 /**

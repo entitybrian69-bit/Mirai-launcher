@@ -24,6 +24,7 @@ import com.movtery.zalithlauncher.game.renderer.renderers.KopperZinkRenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.LTWLegacyRenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.LTWRenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.MobileGluesRenderer
+import com.movtery.zalithlauncher.game.renderer.renderers.NGGL4ESRenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.VGPU1368Renderer
 import com.movtery.zalithlauncher.game.renderer.renderers.VGPURenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.VirGLRenderer
@@ -44,8 +45,9 @@ import com.movtery.zalithlauncher.game.version.installed.utils.isLowerVer
  *  - **1.8 – 1.16.5** drive OpenGL 1.x/2.1 with fixed-function state and the legacy
  *    client-array draw path, so they need [LTWLegacyRenderer], [VGPURenderer],
  *    [VGPU1368Renderer], or [GL4ESRenderer].
- *  - **1.17 and newer** require the OpenGL 3.2 core profile, which is what [LTWRenderer]
- *    implements.
+ *  - **1.17 and newer** require a core-profile-capable OpenGL wrapper; the picker considers
+ *    [LTWRenderer], [MobileGluesRenderer], and modern [NGGL4ESRenderer] before Vulkan-backed paths. Legacy
+ *    GLES2 [GL4ESRenderer] is never used as a fallback for these versions.
  *
  * An explicit per-instance choice always wins, but only while it stays compatible with the
  * version being launched; otherwise the launcher would refuse to start the game a moment later
@@ -57,6 +59,7 @@ object RendererPicker {
     val VIRGL: String = VirGLRenderer.getUniqueIdentifier()
     val LTW: String = LTWRenderer.getUniqueIdentifier()
     val MOBILEGLUES: String = MobileGluesRenderer.getUniqueIdentifier()
+    val NG_GL4ES: String = NGGL4ESRenderer.getUniqueIdentifier()
     val ZINK: String = KopperZinkRenderer.getUniqueIdentifier()
     val LTW_LEGACY: String = LTWLegacyRenderer.getUniqueIdentifier()
     val VGPU: String = VGPURenderer.getUniqueIdentifier()
@@ -68,8 +71,8 @@ object RendererPicker {
     /** Preferred legacy wrappers, best first. */
     private val LEGACY_ORDER = listOf(LTW_LEGACY, VGPU, VGPU_1368, GL4ES, VIRGL)
 
-    /** Preferred core-profile wrappers, best first. */
-    private val MODERN_ORDER = listOf(LTW, MOBILEGLUES, ZINK)
+    /** Preferred core-profile wrappers, best first. GL4ES is intentionally absent here. */
+    private val MODERN_ORDER = listOf(LTW, MOBILEGLUES, NG_GL4ES, ZINK)
 
     data class Choice(
         val identifier: String,
@@ -89,11 +92,13 @@ object RendererPicker {
         mcVersion: String,
         manualIdentifier: String,
         deviceGlesVersion: Int? = null,
+        vulkanAvailable: Boolean? = null,
     ): String? {
         if (mcVersion.isBlank()) return null
         val available = Renderers.getRenderers().map { it.getUniqueIdentifier() }.toSet()
         if (available.isEmpty()) return null
-        return pick(mcVersion, manualIdentifier, available, deviceGlesVersion).identifier.ifEmpty { null }
+        return pick(mcVersion, manualIdentifier, available, deviceGlesVersion, vulkanAvailable)
+            .identifier.ifEmpty { null }
     }
 
     /**
@@ -101,22 +106,29 @@ object RendererPicker {
      * @param manualIdentifier the instance's configured renderer, blank when it has none.
      * @param available identifiers of the renderers that are actually loaded right now.
      * @param deviceGlesVersion detected GLES major version; null/zero means unavailable.
+     * @param vulkanAvailable whether a native Vulkan implementation was detected; null means unknown.
      */
     fun pick(
         mcVersion: String,
         manualIdentifier: String,
         available: Set<String>,
         deviceGlesVersion: Int? = null,
+        vulkanAvailable: Boolean? = null,
     ): Choice {
         val manual = manualIdentifier.trim()
         if (manual.isNotEmpty()) {
-            if (manual in available && supports(manual, mcVersion) && supportsDevice(manual, deviceGlesVersion)) {
+            if (manual in available &&
+                supports(manual, mcVersion) &&
+                supportsDevice(manual, deviceGlesVersion) &&
+                supportsVulkan(manual, vulkanAvailable, allowUnknown = true)
+            ) {
                 return Choice(manual, "instance override", automatic = false)
             }
-            val fallback = automatic(mcVersion, available, deviceGlesVersion)
+            val fallback = automatic(mcVersion, available, deviceGlesVersion, vulkanAvailable)
             val reason = when {
                 manual !in available -> "instance override missing, ${fallback.reason}"
                 !supports(manual, mcVersion) -> "instance override unsupported on $mcVersion, ${fallback.reason}"
+                !supportsVulkan(manual, vulkanAvailable, allowUnknown = true) -> "instance override requires Vulkan, but Vulkan is unavailable, ${fallback.reason}"
                 else -> {
                     val required = minimumGlesVersion(manual)
                     "instance override requires GLES $required, detected GLES $deviceGlesVersion, ${fallback.reason}"
@@ -124,18 +136,20 @@ object RendererPicker {
             }
             return fallback.copy(reason = reason)
         }
-        return automatic(mcVersion, available, deviceGlesVersion)
+        return automatic(mcVersion, available, deviceGlesVersion, vulkanAvailable)
     }
 
     private fun automatic(
         mcVersion: String,
         available: Set<String>,
         deviceGlesVersion: Int?,
+        vulkanAvailable: Boolean?,
     ): Choice {
         val order = if (usesCoreProfile(mcVersion)) MODERN_ORDER else LEGACY_ORDER
 
         val compatible = order.filter {
-            it in available && supports(it, mcVersion) && supportsDevice(it, deviceGlesVersion)
+            it in available && supports(it, mcVersion) &&
+                    supportsDevice(it, deviceGlesVersion) && supportsVulkan(it, vulkanAvailable)
         }
         compatible.firstOrNull()?.let { picked ->
             val reason = when {
@@ -149,21 +163,21 @@ object RendererPicker {
             return Choice(picked, reason, automatic = true)
         }
 
-        // Nothing in the preferred order is compatible with this version/device. Offering
-        // something is better than refusing to launch, but say so plainly instead of
-        // pretending it is a good match.
-        val anyAvailable = available.firstOrNull { supportsDevice(it, deviceGlesVersion) }
-            ?: available.firstOrNull()
-            ?: return Choice("", "no renderer available", automatic = true)
-        val deviceWarning = if (!supportsDevice(anyAvailable, deviceGlesVersion)) {
-            val required = minimumGlesVersion(anyAvailable)
-            "; requires GLES $required but device reports GLES $deviceGlesVersion"
-        } else {
-            ""
-        }
+        // A renderer outside the preferred order (for example, a plugin) may still be a
+        // declared version/device-compatible choice. Never fall through to an incompatible
+        // renderer such as legacy GLES2 GL4ES on a core-profile Minecraft version.
+        val anyCompatible = available.firstOrNull {
+            supports(it, mcVersion) && supportsDevice(it, deviceGlesVersion) &&
+                    supportsVulkan(it, vulkanAvailable)
+        } ?: return Choice(
+            "",
+            "no renderer compatible with ${describe(mcVersion)} is available for this device",
+            automatic = true
+        )
+
         return Choice(
-            anyAvailable,
-            "no preferred wrapper is compatible with ${describe(mcVersion)}$deviceWarning, using ${nameOf(anyAvailable)}",
+            anyCompatible,
+            "no preferred wrapper is compatible with ${describe(mcVersion)}, using ${nameOf(anyCompatible)}",
             automatic = true
         )
     }
@@ -179,6 +193,22 @@ object RendererPicker {
         if (deviceGlesVersion == null || deviceGlesVersion <= 0) return true
         val minimum = minimumGlesVersion(identifier) ?: return true
         return deviceGlesVersion >= minimum
+    }
+
+    private fun supportsVulkan(
+        identifier: String,
+        vulkanAvailable: Boolean?,
+        allowUnknown: Boolean = false,
+    ): Boolean {
+        val requiresVulkan = Renderers.BUILT_IN
+            .firstOrNull { it.getUniqueIdentifier() == identifier }
+            ?.requiresVulkan() == true
+        if (!requiresVulkan) return true
+        return when (vulkanAvailable) {
+            true -> true
+            false -> false
+            null -> allowUnknown
+        }
     }
 
     /**

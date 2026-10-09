@@ -51,8 +51,10 @@ import com.movtery.zalithlauncher.game.renderer.renderers.NGGL4ESRenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.VGPU1368Renderer
 import com.movtery.zalithlauncher.game.renderer.renderers.VGPURenderer
 import com.movtery.zalithlauncher.game.support.touch_controller.ControllerProxy
+import com.movtery.zalithlauncher.game.version.installed.GraphicsApi
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionInfoParser
+import com.movtery.zalithlauncher.game.version.installed.hasVulkanBackend
 import com.movtery.zalithlauncher.game.versioninfo.models.GameManifest
 import com.movtery.zalithlauncher.path.LibPath
 import com.movtery.zalithlauncher.path.PathManager
@@ -123,6 +125,9 @@ class GameLauncher(
             }
             .map { it.getUniqueIdentifier() }
             .toSet()
+        val graphicsApi = version.getGraphicsApi()
+        val usesVulkanBackend = graphicsApi == GraphicsApi.VULKAN ||
+                (graphicsApi == GraphicsApi.DEFAULT && version.hasVulkanBackend())
         val rendererChoice = if (pickerVersion.isNotBlank()) {
             RendererPicker.pick(
                 mcVersion = pickerVersion,
@@ -136,6 +141,10 @@ class GameLauncher(
         if (rendererChoice != null && rendererChoice.identifier.isNotBlank()) {
             Renderers.setCurrentRenderer(rendererChoice.identifier)
             Logger.info(TAG, "Renderer selected: ${rendererChoice.identifier}; ${rendererChoice.reason}")
+        } else if (rendererChoice != null && !usesVulkanBackend) {
+            throw IllegalStateException(
+                "No renderer compatible with Minecraft $pickerVersion and GLES $detectedGlesVersion is available."
+            )
         } else if (!Renderers.isCurrentRendererValid()) {
             Renderers.setCurrentRenderer(version.getRenderer())
         }
@@ -219,6 +228,7 @@ class GameLauncher(
 
     override fun initEnv(screenSize: IntSize): MutableMap<String, String> {
         val envMap = super.initEnv(screenSize)
+        configureOpenAlEnvironment(envMap)
 
         envMap["DRIVER_PATH"] = DriverPluginManager.getDriver(version.getDriver()).path
 
@@ -239,6 +249,30 @@ class GameLauncher(
             envMap["XDG_DATA_HOME"] = xdgDataHome.absolutePath
         }
         return envMap
+    }
+
+    private fun configureOpenAlEnvironment(envMap: MutableMap<String, String>) {
+        runCatching {
+            val configText = activity.assets.open(OpenAlRuntimeConfig.CONF_ASSET_PATH)
+                .bufferedReader(Charsets.UTF_8)
+                .use { it.readText() }
+            val configFile = OpenAlRuntimeConfig.installConfig(
+                target = File(PathManager.DIR_FILES_PRIVATE, "openal/alsoft.conf"),
+                configText = configText,
+            )
+            envMap += OpenAlRuntimeConfig.environment(configFile, configText)
+
+            val nativeLibrary = File(PathManager.DIR_NATIVE_LIB, "libopenal.so")
+            if (nativeLibrary.isFile) {
+                Logger.info(TAG, "OpenAL Soft ABI-matched native: ${nativeLibrary.absolutePath}")
+            } else {
+                Logger.error(TAG, "OpenAL Soft is not packaged for this process ABI: ${nativeLibrary.absolutePath}")
+            }
+        }.onFailure {
+            // ALSOFT_DRIVERS remains set to opensl by the base launcher even if the config asset
+            // cannot be copied, so audio still has the Android OpenSL ES fallback.
+            Logger.warning(TAG, "Unable to install the OpenAL Soft config; keeping the OpenSL ES driver override", it)
+        }
     }
 
     override fun dlopenEngine() {
@@ -672,8 +706,13 @@ private fun setRendererEnv(envMap: MutableMap<String, String>, detectedGlesVersi
     val renderer = Renderers.getCurrentRenderer()
     val rendererId = renderer.getRendererId()
 
-    // SDL 环境变量
-    envMap["SDL_OPENGL_LIBRARY"] = rendererId
+    // SDL_HINT_OPENGL_LIBRARY expects a shared-library path, not POJAV_RENDERER's ID.
+    // A renderer ID such as "opengles3_mobileglues" cannot be dlopen'ed, so SDL may silently
+    // fall back to the system GLES library instead of the selected renderer.
+    envMap["SDL_OPENGL_LIBRARY"] = resolveSdlOpenGlLibraryPath(
+        rendererLibrary = renderer.getRendererLibrary(),
+        nativeLibraryDirectory = PathManager.DIR_NATIVE_LIB,
+    )
 
     if (rendererId.startsWith("opengles2")) {
         envMap["LIBGL_ES"] = "2"

@@ -27,6 +27,8 @@ object KopperZinkRenderer : RendererInterface {
 
     override fun getRendererName(): String = "Kopper Zink"
 
+    override fun requiresVulkan(): Boolean = true
+
     override fun getMaxMCVersion(): String = "26.3-snapshot-3"
 
     override fun getDisplayMaxMCVersion(): String = "26.2"

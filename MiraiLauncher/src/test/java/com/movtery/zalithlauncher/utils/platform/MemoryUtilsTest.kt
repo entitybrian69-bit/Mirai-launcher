@@ -24,8 +24,15 @@ import org.junit.Test
 
 class MemoryUtilsTest {
     @Test
-    fun capsHeapFor32BitProcessEvenOn64BitHardware() {
-        assertEquals(1024, maxMemoryForSettings(deviceRamMb = 8192.0, is64BitProcess = false))
+    fun capsHeapFor32BitProcessWithinThe1536MbCeilingEvenOn64BitHardware() {
+        assertEquals(1536, maxMemoryForSettings(deviceRamMb = 8192.0, is64BitProcess = false))
+        assertEquals(1536, maxMemoryForSettings(deviceRamMb = 6144.0, is64BitProcess = false))
+    }
+
+    @Test
+    fun preservesPhysicalMemoryHeadroomForLowMemory32BitDevices() {
+        assertEquals(1248, maxMemoryForSettings(deviceRamMb = 2048.0, is64BitProcess = false))
+        assertEquals(736, maxMemoryForSettings(deviceRamMb = 1536.0, is64BitProcess = false))
     }
 
     @Test
@@ -40,6 +47,15 @@ class MemoryUtilsTest {
             settingsLimitMb = 1024,
             is64BitProcess = false,
             largestAddressSpaceHoleMb = 800
+        ))
+    }
+
+    @Test
+    fun neverLetsA32BitLaunchHeapExceedThe1536MbCeiling() {
+        assertEquals(1536, maxMemoryForLaunch(
+            settingsLimitMb = 1536,
+            is64BitProcess = false,
+            largestAddressSpaceHoleMb = 4096
         ))
     }
 
@@ -95,6 +111,7 @@ class MemoryUtilsTest {
     @Test
     fun clampsPreviouslySavedAllocationsToTheCurrentProcessLimit() {
         val maxRamMb = maxMemoryForSettings(deviceRamMb = 8192.0, is64BitProcess = false)
-        assertEquals(1024, clampRamAllocation(requestedRamMb = 6144, maxRamMb = maxRamMb))
+        assertEquals(1536, clampRamAllocation(requestedRamMb = 6144, maxRamMb = maxRamMb))
+        assertEquals(768, clampRamAllocation(requestedRamMb = 768, maxRamMb = maxRamMb))
     }
 }
