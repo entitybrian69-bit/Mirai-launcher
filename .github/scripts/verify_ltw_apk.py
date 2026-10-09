@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Verify the bundled native renderer libraries are packaged for the requested Android ABI(s).
+"""Verify native renderer and JNA libraries are packaged for the requested Android ABI(s).
 
-Aerix ships two wrapper libraries that are built from source rather than vendored as
-prebuilt blobs, and both must survive packaging:
+Aerix ships wrapper libraries that are built from source rather than vendored as
+prebuilt blobs, and they must survive packaging:
 
-  * ``libltw.so``       - LTW,     the OpenGL 3.2 core wrapper (MC 1.17+)
-  * ``libltwlegacy.so`` - LTW Legacy, the OpenGL 1.x/2.1 wrapper (MC 1.8 - 1.16.5)
+  * ``libltw.so``        - LTW, OpenGL 3.2 core wrapper (MC 1.17+)
+  * ``libltwlegacy.so``  - LTW Legacy, OpenGL 1.x/2.1 wrapper (MC 1.8 - 1.16.5)
+  * ``libjnidispatch.so`` - Android JNA dispatch library used by Minecraft's JNA jars
 
-A missing or wrong-architecture library is invisible until someone launches the matching
-Minecraft version on a device, so it is checked here instead.
+A missing or wrong-architecture library can be invisible until a device launch, so it is
+checked here instead.
 """
 
 from __future__ import annotations
@@ -35,6 +36,8 @@ ELF_ABI = {
 }
 # Native renderer libraries that must be verified in every built APK.
 BUILT_FROM_SOURCE_LIBRARIES = ("libltw.so", "libltwlegacy.so", "libvgpu.so", "libvgpu_1368.so")
+# JNA's desktop jars include glibc Linux natives; the Android dispatch library must be packaged per ABI.
+REQUIRED_RUNTIME_LIBRARIES = ("libjnidispatch.so",)
 
 
 def expected_abis(arch: str) -> tuple[str, ...]:
@@ -111,14 +114,16 @@ def main() -> int:
         action="append",
         metavar="NAME",
         help=(
-            "restrict the check to a specific packaged library name; "
+            "restrict the renderer-library check to a specific packaged library name; "
             "repeatable. Defaults to checking every library Aerix builds from source: "
             + ", ".join(BUILT_FROM_SOURCE_LIBRARIES)
+            + ". The Android JNA dispatch library is always checked."
         ),
     )
     args = parser.parse_args()
 
-    libraries = tuple(args.libraries) if args.libraries else BUILT_FROM_SOURCE_LIBRARIES
+    renderer_libraries = tuple(args.libraries) if args.libraries else BUILT_FROM_SOURCE_LIBRARIES
+    libraries = tuple(dict.fromkeys((*renderer_libraries, *REQUIRED_RUNTIME_LIBRARIES)))
 
     try:
         verify(args.arch, args.apk_path, libraries)

@@ -28,12 +28,18 @@ class LTWRendererTest {
         assertEquals("opengles3_ltw", LTWRenderer.getRendererId())
         assertEquals("libltw.so", LTWRenderer.getRendererLibrary())
         assertEquals("libltw.so", LTWRenderer.getRendererEGL())
-        assertEquals("3", LTWRenderer.getRendererEnv().value["LIBGL_ES"])
+        val env = LTWRenderer.getRendererEnv().value
+        assertEquals("3", env["LIBGL_ES"])
+        assertEquals("1", env["LIBGL_NOERROR"])
+        assertEquals("true", env["force_glsl_extensions_warn"])
+        assertEquals("true", env["allow_higher_compat_version"])
+        assertEquals("true", env["allow_glsl_extension_directive_midshader"])
     }
 
     @Test
     fun rendererAdvertisesMinecraftVersionsStartingAtOneSeventeen() {
         assertEquals("1.17", LTWRenderer.getMinMCVersion())
         assertEquals(null, LTWRenderer.getMaxMCVersion())
+        assertEquals(3, LTWRenderer.getMinimumGlesVersion())
     }
 }

@@ -8,12 +8,12 @@
 An Android launcher for Minecraft: Java Edition.</p>
 
 <p align="center">
-  <a href="https://github.com/entitybrian69-bit/Mirai-launcher/releases">Releases</a> ·
+  <a href="https://github.com/entitybrian69-bit/Aerix-launcher/releases">Releases</a> ·
   <a href="README.md">简体中文</a> ·
   <a href="README_ZH_TW.md">繁體中文</a>
 </p>
 
-![GitHub downloads](https://img.shields.io/github/downloads/entitybrian69-bit/Mirai-launcher/total)
+![GitHub downloads](https://img.shields.io/github/downloads/entitybrian69-bit/Aerix-launcher/total)
 
 > **Unofficial Modified Version** — Aerix is for players who want a clear, capable way to manage Minecraft Java Edition on Android. Set up your installations, content, accounts, and controls in one place, then get back to the world you came for.
 
@@ -32,13 +32,13 @@ Aerix keeps versions, content, accounts, controls, and everyday tools together. 
 
 ## Downloads and builds
 
-Published APKs will be available on [GitHub Releases](https://github.com/entitybrian69-bit/Mirai-launcher/releases). GitHub Actions can build a universal APK and architecture-specific packages for ARMv7, ARM64, x86, and x86_64. The manual workflow offers Debug and Release builds; Release requires the `STORE_PASSWORD` and `KEY_PASSWORD` repository secrets, and tagged releases are checked for all five APKs before upload.
+Published APKs will be available on [GitHub Releases](https://github.com/entitybrian69-bit/Aerix-launcher/releases). GitHub Actions can build a universal APK and architecture-specific packages for ARMv7, ARM64, x86, and x86_64. The manual workflow offers Debug and Release builds; Release requires the `STORE_PASSWORD` and `KEY_PASSWORD` repository secrets, and tagged releases are checked for all five APKs before upload.
 
 To build locally, use JDK 21 and the Android SDK (minimum API 26; the project compiles against API 37):
 
 ```bash
-git clone https://github.com/entitybrian69-bit/Mirai-launcher.git
-cd Mirai-launcher
+git clone https://github.com/entitybrian69-bit/Aerix-launcher.git
+cd Aerix-launcher
 ./gradlew :MiraiLauncher:assembleDebug -Darch=all
 ```
 

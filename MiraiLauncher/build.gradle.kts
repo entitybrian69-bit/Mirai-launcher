@@ -1,4 +1,3 @@
-import com.android.build.api.variant.FilterConfiguration.FilterType.ABI
 import com.android.build.api.variant.impl.VariantOutputImpl
 import com.android.build.gradle.tasks.MergeSourceSetFolders
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -30,15 +29,34 @@ val defaultCurseForgeApiKey = project.findProperty("curseforge_api_key") as? Str
 
 val projectArch: String = System.getProperty("arch", "all")
 
+// Keep native packaging explicit so dependency AARs (including OpenAL and NG-GL4ES) retain both
+// ARM process ABIs in all-ABI builds. Single-ABI CI builds use these NDK filters directly rather
+// than overlapping ABI splits, which Android Gradle Plugin rejects for the same ABI.
+val packagedAbis: List<String> = when (projectArch) {
+    "all" -> listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+    "arm" -> listOf("armeabi-v7a")
+    "arm64" -> listOf("arm64-v8a")
+    "x86" -> listOf("x86")
+    "x86_64" -> listOf("x86_64")
+    else -> error("Unsupported -Darch=$projectArch (expected all, arm, arm64, x86, or x86_64)")
+}
+
 fun getKeyFromLocal(envKey: String, fileName: String? = null, default: String? = null): String {
-    val key = System.getenv(envKey)
+    // GitHub Actions exposes unset secrets as an empty environment variable. Treat that as
+    // absent so project defaults (such as the public Microsoft client ID) remain in effect.
+    val key = System.getenv(envKey)?.takeIf { it.isNotBlank() }
     return key ?: fileName?.let {
         val file = File(rootDir, fileName)
-        if (file.canRead() && file.isFile) file.readText() else null
-    } ?: default ?: run {
+        if (file.canRead() && file.isFile) file.readText().takeIf { it.isNotBlank() } else null
+    } ?: default?.takeIf { it.isNotBlank() } ?: run {
         logger.warn("BUILD: $envKey not set; related features may throw exceptions.")
         ""
     }
+}
+
+val oauthClientId = getKeyFromLocal("OAUTH_CLIENT_ID", ".oauth_client_id.txt", defaultOAuthClientID)
+check(oauthClientId.isNotBlank()) {
+    "OAUTH_CLIENT_ID is required. Set the OAUTH_CLIENT_ID secret, .oauth_client_id.txt, or oauth_client_id property."
 }
 
 android {
@@ -72,6 +90,9 @@ android {
         versionCode = launcherVersionCode
         versionName = launcherVersionName
         manifestPlaceholders["launcher_name"] = launcherAPPName
+        ndk {
+            abiFilters += packagedAbis
+        }
     }
 
     buildTypes {
@@ -89,20 +110,6 @@ android {
             applicationIdSuffix = ".debug"
             //版本号不再显示 -debug 后缀，调试包与正式包版本号保持一致
             signingConfig = signingConfigs.getByName("debugBuild")
-        }
-    }
-
-    splits {
-        val arch = projectArch.takeIf { it != "all" } ?: return@splits
-        abi {
-            isEnable = true
-            reset()
-            when (arch) {
-                "arm" -> include("armeabi-v7a")
-                "arm64" -> include("arm64-v8a")
-                "x86" -> include("x86")
-                "x86_64" -> include("x86_64")
-            }
         }
     }
 
@@ -191,10 +198,9 @@ androidComponents {
                     }
                 }
 
-                (output.getFilter(ABI)?.identifier ?: "all").let { abi ->
-                    val baseName = "${launcherName.replace(' ', '.')}-${if (variant.buildType == "release") launcherVersionName else "Debug-$launcherVersionName"}"
-                    output.outputFileName = if (abi == "all") "$baseName.apk" else "$baseName-$abi.apk"
-                }
+                val outputAbi = if (projectArch == "all") null else packagedAbis.single()
+                val baseName = "${launcherName.replace(' ', '.')}-${if (variant.buildType == "release") launcherVersionName else "Debug-$launcherVersionName"}"
+                output.outputFileName = outputAbi?.let { "$baseName-$it.apk" } ?: "$baseName.apk"
             }
         }
     }
@@ -211,7 +217,7 @@ kotlin {
 }
 
 buildKeys {
-    string("OAUTH_CLIENT_ID", getKeyFromLocal("OAUTH_CLIENT_ID", ".oauth_client_id.txt", defaultOAuthClientID), true)
+    string("OAUTH_CLIENT_ID", oauthClientId, true)
     string("LAUNCHER_NAME", launcherAPPName, true)
     string("LAUNCHER_IDENTIFIER", launcherName, true)
     string("LAUNCHER_SHORT_NAME", launcherShortName, true)

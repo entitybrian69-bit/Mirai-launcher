@@ -24,7 +24,8 @@ import com.movtery.zalithlauncher.ui.theme.AerixSurface
 
 private val CardBg = AerixSurface.canvas
 private val Muted = AerixSurface.textMuted
-private val Green = AerixSurface.accent
+private val Green: Color
+    @Composable get() = AerixSurface.accent
 
 data class MoreAction(val title: String, val body: String, val onClick: () -> Unit)
 

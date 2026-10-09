@@ -27,7 +27,8 @@ import com.movtery.zalithlauncher.ui.theme.AerixSurface
 private val PageBg = AerixSurface.canvas
 private val CardBg = AerixSurface.canvas
 private val Muted = AerixSurface.textMuted
-private val Green = AerixSurface.accent
+private val Green: Color
+    @Composable get() = AerixSurface.accent
 
 @Composable
 fun MiraiAccountsPage(onOffline: () -> Unit, onMicrosoft: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {

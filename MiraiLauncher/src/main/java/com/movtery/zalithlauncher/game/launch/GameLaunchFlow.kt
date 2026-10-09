@@ -100,6 +100,9 @@ class GameLaunchFlow(scope: CoroutineScope) {
 
         val account = AccountsManager.currentAccountFlow.value ?: return
 
+        // Do not reject 1.20.5+ here based only on the launcher process bitness. Aerix bundles
+        // 32-bit Java 21 and ABI-matched LWJGL/rendering natives; GameLauncher validates the actual
+        // selected Java major and ABI before it starts the JVM.
         taskExecutor.executePhasesAsync(
             onStart = {
                 taskExecutor.addPhases(

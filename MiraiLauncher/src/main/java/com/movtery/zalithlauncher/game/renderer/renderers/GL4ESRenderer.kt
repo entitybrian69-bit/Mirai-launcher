@@ -27,9 +27,15 @@ object GL4ESRenderer : RendererInterface {
 
     override fun getRendererName(): String = "GL4ES"
 
-    override fun getMaxMCVersion(): String = "1.21.4"
+    /** GL4ES is a legacy fixed-function/compatibility wrapper, not a modern core-profile path. */
+    override fun getMaxMCVersion(): String = "1.16.5"
 
-    override fun getRendererEnv(): Lazy<Map<String, String>> = lazy { emptyMap() }
+    override fun getMinimumGlesVersion(): Int = 2
+
+    override fun getRendererEnv(): Lazy<Map<String, String>> = lazy {
+        // This spelling is what the bundled GL4ES binary reads (LIBGL_USEVBO, not USE_VBO).
+        mapOf("LIBGL_USEVBO" to "1")
+    }
 
     override fun getDlopenLibrary(): Lazy<List<String>> = lazy { emptyList() }
 

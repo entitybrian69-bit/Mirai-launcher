@@ -6,14 +6,14 @@
 <title>Changelog — Aerix Launcher</title>
 <meta name="description" content="Release notes for Aerix Launcher, starting with 1.0.0 — the renderer lineup, mobile performance tools, interface work and the fixes behind them.">
 <meta name="theme-color" content="#FAF6F1">
-<link rel="canonical" href="https://entitybrian69-bit.github.io/Mirai-launcher/changelog.html">
+<link rel="canonical" href="https://aerix-launcher.gt.tc/changelog.html">
 <link rel="icon" href="assets/img/favicon.ico" sizes="any">
 <link rel="icon" href="assets/img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Changelog — Aerix Launcher">
 <meta property="og:description" content="Release notes for Aerix Launcher.">
-<meta property="og:image" content="https://entitybrian69-bit.github.io/Mirai-launcher/assets/img/aerix-logo.png">
+<meta property="og:image" content="https://aerix-launcher.gt.tc/assets/img/aerix-logo.png">
 <script>
 (function(){try{
   var m=localStorage.getItem('mirai-theme')||'auto';
@@ -69,7 +69,7 @@
             </div>
           </div>
         </div>
-        <a class="btn btn-primary btn-sm" href="https://github.com/entitybrian69-bit/Mirai-launcher/releases/latest">Download</a>
+        <a class="btn btn-primary btn-sm" href="https://github.com/entitybrian69-bit/Aerix-launcher/releases/latest">Download</a>
         <button class="icon-btn menu-btn" id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
         </button>
@@ -94,12 +94,112 @@
     <div class="wrap">
       <p class="eyebrow reveal">Changelog</p>
       <h1 class="reveal" style="max-width:14ch;margin-inline:auto">What changed</h1>
-      <p class="lead reveal" style="--d:80ms">Notable changes to Aerix Launcher. The full history lives in <a href="https://github.com/entitybrian69-bit/Mirai-launcher/blob/Mirai-launcher/CHANGELOG.md" style="color:var(--accent)">CHANGELOG.md</a>.</p>
+      <p class="lead reveal" style="--d:80ms">Notable changes to Aerix Launcher. The full history lives in <a href="https://github.com/entitybrian69-bit/Aerix-launcher/blob/Aerix-launcher/CHANGELOG.md" style="color:var(--accent)">CHANGELOG.md</a>.</p>
     </div>
   </section>
 
   <section>
     <div class="wrap wrap-narrow">
+      <div class="release reveal">
+        <div class="release-head">
+          <span class="release-version">1.6</span>
+          <span class="badge">ARM32 runtime &amp; renderer compatibility</span>
+          <span class="small muted">2026-10-08</span>
+        </div>
+        <div class="release-list">
+          <div>
+            <h4>Changed</h4>
+            <ul>
+              <li><strong>Updated the bundled ARM32 Java 21 runtime.</strong> The rebuilt runtime disables <code>InlineIntrinsics</code> to avoid a known ARM32 <code>java.lang.Math</code> regression, and its marker identifies the patched bundle. It passed source and ELF architecture checks, but was not tested on a physical device; Minecraft 1.20.5+ on 32-bit Android remains experimental and unverified.</li>
+              <li><strong>LTW renderer selection now considers GLES support and library availability.</strong> When GLES is detected, LTW is not selected below GLES 3; its ABI-specific native library must also be present. Incompatible selections fall back where a compatible renderer is available.</li>
+              <li><strong>LTW shader optimization preserves linked shader-stage inputs and outputs</strong> through post-link optimization. This source-level compatibility change does not claim to fix every device-specific rendering issue.</li>
+              <li><strong>LTW's GLES/GLSL compatibility environment</strong> now includes the renderer's required GLES and extension flags.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Added</h4>
+            <ul>
+              <li>An automated ARM32 Java 21 build, repack and verification workflow, including runtime metadata, ARM32 ELF and Math-workaround checks.</li>
+              <li>Regression tests for LTW environment settings, GLES-aware renderer selection and fallback behavior.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="release reveal">
+        <div class="release-head">
+          <span class="release-version">1.5</span>
+          <span class="badge">32-bit diagnostics &amp; mobile tuning</span>
+          <span class="small muted">2026-10-08</span>
+        </div>
+        <div class="release-list">
+          <div>
+            <h4>Changed</h4>
+            <ul>
+              <li><strong>Low-heap JVM auto-tuning</strong> selects SerialGC and a 48 MiB code cache for allocations up to 1280 MiB, while preserving explicit GC and code-cache choices.</li>
+              <li><strong>Mobile graphics presets</strong> use shorter render distances and reduced render scales. No FPS or temperature gains are promised without device-specific testing.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Fixed</h4>
+            <ul>
+              <li><strong>Memory sizing follows the launcher process ABI.</strong> On 32-bit, heap allocation accounts for the largest free virtual-address range and reserves space for JVM non-heap memory; old oversized saved values are capped.</li>
+              <li><strong>Minecraft 1.20.5+ is no longer blocked solely because Android or the launcher process is 32-bit.</strong> The launcher makes a best-effort attempt when a compatible Java 21+ runtime is available. Mojang's 64-bit OS requirement remains, so this configuration is unsupported and not confirmed on real devices.</li>
+              <li><strong>Surface startup diagnostics</strong> ignore zero-sized initial measurements and log requested and native buffer sizes plus buffer-geometry errors. This improves diagnosis; it does not claim to fix device-specific renderer failures.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Added</h4>
+            <ul>
+              <li>Regression tests for runtime selection by Java minimum and Android process ABI, included in build CI.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="release reveal">
+        <div class="release-head">
+          <span class="release-version">1.4</span>
+          <span class="badge">Microsoft login &amp; Java compatibility</span>
+          <span class="small muted">2026-10-08</span>
+        </div>
+        <div class="release-list">
+          <div>
+            <h4>Fixed</h4>
+            <ul>
+              <li><strong>Microsoft device-code sign-in</strong> now selects the OAuth endpoints for the configured client: the built-in Minecraft Java client uses Live endpoints, while custom client IDs continue to use Entra consumers v2. Refreshes stay on the matching flow, Xbox RPS tickets use its matching prefix, and both verification URL field names are accepted.</li>
+              <li><strong>Authentication errors retain their details.</strong> HTTP status and OAuth error information are surfaced, and blank CI client-ID values fall back to the configured default rather than producing an empty client ID.</li>
+              <li><strong>Java runtime and native selection now follows the app process ABI</strong>, including 32-bit APKs on 64-bit phones. Incompatible runtimes are filtered, and Java 21–25 GC flags avoid unsupported ZGC options with a G1GC fallback where needed.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Added</h4>
+            <ul>
+              <li>Regression tests for OAuth client routing and response fields, Android process architecture, and GC compatibility; OAuth configuration tests now run in CI.</li>
+              <li>Updated repository links and GitHub Pages deployment workflow after the repository rename, plus a CNAME and canonical/social metadata prepared for <code>aerix-launcher.gt.tc</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="release reveal">
+        <div class="release-head">
+          <span class="release-version">1.3</span>
+          <span class="badge">Instance &amp; theme fixes</span>
+          <span class="small muted">2026-10-07</span>
+        </div>
+        <div class="release-list">
+          <div>
+            <h4>Fixed</h4>
+            <ul>
+              <li><strong>Landscape instance management</strong> now keeps the instance summary and Play action in a compact left sidebar with a two-column section grid, while the selected manager opens in the right pane.</li>
+              <li><strong>Theme accents are consistent across the launcher.</strong> Navigation selection, primary actions, enabled switches, selected tabs and highlighted controls follow the selected launcher or wallpaper theme.</li>
+              <li><strong>Reset Icon stays horizontal.</strong> Overview actions now wrap as complete controls and keep their labels on one line on narrow screens.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <div class="release reveal">
         <div class="release-head">
           <span class="release-version">1.2</span>
@@ -222,11 +322,11 @@
   <section>
     <div class="wrap">
       <div class="cta-band reveal">
-        <h2>Get 1.2</h2>
-        <p>Five APKs, one per ABI, plus a universal build that runs on all of them.</p>
+        <h2>Get 1.6</h2>
+        <p>Download the universal APK or choose the build for your device's ABI.</p>
         <div class="btn-row">
-          <a class="btn btn-primary" href="https://github.com/entitybrian69-bit/Mirai-launcher/releases/latest">Download the latest release</a>
-          <a class="btn btn-ghost" href="https://github.com/entitybrian69-bit/Mirai-launcher/releases">All releases</a>
+          <a class="btn btn-primary" href="https://github.com/entitybrian69-bit/Aerix-launcher/releases/latest">Download the latest release</a>
+          <a class="btn btn-ghost" href="https://github.com/entitybrian69-bit/Aerix-launcher/releases">All releases</a>
         </div>
       </div>
     </div>
@@ -255,15 +355,15 @@
         <ul>
           <li><a href="https://discord.gg/RS7q9KaCm6">Discord server</a></li>
           <li><a href="faq.html">FAQ</a></li>
-          <li><a href="https://github.com/entitybrian69-bit/Mirai-launcher">GitHub</a></li>
+          <li><a href="https://github.com/entitybrian69-bit/Aerix-launcher">GitHub</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Download</h4>
         <ul>
-          <li><a href="https://github.com/entitybrian69-bit/Mirai-launcher/releases/latest">Latest release</a></li>
-          <li><a href="https://github.com/entitybrian69-bit/Mirai-launcher/blob/Mirai-launcher/CHANGELOG.md">Release notes</a></li>
-          <li><a href="https://github.com/entitybrian69-bit/Mirai-launcher/blob/Mirai-launcher/LICENSE">License</a></li>
+          <li><a href="https://github.com/entitybrian69-bit/Aerix-launcher/releases/latest">Latest release</a></li>
+          <li><a href="https://github.com/entitybrian69-bit/Aerix-launcher/blob/Aerix-launcher/CHANGELOG.md">Release notes</a></li>
+          <li><a href="https://github.com/entitybrian69-bit/Aerix-launcher/blob/Aerix-launcher/LICENSE">License</a></li>
         </ul>
       </div>
     </div>

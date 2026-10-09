@@ -206,6 +206,7 @@ fun VersionOverViewScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun VersionInfoLayout(
     modifier: Modifier = Modifier,
@@ -227,26 +228,28 @@ private fun VersionInfoLayout(
         modifier = modifier,
         paddingValues = PaddingValues(all = AerixSpacing.sm)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = AerixSpacing.sm),
-            horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(AerixSpacing.sm)
         ) {
             VersionOverviewItem(
                 modifier = Modifier
-                    .padding(start = AerixSpacing.xs)
-                    .weight(1f),
+                    .fillMaxWidth()
+                    .padding(start = AerixSpacing.xs),
                 version = version,
                 versionSummary = versionSummary,
                 refreshKey = refreshKey
             )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.md),
-                verticalAlignment = Alignment.CenterVertically
+
+            // Let the action buttons wrap as whole controls instead of squeezing
+            // their labels into a narrow vertical column on split-screen layouts.
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AerixSpacing.sm),
+                verticalArrangement = Arrangement.spacedBy(AerixSpacing.xs)
             ) {
-                //添加卡片到主界面
                 val cardExists by remember(version) {
                     VersionCardManager.cards.map { states ->
                         states.any {

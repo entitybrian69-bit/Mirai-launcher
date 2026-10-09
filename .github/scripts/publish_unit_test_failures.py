@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+import re
 import sys
 import xml.etree.ElementTree as ElementTree
 
@@ -76,28 +77,20 @@ def from_gradle_log(log_path: pathlib.Path) -> None:
         return
 
     lines = log_path.read_text(errors="replace").splitlines()
-    patterns = (
-        "e: ",
-        "error:",
-        "fatal error:",
-        "FAILED",
-        "Execution failed for task",
-        "> Task :",
-        "What went wrong:",
-        "Could not ",
-        "UnknownHostException",
-        "OutOfMemoryError",
-        "Test .*FAILED",
+    diagnostic_pattern = re.compile(
+        r"(^\s*e:\s|error:|fatal error:|\bFAILED\b|Execution failed for task|"
+        r"No tests found|What went wrong:|Could not |UnknownHostException|"
+        r"OutOfMemoryError|Exception|Caused by:|AssertionError|FAILURE:|BUILD FAILED|"
+        r"Task .+ FAILED)",
+        re.IGNORECASE,
     )
-    interesting = [
-        line[:400]
-        for line in lines
-        if any(pattern in line for pattern in patterns)
-    ]
-    if not interesting:
-        interesting = [line[:400] for line in lines[-40:]]
+    diagnostics = [line[:800] for line in lines if diagnostic_pattern.search(line)]
+    if diagnostics:
+        selected = diagnostics[-MAX_ANNOTATIONS:]
+    else:
+        selected = [line[:800] for line in lines[-MAX_ANNOTATIONS:]]
 
-    for line in interesting[-MAX_ANNOTATIONS:]:
+    for line in selected:
         annotate(line, title="Unit test build output")
 
 

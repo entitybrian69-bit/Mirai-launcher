@@ -36,9 +36,11 @@ import com.movtery.zalithlauncher.game.launch.GameLauncher
 import com.movtery.zalithlauncher.game.launch.LaunchConfig
 import com.movtery.zalithlauncher.game.launch.MCOptions
 import com.movtery.zalithlauncher.game.launch.loadLanguage
+import com.movtery.zalithlauncher.game.launch.resolvePreferredGraphicsBackendOption
 import com.movtery.zalithlauncher.game.sdl.SdlBridge
 import com.movtery.zalithlauncher.game.sdl.handleGamepadKeyEvent
 import com.movtery.zalithlauncher.game.version.installed.GraphicsApi
+import com.movtery.zalithlauncher.game.version.installed.hasVulkanBackend
 import com.movtery.zalithlauncher.game.version.installed.utils.isLowerVer
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.GamepadInputMode
@@ -117,13 +119,13 @@ class GameHandler(
 
             val graphicsApi = version.getGraphicsApi()
             val graphicsOption = "preferredGraphicsBackend"
-            when (graphicsApi) {
-                GraphicsApi.DEFAULT, GraphicsApi.DEFAULT_OPENGL -> {
-                    if (!containsKey(graphicsOption)) {
-                        set(graphicsOption, graphicsApi.option)
-                    }
-                }
-                else -> set(graphicsOption, graphicsApi.option)
+            val hasVulkanBackend = graphicsApi == GraphicsApi.DEFAULT_OPENGL && version.hasVulkanBackend()
+            resolvePreferredGraphicsBackendOption(
+                graphicsApi = graphicsApi,
+                hasVulkanBackend = hasVulkanBackend,
+                existingOption = get(graphicsOption),
+            )?.let { preferredBackend ->
+                set(graphicsOption, preferredBackend)
             }
 
             loadLanguage(version.getVersionInfo()!!.minecraftVersion)

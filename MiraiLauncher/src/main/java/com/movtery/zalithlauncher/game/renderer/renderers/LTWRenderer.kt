@@ -34,13 +34,22 @@ object LTWRenderer : RendererInterface {
     override fun getRendererName(): String = "LTW (Large Thin Wrapper)"
 
     override fun getRendererSummary(): String =
-        "Incomplete OpenGL 3.2 core wrapper on OpenGL ES; game, mod, and device compatibility varies."
+        "Incomplete OpenGL 3.2 core wrapper on OpenGL ES 3; game, mod, and device compatibility varies."
 
     /** LTW is available for Minecraft 1.17 and newer. */
     override fun getMinMCVersion(): String = "1.17"
 
+    /** LTW's GLES translator requires an OpenGL ES 3-capable device. */
+    override fun getMinimumGlesVersion(): Int = 3
+
     override fun getRendererEnv(): Lazy<Map<String, String>> = lazy {
-        mapOf("LIBGL_ES" to "3")
+        mapOf(
+            "LIBGL_ES" to "3",
+            "LIBGL_NOERROR" to "1",
+            "force_glsl_extensions_warn" to "true",
+            "allow_higher_compat_version" to "true",
+            "allow_glsl_extension_directive_midshader" to "true",
+        )
     }
 
     override fun getDlopenLibrary(): Lazy<List<String>> = lazy { emptyList() }

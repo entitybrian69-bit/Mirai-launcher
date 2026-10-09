@@ -224,7 +224,16 @@ EXTERNAL_API int pojavInit() {
     ANativeWindow_acquire(pojav_environ->pojavWindow);
     pojav_environ->savedWidth = ANativeWindow_getWidth(pojav_environ->pojavWindow);
     pojav_environ->savedHeight = ANativeWindow_getHeight(pojav_environ->pojavWindow);
-    ANativeWindow_setBuffersGeometry(pojav_environ->pojavWindow,pojav_environ->savedWidth,pojav_environ->savedHeight,AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM);
+    printf("EGLBridge: Android native window framebuffer is %d x %d (%zu-bit process)\n",
+           pojav_environ->savedWidth, pojav_environ->savedHeight, sizeof(void*) * 8);
+    int bufferGeometryResult = ANativeWindow_setBuffersGeometry(
+            pojav_environ->pojavWindow,
+            pojav_environ->savedWidth,
+            pojav_environ->savedHeight,
+            AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM);
+    if (bufferGeometryResult != 0) {
+        printf("EGLBridge: ANativeWindow_setBuffersGeometry failed: %d\n", bufferGeometryResult);
+    }
     updateMonitorSize(pojav_environ->savedWidth, pojav_environ->savedHeight);
     pojavInitOpenGL();
     // 垂直同步开关关闭时主动切入异步模式，解除帧率对屏幕刷新率的锁定；开启时交由 MC 的交换间隔调用决定

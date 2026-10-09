@@ -198,6 +198,7 @@ private fun MouseHotspotPreview(
                 repeatMode = RepeatMode.Reverse
             )
         )
+        val activeAccent = AerixSurface.accent
 
         Box(
             modifier = modifier.size(mouseSize)
@@ -221,7 +222,7 @@ private fun MouseHotspotPreview(
                 val center = Offset(x, y)
 
                 drawCircle(
-                    color = AerixSurface.accent,
+                    color = activeAccent,
                     radius = radius,
                     center = center
                 )

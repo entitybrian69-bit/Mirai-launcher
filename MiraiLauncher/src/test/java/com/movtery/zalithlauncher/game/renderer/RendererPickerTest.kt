@@ -34,14 +34,154 @@ class RendererPickerTest {
     }
 
     @Test
-    fun modernFallsBackToZink() {
-        val choice = RendererPicker.pick("1.17.1", "", setOf(RendererPicker.ZINK))
+    fun minecraft26PrefersRendererWithFullEglSupportForSdl() {
+        val choice = RendererPicker.pick(
+            mcVersion = "26.2",
+            manualIdentifier = "",
+            available = setOf(RendererPicker.LTW, RendererPicker.MOBILEGLUES, RendererPicker.NG_GL4ES),
+        )
+
+        assertEquals(RendererPicker.MOBILEGLUES, choice.identifier)
+    }
+
+    @Test
+    fun minecraft26FallsBackToNgGl4esInsteadOfThePartialLtwEglShim() {
+        val choice = RendererPicker.pick(
+            mcVersion = "26.2",
+            manualIdentifier = "",
+            available = setOf(RendererPicker.LTW, RendererPicker.NG_GL4ES),
+        )
+
+        assertEquals(RendererPicker.NG_GL4ES, choice.identifier)
+    }
+
+    @Test
+    fun persistedLtwOverrideIsRejectedForMinecraft26Snapshots() {
+        val choice = RendererPicker.pick(
+            mcVersion = "26.2-snapshot-1",
+            manualIdentifier = RendererPicker.LTW,
+            available = setOf(RendererPicker.LTW, RendererPicker.MOBILEGLUES, RendererPicker.NG_GL4ES),
+        )
+
+        assertEquals(RendererPicker.MOBILEGLUES, choice.identifier)
+        assertEquals(true, choice.automatic)
+        assertEquals(true, choice.reason.contains("instance override unsupported"))
+    }
+
+    @Test
+    fun modernVersionsCanFallBackToNgGl4esButNeverLegacyGl4es() {
+        val choice = RendererPicker.pick(
+            mcVersion = "1.20.1",
+            manualIdentifier = RendererPicker.GL4ES,
+            available = setOf(RendererPicker.GL4ES, RendererPicker.NG_GL4ES),
+        )
+
+        assertEquals(RendererPicker.NG_GL4ES, choice.identifier)
+        assertEquals(true, choice.automatic)
+    }
+
+    @Test
+    fun refusesToForceLegacyGl4esForModernMinecraftWhenNoCoreRendererExists() {
+        val choice = RendererPicker.pick(
+            mcVersion = "1.20.1",
+            manualIdentifier = RendererPicker.GL4ES,
+            available = setOf(RendererPicker.GL4ES),
+        )
+
+        assertEquals("", choice.identifier)
+        assertEquals(true, choice.reason.contains("no renderer compatible"))
+    }
+
+    @Test
+    fun modernPickDoesNotChooseGles3OrUnverifiedVulkanRenderersOnGles2Devices() {
+        val available = setOf(
+            RendererPicker.GL4ES,
+            RendererPicker.LTW,
+            RendererPicker.MOBILEGLUES,
+            RendererPicker.NG_GL4ES,
+            RendererPicker.ZINK,
+        )
+
+        val choice = RendererPicker.pick(
+            mcVersion = "1.21.1",
+            manualIdentifier = "",
+            available = available,
+            deviceGlesVersion = 2,
+        )
+
+        assertEquals("", choice.identifier)
+    }
+
+    @Test
+    fun manualLtwOverrideIsRejectedWhenDeviceLacksGles3UnlessVulkanIsAvailable() {
+        val available = setOf(
+            RendererPicker.GL4ES,
+            RendererPicker.LTW,
+            RendererPicker.MOBILEGLUES,
+            RendererPicker.NG_GL4ES,
+            RendererPicker.ZINK,
+        )
+
+        val unavailable = RendererPicker.pick(
+            mcVersion = "1.21.1",
+            manualIdentifier = RendererPicker.LTW,
+            available = available,
+            deviceGlesVersion = 2,
+        )
+        assertEquals("", unavailable.identifier)
+        assertEquals(true, unavailable.reason.contains("requires GLES 3"))
+
+        val withVulkan = RendererPicker.pick(
+            mcVersion = "1.21.1",
+            manualIdentifier = RendererPicker.LTW,
+            available = available,
+            deviceGlesVersion = 2,
+            vulkanAvailable = true,
+        )
+        assertEquals(RendererPicker.ZINK, withVulkan.identifier)
+        assertEquals(true, withVulkan.automatic)
+    }
+
+    @Test
+    fun unknownGlesDetectionDoesNotHideLtw() {
+        val choice = RendererPicker.pick(
+            mcVersion = "1.21.1",
+            manualIdentifier = "",
+            available = all,
+            deviceGlesVersion = -3,
+        )
+
+        assertEquals(RendererPicker.LTW, choice.identifier)
+    }
+
+    @Test
+    fun modernUsesZinkAsAFallbackOnlyAfterVulkanHasBeenDetected() {
+        val choice = RendererPicker.pick(
+            mcVersion = "1.17.1",
+            manualIdentifier = "",
+            available = setOf(RendererPicker.ZINK),
+            vulkanAvailable = true,
+        )
         assertEquals(RendererPicker.ZINK, choice.identifier)
     }
 
     @Test
-    fun instanceOverrideWins() {
-        val choice = RendererPicker.pick("1.21", RendererPicker.GL4ES, all)
+    fun fallsBackFromZinkWhenVulkanIsKnownToBeUnavailable() {
+        val choice = RendererPicker.pick(
+            mcVersion = "1.21.1",
+            manualIdentifier = RendererPicker.ZINK,
+            available = setOf(RendererPicker.ZINK, RendererPicker.LTW, RendererPicker.NG_GL4ES),
+            vulkanAvailable = false,
+        )
+
+        assertEquals(RendererPicker.LTW, choice.identifier)
+        assertEquals(true, choice.automatic)
+        assertEquals(true, choice.reason.contains("requires Vulkan"))
+    }
+
+    @Test
+    fun instanceOverrideWinsWhenGl4esIsUsedOnALegacyVersion() {
+        val choice = RendererPicker.pick("1.16.5", RendererPicker.GL4ES, all)
         assertEquals(RendererPicker.GL4ES, choice.identifier)
         assertEquals(false, choice.automatic)
     }
@@ -89,13 +229,10 @@ class RendererPickerTest {
         assertEquals(false, choice.automatic)
     }
 
-    /**
-     * GL4ES declares 1.21.4 as its ceiling. Selecting it anyway would pass the picker and then
-     * fail the launcher's own support check, so the picker has to fall back here.
-     */
+    /** GL4ES is legacy-only: Minecraft 1.17+ must use a core-profile-compatible renderer. */
     @Test
-    fun overrideBeyondItsVersionRangeIsRejected() {
-        val choice = RendererPicker.pick("1.21.5", RendererPicker.GL4ES, all)
+    fun legacyGl4esOverrideIsRejectedForCoreProfileVersions() {
+        val choice = RendererPicker.pick("1.17", RendererPicker.GL4ES, all)
 
         assertEquals(RendererPicker.LTW, choice.identifier)
         assertEquals(true, choice.automatic)

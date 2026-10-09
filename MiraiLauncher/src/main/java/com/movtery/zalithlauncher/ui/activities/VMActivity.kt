@@ -617,16 +617,28 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener, SurfaceHolde
     private fun refreshWindowSize(
         screenSize: IntSize
     ): IntSize {
-        val newSize = withHandler {
-            when (type) {
-                HandlerType.GAME -> computeGameRenderSize(screenSize)
-                HandlerType.JVM -> IntSize(
-                    getDisplayFriendlyRes(screenSize.width, 0.8f),
-                    getDisplayFriendlyRes(screenSize.height, 0.8f)
-                )
-            }
+        val handlerType = withHandler { type }
+        val newSize = when (handlerType) {
+            HandlerType.GAME -> computeGameRenderSize(screenSize)
+            HandlerType.JVM -> IntSize(
+                getDisplayFriendlyRes(screenSize.width, 0.8f),
+                getDisplayFriendlyRes(screenSize.height, 0.8f)
+            )
         }
+        val previousSize = lastWindowSize
         lastWindowSize = newSize
+
+        if (previousSize != newSize) {
+            val surfaceType = if (handlerType == HandlerType.GAME) {
+                if (AllSettings.useSurfaceView.getValue()) "SurfaceView" else "TextureView"
+            } else {
+                "AWT"
+            }
+            LoggerBridge.appendInfo(
+                "Shared surface resize: type=$surfaceType, layout=${screenSize.width}x${screenSize.height}, " +
+                        "framebuffer=${newSize.width}x${newSize.height}"
+            )
+        }
 
         applySizeToSurface?.invoke(newSize.width, newSize.height)
         ZLBridgeStates.onWindowChange()
@@ -844,6 +856,10 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener, SurfaceHolde
 
             val changed by vmViewModel.onConfigurationChanged.collectAsStateWithLifecycle()
             LaunchedEffect(screenSize, changed) {
+                // Do not let a transient zero-sized Compose measurement become the one-shot
+                // startup size consumed by the renderer/native framebuffer setup.
+                if (screenSize.width <= 0 || screenSize.height <= 0) return@LaunchedEffect
+
                 vmViewModel.screenSize = screenSize
                 vmViewModel.screenSizeBridge.provideData(screenSize)
                 if (changed) {

@@ -690,7 +690,7 @@ private fun VersionsLayout(
                                     Surface(
                                         modifier = Modifier.size(34.dp),
                                         shape = RoundedCornerShape(AerixRadii.controlSmall),
-                                        color = if (showGamePathDrawer) AerixSurface.accentContainer else AerixSurface.panelRaised,
+                                        color = if (showGamePathDrawer) MiraiThemeManager.currentAccent().copy(alpha = 0.18f) else AerixSurface.panelRaised,
                                         border = BorderStroke(
                                             AerixSpacing.hairline,
                                             if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixSurface.borderSoft
@@ -880,7 +880,7 @@ private fun VersionsLayout(
                             Surface(
                                 modifier = Modifier.size(34.dp),
                                 shape = RoundedCornerShape(AerixRadii.controlSmall),
-                                color = if (showGamePathDrawer) AerixSurface.accentContainer else AerixSurface.panel,
+                                color = if (showGamePathDrawer) MiraiThemeManager.currentAccent().copy(alpha = 0.18f) else AerixSurface.panel,
                                 border = BorderStroke(
                                     AerixSpacing.hairline,
                                     if (showGamePathDrawer) MiraiThemeManager.currentAccent() else AerixSurface.borderSoft
@@ -1163,7 +1163,7 @@ private fun LandscapeInstanceListItem(
                         text = if (active) "Active" else "Pinned",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = if (active) AerixSurface.success else AerixSurface.accent
+                        color = if (active) AerixSurface.success else MiraiThemeManager.currentAccent()
                     )
                 }
             }
@@ -1295,7 +1295,7 @@ private fun VersionManagementDetailPane(
                             contentDescription = stringResource(
                                 if (version.pinnedState) R.string.favorite_added else R.string.favorite_add
                             ),
-                            tint = if (version.pinnedState) AerixSurface.accent else AerixSurface.textSecondary
+                            tint = if (version.pinnedState) MiraiThemeManager.currentAccent() else AerixSurface.textSecondary
                         )
                     }
                     Box {
@@ -1375,9 +1375,9 @@ private fun VersionManagementDetailPane(
                             .weight(1f)
                             .height(38.dp),
                         shape = RoundedCornerShape(AerixRadii.control),
-                        color = AerixSurface.accentContainer,
-                        border = BorderStroke(AerixSpacing.hairline, AerixSurface.accent.copy(alpha = 0.72f)),
-                        contentColor = AerixSurface.accent
+                        color = MiraiThemeManager.currentAccent().copy(alpha = 0.18f),
+                        border = BorderStroke(AerixSpacing.hairline, MiraiThemeManager.currentAccent().copy(alpha = 0.72f)),
+                        contentColor = MiraiThemeManager.currentAccent()
                     ) {
                         Row(
                             modifier = Modifier.fillMaxSize(),

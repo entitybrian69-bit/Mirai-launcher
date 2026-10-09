@@ -34,6 +34,8 @@ object MobileGluesRenderer : RendererInterface {
 
     override fun getRendererName(): String = "MobileGlues"
 
+    override fun getMinimumGlesVersion(): Int = 3
+
     override fun getMinMCVersion(): String = "1.17"
 
     override fun getMaxMCVersion(): String = "26.3"
@@ -48,7 +50,8 @@ object MobileGluesRenderer : RendererInterface {
         }
     }
 
-    //MG is its own EGL provider (same hook LTW uses): feeds POJAVEXEC_EGL and SDL.
+    // MobileGlues exports the complete EGL API required by Minecraft's SDL backend, as well
+    // as the hooks used by the launcher's native EGL bridge.
     override fun getRendererEGL(): String = "libmobileglues.so"
 
     override fun getDlopenLibrary(): Lazy<List<String>> = lazy { emptyList() }

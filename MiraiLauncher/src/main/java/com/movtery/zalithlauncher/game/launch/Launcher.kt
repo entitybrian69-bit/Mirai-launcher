@@ -44,7 +44,7 @@ import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.unit.getOrMin
 import com.movtery.zalithlauncher.utils.device.Architecture
 import com.movtery.zalithlauncher.utils.device.Architecture.ARCH_X86
-import com.movtery.zalithlauncher.utils.device.Architecture.is64BitsDevice
+import com.movtery.zalithlauncher.utils.device.Architecture.is64BitsProcess
 import com.movtery.zalithlauncher.utils.logging.Logger
 import com.movtery.zalithlauncher.utils.network.getSystemDnsServerAddresses
 import com.movtery.zalithlauncher.utils.string.getMessageOrToString
@@ -341,6 +341,8 @@ abstract class Launcher(
         args.purgeArg("-XX:+UseLargePagesInMetaspace")
         args.purgeArg("-XX:+UseLargePages")
         args.purgeArg("-Dorg.lwjgl.opengl.libname")
+        // Force the process-ABI library from Android's nativeLibraryDir, not a desktop LWJGL jar.
+        args.purgeArg("-Dorg.lwjgl.openal.libname")
         // Don't let the user specify a custom Freetype library (as the user is unlikely to specify a version compiled for Android)
         args.purgeArg("-Dorg.lwjgl.freetype.libname")
         // Overridden by us to specify the exact number of cores that the android system has
@@ -351,7 +353,11 @@ abstract class Launcher(
         args.add("-Xms${ramAllocationString}M")
         args.add("-Xmx${ramAllocationString}M")
 
-        args.add("-Dorg.lwjgl.openal.libname=${PathManager.DIR_NATIVE_LIB}/libopenal.so")
+        val openAlLibrary = File(PathManager.DIR_NATIVE_LIB, "libopenal.so")
+        if (!openAlLibrary.isFile) {
+            Logger.error(TAG, "The ABI-matched OpenAL library is missing: ${openAlLibrary.absolutePath}")
+        }
+        args.add(OpenAlRuntimeConfig.lwjglOpenAlProperty(PathManager.DIR_NATIVE_LIB))
 
         // Force LWJGL to use the Freetype library intended for it, instead of using the one
         // that we ship with Java (since it may be older than what's needed).
@@ -400,7 +406,7 @@ abstract class Launcher(
         val javaLibDir = getJavaLibDir()
         val jvmLibDir = getJvmLibDir()
 
-        val libName = if (is64BitsDevice) "lib64" else "lib"
+        val libName = if (is64BitsProcess) "lib64" else "lib"
         val paths = buildList {
             FFmpegPluginManager.takeIf { it.isAvailable }?.libraryPath?.let { add(it) }
             RendererPluginManager.selectedRendererPlugin?.path?.let { add(it) }
@@ -424,7 +430,7 @@ abstract class Launcher(
     }
 
     protected fun getLibraryPath(): String {
-        val libDirName = if (is64BitsDevice) "lib64" else "lib"
+        val libDirName = if (is64BitsProcess) "lib64" else "lib"
         val path = listOfNotNull(
             // per-version LWJGL natives 优先，避免 APK 内旧版 native 抢占
             lwjglNativesDir,
@@ -505,7 +511,7 @@ abstract class Launcher(
             map["MOD_ANDROID_RUNTIME"] = PathManager.DIR_RUNTIME_MOD?.absolutePath ?: ""
             map["DALVIK_JAVAVM"] = ZLBridge.getJavaVMPointer().toString()
             map["DALVIK_APPLICATION"] = ZLBridge.jObjectToString(GlobalContext.applicationContext)
-            map["ALSOFT_DRIVERS"] = "opensl"
+            map["ALSOFT_DRIVERS"] = OpenAlRuntimeConfig.OPENSL_DRIVER
 
             if (AllSettings.dumpShaders.getValue()) map["LIBGL_VGPU_DUMP"] = "1"
             if (AllSettings.zinkPreferSystemDriver.getValue()) map["POJAV_ZINK_PREFER_SYSTEM_DRIVER"] = "1"

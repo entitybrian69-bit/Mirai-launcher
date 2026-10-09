@@ -8,12 +8,12 @@
 為 Android 上的 Minecraft: Java Edition 打造的啟動器。</p>
 
 <p align="center">
-  <a href="https://github.com/entitybrian69-bit/Mirai-launcher/releases">查看已發布版本</a> ·
+  <a href="https://github.com/entitybrian69-bit/Aerix-launcher/releases">查看已發布版本</a> ·
   <a href="README_EN_US.md">English</a> ·
   <a href="README.md">简体中文</a>
 </p>
 
-![GitHub downloads](https://img.shields.io/github/downloads/entitybrian69-bit/Mirai-launcher/total)
+![GitHub downloads](https://img.shields.io/github/downloads/entitybrian69-bit/Aerix-launcher/total)
 
 > **Unofficial Modified Version** — Aerix 為希望在 Android 上清楚管理 Minecraft Java Edition 的玩家而設。版本、內容、帳號與控制設定集中於一處，讓你更快回到想玩的世界。
 
@@ -32,13 +32,13 @@ Aerix 將版本、內容、帳號、控制與常用工具整合在一起，重�
 
 ## 下載與建置
 
-已發布的 APK 會放在 [GitHub Releases](https://github.com/entitybrian69-bit/Mirai-launcher/releases)。GitHub Actions 可建置通用 APK，以及 ARMv7、ARM64、x86 與 x86_64 架構版本。手動工作流程可選擇 Debug 或 Release；Release 建置需在儲存庫的 Actions secrets 中設定 `STORE_PASSWORD` 與 `KEY_PASSWORD`，發布前會核驗五種 APK。
+已發布的 APK 會放在 [GitHub Releases](https://github.com/entitybrian69-bit/Aerix-launcher/releases)。GitHub Actions 可建置通用 APK，以及 ARMv7、ARM64、x86 與 x86_64 架構版本。手動工作流程可選擇 Debug 或 Release；Release 建置需在儲存庫的 Actions secrets 中設定 `STORE_PASSWORD` 與 `KEY_PASSWORD`，發布前會核驗五種 APK。
 
 本機建置需要 JDK 21 與 Android SDK（最低 API 26；專案使用 API 37 編譯設定）：
 
 ```bash
-git clone https://github.com/entitybrian69-bit/Mirai-launcher.git
-cd Mirai-launcher
+git clone https://github.com/entitybrian69-bit/Aerix-launcher.git
+cd Aerix-launcher
 ./gradlew :MiraiLauncher:assembleDebug -Darch=all
 ```
 

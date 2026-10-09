@@ -19,6 +19,7 @@
 package com.movtery.zalithlauncher.utils.device
 
 import android.os.Build
+import android.os.Process
 
 /**
  * [from Architecture.java](https://github.com/PojavLauncherTeam/PojavLauncher/blob/v3_openjdk/app_pojavlauncher/src/main/java/net/kdt/pojavlaunch/Architecture.java)
@@ -33,26 +34,44 @@ object Architecture {
     const val ADDRESS_SPACE_LIMIT_32_BIT: Long = 0xbfffffffL
     const val ADDRESS_SPACE_LIMIT_64_BIT: Long = 0x7fffffffffL
 
-    fun getAddressSpaceLimit() = if (is64BitsDevice) ADDRESS_SPACE_LIMIT_64_BIT else ADDRESS_SPACE_LIMIT_32_BIT
+    fun getAddressSpaceLimit() = if (is64BitsProcess) ADDRESS_SPACE_LIMIT_64_BIT else ADDRESS_SPACE_LIMIT_32_BIT
 
+    /** True when the physical device supports a 64-bit ABI (not necessarily this app's ABI). */
     val is64BitsDevice: Boolean
         get() = Build.SUPPORTED_64_BIT_ABIS.isNotEmpty()
 
     val is32BitsDevice: Boolean
         get() = !is64BitsDevice
 
-    fun getDeviceArchitecture(): Int {
-        return if (isx86Device()) {
-            if (is64BitsDevice) ARCH_X86_64 else ARCH_X86
-        } else {
-            if (is64BitsDevice) ARCH_ARM64 else ARCH_ARM
-        }
+    /**
+     * Native libraries and bundled runtimes must match the ABI of this process. A 32-bit build
+     * can run on a 64-bit phone, so checking only the device's supported ABIs selects the wrong
+     * LWJGL/JRE directories for that case.
+     */
+    val is64BitsProcess: Boolean
+        get() = Process.is64Bit()
+
+    /** Returns the current app-process ABI; the legacy method name is kept for call-site compatibility. */
+    fun getDeviceArchitecture(): Int = selectProcessArchitecture(
+        is64BitProcess = is64BitsProcess,
+        supported32BitAbis = Build.SUPPORTED_32_BIT_ABIS,
+        supported64BitAbis = Build.SUPPORTED_64_BIT_ABIS
+    )
+
+    internal fun selectProcessArchitecture(
+        is64BitProcess: Boolean,
+        supported32BitAbis: Array<String>,
+        supported64BitAbis: Array<String>
+    ): Int {
+        val processAbis = if (is64BitProcess) supported64BitAbis else supported32BitAbis
+        return processAbis.firstNotNullOfOrNull { abi ->
+            archAsInt(abi).takeIf { it != UNSUPPORTED_ARCH }
+        } ?: UNSUPPORTED_ARCH
     }
 
     fun isx86Device(): Boolean {
-        val ABIs = if (is64BitsDevice) Build.SUPPORTED_64_BIT_ABIS else Build.SUPPORTED_32_BIT_ABIS
-        val comparedArch = if (is64BitsDevice) ARCH_X86_64 else ARCH_X86
-        return ABIs.any { archAsInt(it) == comparedArch }
+        val architecture = getDeviceArchitecture()
+        return architecture == ARCH_X86 || architecture == ARCH_X86_64
     }
 
     fun archAsInt(arch: String?): Int {

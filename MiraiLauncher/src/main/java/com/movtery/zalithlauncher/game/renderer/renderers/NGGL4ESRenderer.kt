@@ -27,6 +27,10 @@ object NGGL4ESRenderer : RendererInterface {
 
     override fun getRendererName(): String = "Krypton Wrapper"
 
+    override fun getMinMCVersion(): String = "1.17"
+
+    override fun getMinimumGlesVersion(): Int = 3
+
     override fun getMaxMCVersion(): String = "26.3-snapshot-3"
 
     override fun getDisplayMaxMCVersion(): String = "26.2"
@@ -37,6 +41,7 @@ object NGGL4ESRenderer : RendererInterface {
             put("LIBGL_GL", "31")
             put("LIBGL_ES", "3")
             put("LIBGL_NORMALIZE", "1")
+            put("LIBGL_USEVBO", "1")
             put("LIBGL_NOERROR", "1")
         }
     }

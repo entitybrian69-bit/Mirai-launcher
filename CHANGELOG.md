@@ -5,6 +5,113 @@ All notable changes to Aerix Launcher are recorded here.
 Versions follow the `launcher_version_code` / `launcher_version_name` pair in
 `MiraiLauncher/gradle.properties`.
 
+## 1.6 - 2026-10-08
+
+### Changed
+
+- **Updated the bundled ARM32 Java 21 runtime.** The rebuilt runtime disables
+  `InlineIntrinsics` to avoid a known ARM32 `java.lang.Math` regression, and its
+  bundle marker now identifies the patched build. The runtime was checked for
+  Java metadata and ARM32 ELF architecture, but was not tested on a physical
+  device; Minecraft 1.20.5+ on 32-bit Android remains experimental and unverified.
+- **LTW renderer selection now considers device capability and library
+  availability.** When GLES is detected, devices below GLES 3 are not offered
+  LTW; the ABI-specific native library must also be present. Incompatible
+  selections fall back where a compatible renderer is available.
+- **LTW's GLES/GLSL compatibility configuration is more complete**, and the
+  shader optimizer now preserves linked shader-stage inputs and outputs through
+  post-link optimization. This is a source-level compatibility change, not a
+  claim that all device-specific rendering issues are fixed.
+
+### Added
+
+- **An automated ARM32 Java 21 build, repack, and verification workflow**, with
+  checks for the runtime metadata, ARM32 ELF binaries, and the Math workaround.
+- Regression tests for LTW environment settings, GLES-aware renderer selection,
+  and fallback behavior.
+
+## 1.5 - 2026-10-08
+
+### Changed
+
+- **Low-heap automatic JVM tuning now selects SerialGC and a 48 MiB code
+  cache at allocations up to 1280 MiB.** Explicit GC and code-cache choices are
+  preserved; larger heaps keep the existing G1GC tuning.
+- **Mobile graphics presets use lighter default workloads**, including shorter
+  render distances and reduced render scales. Preset descriptions avoid
+  unmeasured FPS or temperature promises; real gains depend on the device and
+  game workload.
+
+### Fixed
+
+- **32-bit launches now account for the largest currently free virtual-address
+  range** read from `/proc/self/maps`, subtracting a 128 MiB margin for JVM
+  non-heap allocations while retaining the launcher's 256 MiB minimum heap. If
+  the process map cannot be read, the existing process/RAM cap remains the
+  fallback.
+- **RAM defaults, limits, and launch-time allocation follow the launcher
+  process ABI**, not only the phone's maximum supported ABI. This also clamps
+  old saved allocations that exceed 32-bit process limits.
+- **Minecraft 1.20.5+ is no longer rejected solely because Android or the
+  launcher process is 32-bit.** Aerix attempts the bundled, ABI-matched Java 21+
+  runtime/native path when available, logs that this is experimental, and still
+  rejects a selected Java runtime below the Minecraft version's minimum.
+  Mojang's 64-bit OS requirement remains; this does not make 32-bit an
+  officially supported configuration.
+- **The shared game surface ignores zero-sized startup measurements** and logs
+  the requested framebuffer size, native window size, and buffer-geometry
+  errors to help identify device-specific rendering failures.
+
+### Added
+
+- Regression coverage for minimum Java/ABI runtime selection and the 32-bit
+  compatibility warning; the runtime-selection test now runs in build CI.
+
+## 1.4 - 2026-10-08
+
+### Fixed
+
+- **Microsoft device-code sign-in now selects the OAuth flow for the client ID.**
+  The built-in Minecraft Java client uses its Live device-code/token endpoints;
+  custom client IDs continue to use the Entra consumers v2 flow. Token refreshes
+  stay on the issuing flow, Xbox RPS tickets use the matching prefix, and both
+  Microsoft device-code verification URL fields are accepted.
+- **Microsoft OAuth failures are surfaced with useful details** (HTTP status,
+  error code, and description) instead of losing the server response behind a
+  generic error. Blank CI client-ID values now fall back to the configured
+  default; an actually empty final configuration fails during build.
+- **Runtime and native-library selection follows the app process ABI**, not just
+  the phone's hardware capabilities. This covers 32-bit APKs on 64-bit phones,
+  filters out incompatible Java runtimes, and applies safe GC flags across Java
+  21–25: ZGC is limited to compatible 64-bit runtimes, obsolete JDK 24+ ZGC
+  switches are omitted, and unsupported cases fall back to G1GC.
+
+### Added
+
+- Regression tests for Microsoft OAuth routing and response variations, Android
+  process-ABI selection, and Java GC flags. The Microsoft OAuth configuration
+  tests now run in CI.
+- A `website/CNAME` and custom-domain canonical/Open Graph metadata for
+  `aerix-launcher.gt.tc`, alongside repository-renamed links and a GitHub Pages
+  deployment workflow targeting the `Aerix-launcher` default branch.
+
+## 1.3 - 2026-10-07
+
+### Fixed
+
+- **Landscape instance management now uses the intended split layout on phones.**
+  The selected instance summary and Play action stay in a compact left column with
+  a two-column section grid, while its active manager fills the right pane. The
+  breakpoint now accounts for short landscape screens instead of forcing them
+  into the stacked layout.
+- **Theme colors now follow the selected launcher or wallpaper accent across the
+  whole interface.** Navigation selection, action buttons, enabled switches,
+  selected tabs, highlighted cards, and their foreground colors no longer remain
+  stuck on the default mint palette.
+- **The Overview reset-icon action no longer wraps vertically.** Overview actions
+  flow as complete buttons and keep their labels on one horizontal line in the
+  split pane and other narrow layouts.
+
 ## 1.2 - 2026-10-07
 
 The interface release. Every screen was rebuilt around what a phone can actually

@@ -47,7 +47,8 @@ import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
 private val PageBg = AerixSurface.canvas
 private val CardBg = AerixSurface.canvas
 private val Muted = AerixSurface.textMuted
-private val Green = AerixSurface.accent
+private val Green: Color
+    @Composable get() = AerixSurface.accent
 
 data class SectionAction(val title: String, val subtitle: String, val onClick: () -> Unit)
 

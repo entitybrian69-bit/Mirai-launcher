@@ -21,7 +21,6 @@ package com.movtery.zalithlauncher.game.launch
 import android.app.Activity
 import android.os.Build
 import android.os.Parcelable
-import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.compose.ui.unit.IntSize
 import com.movtery.zalithlauncher.BuildConfig
@@ -42,6 +41,7 @@ import com.movtery.zalithlauncher.game.optimization.JvmGcAutoTuner
 import com.movtery.zalithlauncher.game.plugin.Plugin
 import com.movtery.zalithlauncher.game.plugin.driver.DriverPluginManager
 import com.movtery.zalithlauncher.game.plugin.renderer.RendererPluginManager
+import com.movtery.zalithlauncher.game.renderer.RendererPicker
 import com.movtery.zalithlauncher.game.renderer.Renderers
 import com.movtery.zalithlauncher.game.renderer.renderers.GL4ESRenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.LTWLegacyRenderer
@@ -51,8 +51,10 @@ import com.movtery.zalithlauncher.game.renderer.renderers.NGGL4ESRenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.VGPU1368Renderer
 import com.movtery.zalithlauncher.game.renderer.renderers.VGPURenderer
 import com.movtery.zalithlauncher.game.support.touch_controller.ControllerProxy
+import com.movtery.zalithlauncher.game.version.installed.GraphicsApi
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionInfoParser
+import com.movtery.zalithlauncher.game.version.installed.hasVulkanBackend
 import com.movtery.zalithlauncher.game.versioninfo.models.GameManifest
 import com.movtery.zalithlauncher.path.LibPath
 import com.movtery.zalithlauncher.path.PathManager
@@ -62,7 +64,7 @@ import com.movtery.zalithlauncher.utils.device.Architecture
 import com.movtery.zalithlauncher.utils.file.child
 import com.movtery.zalithlauncher.utils.file.ensureDirectorySilently
 import com.movtery.zalithlauncher.utils.logging.Logger
-import com.movtery.zalithlauncher.utils.string.isBiggerTo
+import com.movtery.zalithlauncher.utils.platform.getMaxMemoryForLaunch
 import com.movtery.zalithlauncher.utils.string.isEqualTo
 import kotlinx.parcelize.Parcelize
 import org.lwjgl.glfw.CallbackBridge
@@ -88,6 +90,7 @@ class GameLauncher(
 ) : Launcher(onExit, openPath) {
     private lateinit var gameManifest: GameManifest
     private var jnaDir: File? = null
+    private var detectedGlesVersion: Int = 0
     private val offlineServer = OfflineYggdrasilServer(0)
 
     private val version = config.version
@@ -105,7 +108,44 @@ class GameLauncher(
     }
 
     override suspend fun launch(screenSize: IntSize): Int {
-        if (!Renderers.isCurrentRendererValid()) {
+        detectedGlesVersion = getDetectedVersion()
+        Logger.info(TAG, "GLES version detected: $detectedGlesVersion")
+
+        val pickerVersion = version.getVersionInfo()?.minecraftVersion.orEmpty()
+        val ltwLibraryAvailable = File(
+            PathManager.DIR_NATIVE_LIB,
+            LTWRenderer.getRendererLibrary(),
+        ).isFile
+        if (!ltwLibraryAvailable) {
+            Logger.warning(TAG, "LTW is unavailable: ${LTWRenderer.getRendererLibrary()} is missing from the app's native library directory.")
+        }
+        val availableRenderers = Renderers.getRenderers()
+            .filter { renderer ->
+                renderer.getUniqueIdentifier() != LTWRenderer.getUniqueIdentifier() || ltwLibraryAvailable
+            }
+            .map { it.getUniqueIdentifier() }
+            .toSet()
+        val graphicsApi = version.getGraphicsApi()
+        val usesVulkanBackend = graphicsApi == GraphicsApi.VULKAN ||
+                (graphicsApi == GraphicsApi.DEFAULT && version.hasVulkanBackend())
+        val rendererChoice = if (pickerVersion.isNotBlank()) {
+            RendererPicker.pick(
+                mcVersion = pickerVersion,
+                manualIdentifier = version.getRenderer(),
+                available = availableRenderers,
+                deviceGlesVersion = detectedGlesVersion,
+            )
+        } else {
+            null
+        }
+        if (rendererChoice != null && rendererChoice.identifier.isNotBlank()) {
+            Renderers.setCurrentRenderer(rendererChoice.identifier)
+            Logger.info(TAG, "Renderer selected: ${rendererChoice.identifier}; ${rendererChoice.reason}")
+        } else if (rendererChoice != null && !usesVulkanBackend) {
+            throw IllegalStateException(
+                "No renderer compatible with Minecraft $pickerVersion and GLES $detectedGlesVersion is available."
+            )
+        } else if (!Renderers.isCurrentRendererValid()) {
             Renderers.setCurrentRenderer(version.getRenderer())
         }
 
@@ -164,11 +204,18 @@ class GameLauncher(
             put("sort.patch", "true")
         }
 
-        //Jna
-        jnaDir?.let { dir ->
-            val dirPath = dir.absolutePath
-            put("jna.boot.library.path", dirPath) //覆盖父类添加的jna路径
-        }
+        // JNA jars contain desktop Linux natives. Prefer a version-matched Android
+        // dispatch library when the launcher unpacked one; otherwise use the
+        // ABI-specific Android library packaged in the APK. Pointing at a JNA jar
+        // directory without an Android .so makes JNA extract libc.so.6-dependent
+        // Linux code, which cannot load on Android's bionic libc.
+        val jnaBootLibraryPath = JnaBootLibraryPath.resolve(
+            gameJnaVersionDirectory = jnaDir,
+            appNativeLibraryDirectory = PathManager.DIR_NATIVE_LIB,
+            processArchitecture = Architecture.getDeviceArchitecture(),
+        )
+        put("jna.boot.library.path", jnaBootLibraryPath)
+        Logger.info(TAG, "JNA native dispatch library directory: $jnaBootLibraryPath")
     }
 
     override fun chdir(): String {
@@ -181,6 +228,7 @@ class GameLauncher(
 
     override fun initEnv(screenSize: IntSize): MutableMap<String, String> {
         val envMap = super.initEnv(screenSize)
+        configureOpenAlEnvironment(envMap)
 
         envMap["DRIVER_PATH"] = DriverPluginManager.getDriver(version.getDriver()).path
 
@@ -189,7 +237,7 @@ class GameLauncher(
             envMap[loaderKey] = "1"
         }
         if (Renderers.isCurrentRendererValid()) {
-            setRendererEnv(envMap)
+            setRendererEnv(envMap, detectedGlesVersion)
         }
         envMap["ZALITH_VERSION_CODE"] = BuildConfig.VERSION_CODE.toString()
 
@@ -201,6 +249,30 @@ class GameLauncher(
             envMap["XDG_DATA_HOME"] = xdgDataHome.absolutePath
         }
         return envMap
+    }
+
+    private fun configureOpenAlEnvironment(envMap: MutableMap<String, String>) {
+        runCatching {
+            val configText = activity.assets.open(OpenAlRuntimeConfig.CONF_ASSET_PATH)
+                .bufferedReader(Charsets.UTF_8)
+                .use { it.readText() }
+            val configFile = OpenAlRuntimeConfig.installConfig(
+                target = File(PathManager.DIR_FILES_PRIVATE, "openal/alsoft.conf"),
+                configText = configText,
+            )
+            envMap += OpenAlRuntimeConfig.environment(configFile, configText)
+
+            val nativeLibrary = File(PathManager.DIR_NATIVE_LIB, "libopenal.so")
+            if (nativeLibrary.isFile) {
+                Logger.info(TAG, "OpenAL Soft ABI-matched native: ${nativeLibrary.absolutePath}")
+            } else {
+                Logger.error(TAG, "OpenAL Soft is not packaged for this process ABI: ${nativeLibrary.absolutePath}")
+            }
+        }.onFailure {
+            // ALSOFT_DRIVERS remains set to opensl by the base launcher even if the config asset
+            // cannot be copied, so audio still has the Android OpenSL ES fallback.
+            Logger.warning(TAG, "Unable to install the OpenAL Soft config; keeping the OpenSL ES driver override", it)
+        }
     }
 
     override fun dlopenEngine() {
@@ -222,12 +294,24 @@ class GameLauncher(
     }
 
     override fun progressFinalUserArgs(args: MutableList<String>, ramAllocation: Int) {
-        val allocMb = version.getRamAllocation(activity)
+        val requestedRamMb = version.getRamAllocation(activity)
+        val allocMb = if (Architecture.is64BitsProcess) {
+            requestedRamMb
+        } else {
+            minOf(requestedRamMb, getMaxMemoryForLaunch(activity))
+        }
+        if (allocMb < requestedRamMb) {
+            Logger.warning(
+                TAG,
+                "Reduced the requested JVM heap from ${requestedRamMb}MB to ${allocMb}MB for the available 32-bit address space"
+            )
+        }
         super.progressFinalUserArgs(args, allocMb)
         JvmGcAutoTuner.sanitizeAndInjectGcArgs(
             args = args,
             javaMajor = runtime.javaVersion,
-            ramAllocationMb = allocMb
+            ramAllocationMb = allocMb,
+            is64BitRuntime = Architecture.is64BitsProcess
         )
         if (Renderers.isCurrentRendererValid()) {
             args.add("-Dorg.lwjgl.opengl.libname=${getRendererLibrary()}")
@@ -315,7 +399,30 @@ class GameLauncher(
         appendInfo("Minecraft Info: $mcInfo")
         appendInfo("Game Path: ${version.getGameDir().absolutePath} (Isolation: ${version.isIsolation()})")
         appendInfo("Custom Java arguments: $javaArguments")
-        appendInfo("Java Runtime: $javaRuntime")
+        val selectedRuntime = RuntimesManager.loadRuntime(javaRuntime)
+        val processBits = if (Architecture.is64BitsProcess) 64 else 32
+        appendInfo(
+            "Process ABI: ${Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)} " +
+                    "(${processBits}-bit process; 64-bit device ABI available=${Architecture.is64BitsDevice})"
+        )
+        appendInfo(
+            "Java Runtime: $javaRuntime (Java ${selectedRuntime.versionString ?: "unknown"}, " +
+                    "OS_ARCH=${selectedRuntime.arch ?: "unknown"})"
+        )
+        val minecraftVersion = version.getVersionInfo()?.minecraftVersion ?: version.getVersionName()
+        if (MinecraftPlatformCompatibility.needsBestEffort32BitWarning(
+                minecraftVersion = minecraftVersion,
+                supports64BitOperatingSystem = Architecture.is64BitsDevice,
+                is64BitProcess = Architecture.is64BitsProcess
+            )
+        ) {
+            val warning = "Best-effort 32-bit compatibility attempt for Minecraft $minecraftVersion: " +
+                    "using ${Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)} Java " +
+                    "${selectedRuntime.javaVersion}. Mojang documents this version as requiring a " +
+                    "64-bit OS; this community path is not upstream-supported or device-verified."
+            appendInfo("WARNING: $warning")
+            Logger.warning(TAG, warning)
+        }
         appendInfo("Account: ${usingAccount.username} (${usingAccount.accountType})")
     }
 
@@ -325,39 +432,51 @@ class GameLauncher(
      * 如果版本未设置，则根据全局设置或自动选择
      */
     private fun getRuntime(): String {
-        val versionRuntime = version.getJavaRuntime().takeIf { it.isNotEmpty() } ?: ""
-        if (versionRuntime.isNotEmpty()) return versionRuntime
+        val versionInfo = version.getVersionInfo()
+        val minecraftVersion = versionInfo?.minecraftVersion ?: version.getVersionName()
+        val loaderInfo = versionInfo?.loaderInfo
+        val minimumJavaVersion = JvmGcAutoTuner.recommendJavaMajorVersion(
+            minecraftVersion = minecraftVersion,
+            loader = loaderInfo?.loader,
+            loaderVersion = loaderInfo?.version,
+            manifestJavaMajor = gameManifest.javaVersion?.majorVersion
+        )
 
-        val runtime = AllSettings.javaRuntime.getValue()
-        val pickedRuntime = RuntimesManager.loadRuntime(runtime)
+        val versionRuntime = version.getJavaRuntime().takeIf { it.isNotEmpty() }
+        if (versionRuntime != null) {
+            return requireCompatibleRuntime(versionRuntime, minimumJavaVersion).name
+        }
 
-        if (AllSettings.autoPickJavaRuntime.getValue()) {
-            JvmGcAutoTuner.resolveOptimalRuntimeForLaunch(version, gameManifest)?.let { optimalRuntime ->
-                return optimalRuntime
-            }
-            val loaderInfo = version.getVersionInfo()?.loaderInfo
-            //开启了自动选择，根据游戏需求的版本做选择
-            val targetJavaVersion = when (loaderInfo?.loader) {
-                ModLoader.BABRIC -> 17 //Babric 推荐使用 17
-                ModLoader.CLEANROOM -> {
-                    if (loaderInfo.version.isBiggerTo("0.4.4-alpha")) {
-                        25 //0.5.0-alpha 及以上要求使用 25
-                    } else {
-                        21 //0.4.4-alpha 及以下要求使用 21
-                    }
-                }
-                else -> gameManifest.javaVersion?.majorVersion ?: 8
-            }
-            if (pickedRuntime.javaVersion == 0 || pickedRuntime.javaVersion < targetJavaVersion) {
-                val runtime0 = RuntimesManager.getNearestJreName(targetJavaVersion)
-                if (runtime0 != null) {
-                    return runtime0
-                } else {
-                    activity.runOnUiThread {
-                        Toast.makeText(activity, activity.getString(R.string.game_auto_pick_runtime_failed), Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
+        if (!AllSettings.autoPickJavaRuntime.getValue()) {
+            return requireCompatibleRuntime(
+                AllSettings.javaRuntime.getValue(),
+                minimumJavaVersion
+            ).name
+        }
+
+        return JvmGcAutoTuner.resolveOptimalRuntimeForLaunch(version, gameManifest)
+            ?.let { requireCompatibleRuntime(it, minimumJavaVersion).name }
+            ?: throw IllegalStateException(
+                "Minecraft $minecraftVersion requires Java $minimumJavaVersion or newer, but " +
+                        "no compatible runtime is installed for the " +
+                        "${Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)} process. " +
+                        "Install a matching Internal-$minimumJavaVersion runtime or select a compatible Java runtime."
+            )
+    }
+
+    private fun requireCompatibleRuntime(runtimeName: String, minimumJavaVersion: Int): Runtime {
+        val runtime = RuntimesManager.loadRuntime(runtimeName)
+        if (!runtime.isCompatible()) {
+            val expectedArch = Architecture.archAsString(ZLApplication.DEVICE_ARCHITECTURE)
+            val error = "Java runtime '${runtime.name}' is incompatible with this $expectedArch process."
+            Logger.error(TAG, error)
+            throw IllegalStateException(error)
+        }
+        if (runtime.javaVersion < minimumJavaVersion) {
+            val error = "Java runtime '${runtime.name}' is Java ${runtime.javaVersion}, but " +
+                    "Minecraft ${version.getVersionName()} requires Java $minimumJavaVersion or newer."
+            Logger.error(TAG, error)
+            throw IllegalStateException(error)
         }
         return runtime
     }
@@ -583,12 +702,17 @@ private fun checkAndUsedJSPH(envMap: MutableMap<String, String>, runtime: Runtim
     }
 }
 
-private fun setRendererEnv(envMap: MutableMap<String, String>) {
+private fun setRendererEnv(envMap: MutableMap<String, String>, detectedGlesVersion: Int) {
     val renderer = Renderers.getCurrentRenderer()
     val rendererId = renderer.getRendererId()
 
-    // SDL 环境变量
-    envMap["SDL_OPENGL_LIBRARY"] = rendererId
+    // SDL_HINT_OPENGL_LIBRARY expects a shared-library path, not POJAV_RENDERER's ID.
+    // A renderer ID such as "opengles3_mobileglues" cannot be dlopen'ed, so SDL may silently
+    // fall back to the system GLES library instead of the selected renderer.
+    envMap["SDL_OPENGL_LIBRARY"] = resolveSdlOpenGlLibraryPath(
+        rendererLibrary = renderer.getRendererLibrary(),
+        nativeLibraryDirectory = PathManager.DIR_NATIVE_LIB,
+    )
 
     if (rendererId.startsWith("opengles2")) {
         envMap["LIBGL_ES"] = "2"
@@ -634,10 +758,7 @@ private fun setRendererEnv(envMap: MutableMap<String, String>) {
     }
 
     if (!envMap.containsKey("LIBGL_ES")) {
-        val glesMajor = getDetectedVersion()
-        Logger.info(TAG, "GLES version detected: $glesMajor")
-
-        envMap["LIBGL_ES"] = if (glesMajor < 3) {
+        envMap["LIBGL_ES"] = if (detectedGlesVersion < 3) {
             //fallback to 2 since it's the minimum for the entire app
             "2"
         } else if (rendererId.startsWith("opengles")) {
