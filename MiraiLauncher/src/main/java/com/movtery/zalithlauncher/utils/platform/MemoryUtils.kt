@@ -32,6 +32,9 @@ import kotlin.math.round
 private const val BYTES_PER_MB = 1024L * 1024
 private const val ADDRESS_SPACE_HEAP_RESERVE_MB = 128
 private const val MINIMUM_JVM_HEAP_MB = 256
+private const val LOW_MEMORY_RESERVE_MB = 800
+private const val HIGH_MEMORY_RESERVE_MB = 1024
+private const val MAX_32_BIT_JVM_HEAP_MB = 1536
 private val MAPS_RANGE_REGEX = Regex("^([0-9a-fA-F]+)-([0-9a-fA-F]+)(?:\\s|$)")
 
 private inline val Context.activityManager: ActivityManager
