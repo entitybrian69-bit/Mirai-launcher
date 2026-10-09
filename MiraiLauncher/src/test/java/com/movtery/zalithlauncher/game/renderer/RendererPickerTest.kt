@@ -34,6 +34,41 @@ class RendererPickerTest {
     }
 
     @Test
+    fun minecraft26PrefersRendererWithFullEglSupportForSdl() {
+        val choice = RendererPicker.pick(
+            mcVersion = "26.2",
+            manualIdentifier = "",
+            available = setOf(RendererPicker.LTW, RendererPicker.MOBILEGLUES, RendererPicker.NG_GL4ES),
+        )
+
+        assertEquals(RendererPicker.MOBILEGLUES, choice.identifier)
+    }
+
+    @Test
+    fun minecraft26FallsBackToNgGl4esInsteadOfThePartialLtwEglShim() {
+        val choice = RendererPicker.pick(
+            mcVersion = "26.2",
+            manualIdentifier = "",
+            available = setOf(RendererPicker.LTW, RendererPicker.NG_GL4ES),
+        )
+
+        assertEquals(RendererPicker.NG_GL4ES, choice.identifier)
+    }
+
+    @Test
+    fun persistedLtwOverrideIsRejectedForMinecraft26Snapshots() {
+        val choice = RendererPicker.pick(
+            mcVersion = "26.2-snapshot-1",
+            manualIdentifier = RendererPicker.LTW,
+            available = setOf(RendererPicker.LTW, RendererPicker.MOBILEGLUES, RendererPicker.NG_GL4ES),
+        )
+
+        assertEquals(RendererPicker.MOBILEGLUES, choice.identifier)
+        assertEquals(true, choice.automatic)
+        assertEquals(true, choice.reason.contains("instance override unsupported"))
+    }
+
+    @Test
     fun modernVersionsCanFallBackToNgGl4esButNeverLegacyGl4es() {
         val choice = RendererPicker.pick(
             mcVersion = "1.20.1",

@@ -30,24 +30,29 @@ import com.movtery.zalithlauncher.game.renderer.renderers.VGPURenderer
 import com.movtery.zalithlauncher.game.renderer.renderers.VirGLRenderer
 import com.movtery.zalithlauncher.game.version.installed.utils.isBiggerVer
 import com.movtery.zalithlauncher.game.version.installed.utils.isLowerVer
+import com.movtery.zalithlauncher.utils.device.VulkanRequirements
+import com.movtery.zalithlauncher.utils.device.normalizeMcVersion
 
 /**
  * Chooses which wrapper an instance should launch with.
  *
- * A renderer is only ever offered for a Minecraft version it declares itself compatible with,
- * through [RendererInterface.getMinMCVersion] / [RendererInterface.getMaxMCVersion]. Nothing
- * in this file hardcodes a renderer's compatibility window, so adding a renderer to
- * [Renderers.BUILT_IN] is enough to make it participate in automatic selection.
+ * Renderers declare their Minecraft compatibility through [RendererInterface.getMinMCVersion]
+ * / [RendererInterface.getMaxMCVersion]. The picker also applies engine-specific constraints
+ * where a renderer's native contract does not match the game's backend loader.
  *
  * Minecraft's renderer boundary is the OpenGL profile, not the version number nobody can
- * agree on:
+ * agree on. Minecraft 26.2+ also uses SDL's EGL loader for its new graphics-backend path;
+ * that loader requires a complete EGL library, whereas LTW only exports a partial EGL shim.
+ * Prefer MobileGlues (which supplies the full EGL API) or NG-GL4ES for those versions and
+ * reject LTW there rather than passing an incomplete library to SDL.
  *
  *  - **1.8 – 1.16.5** drive OpenGL 1.x/2.1 with fixed-function state and the legacy
  *    client-array draw path, so they need [LTWLegacyRenderer], [VGPURenderer],
  *    [VGPU1368Renderer], or [GL4ESRenderer].
  *  - **1.17 and newer** require a core-profile-capable OpenGL wrapper; the picker considers
- *    [LTWRenderer], [MobileGluesRenderer], and modern [NGGL4ESRenderer] before Vulkan-backed paths. Legacy
- *    GLES2 [GL4ESRenderer] is never used as a fallback for these versions.
+ *    [LTWRenderer], [MobileGluesRenderer], and modern [NGGL4ESRenderer]. For 26.2+, the SDL
+ *    backend constraint above puts MobileGlues and NG-GL4ES ahead of LTW. Legacy GLES2
+ *    [GL4ESRenderer] is never used as a fallback for these versions.
  *
  * An explicit per-instance choice always wins, but only while it stays compatible with the
  * version being launched; otherwise the launcher would refuse to start the game a moment later
@@ -73,6 +78,12 @@ object RendererPicker {
 
     /** Preferred core-profile wrappers, best first. GL4ES is intentionally absent here. */
     private val MODERN_ORDER = listOf(LTW, MOBILEGLUES, NG_GL4ES, ZINK)
+
+    /**
+     * Minecraft's SDL/EGL backend needs a full EGL shared library. LTW's egl* exports are only
+     * an interception shim, so use a complete EGL implementation for Minecraft 26.2+.
+     */
+    private val SDL_BACKEND_ORDER = listOf(MOBILEGLUES, NG_GL4ES, ZINK)
 
     data class Choice(
         val identifier: String,
@@ -145,7 +156,11 @@ object RendererPicker {
         deviceGlesVersion: Int?,
         vulkanAvailable: Boolean?,
     ): Choice {
-        val order = if (usesCoreProfile(mcVersion)) MODERN_ORDER else LEGACY_ORDER
+        val order = when {
+            usesSdlGraphicsBackend(mcVersion) -> SDL_BACKEND_ORDER
+            usesCoreProfile(mcVersion) -> MODERN_ORDER
+            else -> LEGACY_ORDER
+        }
 
         val compatible = order.filter {
             it in available && supports(it, mcVersion) &&
@@ -185,6 +200,10 @@ object RendererPicker {
     private fun usesCoreProfile(mcVersion: String): Boolean =
         mcVersion.isNotBlank() && !mcVersion.isLowerVer(CORE_PROFILE_VERSION)
 
+    private fun usesSdlGraphicsBackend(mcVersion: String): Boolean =
+        mcVersion.isNotBlank() &&
+                !normalizeMcVersion(mcVersion).isLowerVer(VulkanRequirements.MIN_MC_VERSION)
+
     private fun minimumGlesVersion(identifier: String): Int? =
         Renderers.BUILT_IN.firstOrNull { it.getUniqueIdentifier() == identifier }
             ?.getMinimumGlesVersion()
@@ -219,6 +238,10 @@ object RendererPicker {
      */
     private fun supports(identifier: String, mcVersion: String): Boolean {
         if (mcVersion.isBlank()) return true
+        // LTW's library exports only EGL interception hooks, not the full set of EGL symbols
+        // SDL loads on the Minecraft 26.2+ graphics path. This also upgrades an older persisted
+        // LTW selection to a real SDL-compatible OpenGL renderer for affected instances.
+        if (identifier == LTW && usesSdlGraphicsBackend(mcVersion)) return false
         val renderer = Renderers.BUILT_IN.firstOrNull { it.getUniqueIdentifier() == identifier }
             ?: return true
         renderer.getMinMCVersion()?.let { min -> if (mcVersion.isLowerVer(min)) return false }

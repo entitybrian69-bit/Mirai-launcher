@@ -189,6 +189,7 @@ jobs:
             --tests "com.movtery.zalithlauncher.game.account.wardrobe.FileReplacementTest" \
             --tests "com.movtery.zalithlauncher.game.account.microsoft.MicrosoftOAuthConfigTest" \
             --tests "com.movtery.zalithlauncher.game.launch.MinecraftPlatformCompatibilityTest" \
+            --tests "com.movtery.zalithlauncher.game.launch.MinecraftGraphicsBackendTest" \
             --tests "com.movtery.zalithlauncher.game.launch.JnaBootLibraryPathTest" \
             --tests "com.movtery.zalithlauncher.game.launch.MinecraftRuntimeFlagsTest" \
             --tests "com.movtery.zalithlauncher.game.launch.OpenAlRuntimeConfigTest" \
